@@ -11,6 +11,7 @@ RUN apk add --virtual .build-deps --no-cache postgresql-dev gcc python3-dev musl
         pip install --no-cache-dir -r requirements.txt && \
         apk --purge del .build-deps
 
+RUN pip install Pillow
 COPY . /app/backend/
 
 CMD [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]

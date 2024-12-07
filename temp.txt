@@ -1,0 +1,126 @@
+import './App.css'; // Include updated CSS for modals and overlay
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import TaskForm from './TaskForm';
+import TaskList from './TaskList';
+import ScenarioForm from './ScenarioForm';
+import ScenarioList from './ScenarioList';
+
+const App = () => {
+    const [scenarios, setScenarios] = useState([]);
+    const [selectedScenario, setSelectedScenario] = useState(null);
+    const [tasks, setTasks] = useState([]);
+    const [isTaskFormVisible, setIsTaskFormVisible] = useState(false);
+    const [isScenarioFormVisible, setIsScenarioFormVisible] = useState(false);
+
+    const fetchScenarios = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/scenarios/');
+            setScenarios(response.data);
+        } catch (error) {
+            console.error("Error fetching scenarios:", error);
+        }
+    };
+
+    const fetchTasks = async (scenarioId) => {
+        try {
+            const response = await axios.get(`http://localhost:8000/api/tasks/?scenario=${scenarioId}`);
+            setTasks(response.data);
+        } catch (error) {
+            console.error("Error fetching tasks:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchScenarios();
+    }, []);
+
+    const handleScenarioSelect = (scenario) => {
+        setSelectedScenario(scenario);
+        fetchTasks(scenario.id);
+    };
+
+    const handleDeleteScenario = async (scenarioId) => {
+        try {
+            await axios.delete(`http://localhost:8000/api/scenarios/${scenarioId}/`);
+            fetchScenarios();
+            if (selectedScenario?.id === scenarioId) {
+                setSelectedScenario(null);
+                setTasks([]);
+                setIsTaskFormVisible(false);
+            }
+        } catch (error) {
+            console.error("Error deleting scenario:", error);
+        }
+    };
+
+    const handleDeleteTask = async (taskId) => {
+        try {
+            await axios.delete(`http://localhost:8000/api/tasks/${taskId}/`);
+            fetchTasks(selectedScenario.id);
+        } catch (error) {
+            console.error("Error deleting task:", error);
+        }
+    };
+
+    const refreshScenariosAndTasks = () => {
+        fetchScenarios();
+        if (selectedScenario) {
+            fetchTasks(selectedScenario.id);
+        }
+    };
+
+    const closeScenarioForm = () => setIsScenarioFormVisible(false);
+    const closeTaskForm = () => setIsTaskFormVisible(false);
+
+    return (
+        <div>
+            {isScenarioFormVisible && (
+                <>
+                    <div className="overlay"></div>
+                    <div className="modal">
+                        <button onClick={closeScenarioForm}>Close</button>
+                        <ScenarioForm refreshScenarios={refreshScenariosAndTasks} closeForm={closeScenarioForm} />
+                    </div>
+                </>
+            )}
+            {isTaskFormVisible && (
+                <>
+                    <div className="overlay"></div>
+                    <div className="modal">
+                        <button onClick={closeTaskForm}>Close</button>
+                        <TaskForm selectedScenario={selectedScenario} refreshScenarios={refreshScenariosAndTasks} closeForm={closeTaskForm} />
+                    </div>
+                </>
+            )}
+
+            {!selectedScenario ? (
+                <div>
+                    <button onClick={() => setIsScenarioFormVisible(true)}>Add New Scenario</button>
+                    <h1>Scenarios</h1>
+                    <ScenarioList scenarios={scenarios} onScenarioSelect={handleScenarioSelect} onDeleteScenario={handleDeleteScenario} />
+                </div>
+            ) : (
+                <div>
+                    <h3>Scenario: {selectedScenario.title}</h3>
+                    <p>{selectedScenario.description}</p>
+                    {selectedScenario.image && <img src={selectedScenario.image} alt={selectedScenario.title} />}
+                    <button onClick={() => setSelectedScenario(null)}>Back to Scenarios List</button>
+                    <button onClick={() => setIsTaskFormVisible(true)}>Add New Task</button>
+                    <h3>Tasks</h3>
+                    <ul>
+                        {tasks.map((task) => (
+                            <li key={task.id}>
+                                <h4>Task {task.number}</h4>
+                                <p>{task.description}</p>
+                                <button onClick={() => handleDeleteTask(task.id)}>Delete Task</button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default App;
