@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Task, Scenario
+from .models import Task, Scenario, Game
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -19,3 +19,8 @@ class ScenarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Scenario
         fields = ['id', 'title', 'description', 'image', 'tasks']
+
+class GameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Game
+        fields = '__all__'

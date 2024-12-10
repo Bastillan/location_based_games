@@ -19,3 +19,12 @@ class Task(models.Model):
 
     def __str__(self):
         return f"Task {self.number}: {self.description[:20]}"
+
+class Game(models.Model):
+    scenario = models.ForeignKey(Scenario, related_name="games", on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    beggining_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+
+    def __str__(self):
+        return f"Game {self.title}: from {self.beggining_date} to {self.end_date}"
