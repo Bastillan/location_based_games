@@ -21,6 +21,7 @@ class ScenarioSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'image', 'tasks']
 
 class GameSerializer(serializers.ModelSerializer):
+    scenario  = ScenarioSerializer()
     class Meta:
         model = Game
-        fields = '__all__'
+        fields = ['id', 'title', 'scenario']

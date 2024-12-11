@@ -13,6 +13,9 @@ const App = () => {
     const [tasks, setTasks] = useState([]); // To store tasks for the selected scenario
     const [isTaskFormVisible, setIsTaskFormVisible] = useState(false);
     const [isScenarioFormVisible, setIsScenarioFormVisible] = useState(false);
+    const [games, setGames] = useState([]);
+    const [isGamesListVisible, setIsGamesListVisible] = useState(true);
+    const [selectedGame, setSelectedGame] = useState(null);
 
 
     // const [updateTrigger, setUpdateTrigger] = useState(false);
@@ -40,8 +43,18 @@ const App = () => {
         }
     };
 
+    const fetchGames = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/games/');
+            setGames(response.data);
+        } catch (error) {
+            console.error("Error fetching games:", error);
+        }
+    };
+
     useEffect(() => {
         fetchScenarios();
+        fetchGames();
     }, []);
 
     // Handle scenario selection
@@ -84,6 +97,7 @@ const App = () => {
     const handleBackToList = () => {
         setSelectedScenario(null);
         setIsTaskFormVisible(false); // Hide task form
+        setIsGamesListVisible(false);
     };
 
     const closeScriptForm = () => {
@@ -103,11 +117,46 @@ const App = () => {
         setIsTaskFormVisible(true);
     };
 
+    const openGamesList = () => {
+        setIsGamesListVisible(true);
+        fetchGames();
+    }
+
+    const onGameSelect = (game) => {
+        setSelectedGame(game);
+
+        fetchTasks(game.scenario.id); // Fetch tasks for the selected game
+    };
+
+    const refreshGames = () => {
+        fetchGames();
+    }
+
+    const activateGame = async (game) => {
+        if (!selectedScenario) {
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('scenario', selectedScenario.id);
+        formData.append('title', selectedScenario.title);
+
+        try {
+            await axios.post('http://localhost:8000/api/games/', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            refreshGames();
+        } catch (error) {
+            console.error('Error activating game:', error);
+        }
+    }
+
     return (
         <div className="main">
             {selectedScenario ? (
                 <div className="scenarioView">
                     <button className="powrot" onClick={handleBackToList}>Wróć do scenariuszy</button>
+                    <button className="activate" onClick={activateGame}>Aktywuj grę</button>
                     <h3>{selectedScenario.title}</h3>
                     <p>{selectedScenario.description}</p>
                     {selectedScenario.image && (
@@ -153,18 +202,42 @@ const App = () => {
                 </div>
             ) : (
                 <div>
-                    {isScenarioFormVisible && (
-                        <>
-                            <div className="overlay"></div>
-                            <div className="modal">
-                                <ScenarioForm refreshScenarios={refreshScenariosAndTasks} closeForm={closeScriptForm} />
-                                <button onClick={closeScriptForm}>Zamknij</button>
-                            </div>
-                        </>
+                    {isGamesListVisible ? (
+                        <div className="gamesView">
+                            <button className="return" onClick={handleBackToList}>Wróć do scenariuszy</button>
+                            <h3>Aktywne gry</h3>
+                            <ul>
+                                {games.map((game) => (
+                                    <li key={game.id}>
+                                        <h3>{game.title}</h3>
+                                        <p>{game.scenario.description}</p>
+                                        {game.scenario.image && (
+                                            <img src={game.scenario.image} alt={game.scenario.title} style={{ width: '500px' }} />
+                                        )}
+                                        <div className="butons">
+                                            <button className="select" onClick={() => onGameSelect(game)}>Zagraj</button>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ) : (
+                        <div>
+                            {isScenarioFormVisible && (
+                                <>
+                                    <div className="overlay"></div>
+                                    <div className="modal">
+                                        <ScenarioForm refreshScenarios={refreshScenariosAndTasks} closeForm={closeScriptForm} />
+                                        <button onClick={closeScriptForm}>Zamknij</button>
+                                    </div>
+                                </>
+                            )}
+                            {/* <ScenarioForm refreshScenarios={refreshScenariosAndTasks} /> */}
+                            <ScenarioList scenarios={scenarios} onScenarioSelect={handleScenarioSelect} onDeleteScenario={handleDeleteScenario} />
+                            <button className="addScenario" onClick={openScenarioForm}>+</button>
+                            <button className="showGames" onclick={openGamesList}>Gry</button>
+                        </div>
                     )}
-                    {/* <ScenarioForm refreshScenarios={refreshScenariosAndTasks} /> */}
-                    <ScenarioList scenarios={scenarios} onScenarioSelect={handleScenarioSelect} onDeleteScenario={handleDeleteScenario} />
-                    <button className="addScenario" onClick={openScenarioForm}>+</button>
                 </div>
             )}
         </div>
