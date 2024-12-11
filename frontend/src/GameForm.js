@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import DateTimePicker from 'react-datetime-picker';
 import axios from 'axios';
-//import './forms.css';
+import './forms.css';
+import 'react-datetime-picker/dist/DateTimePicker.css'
 
 const GameForm = ({ selectedScenario, refreshGames, closeForm  }) => {
     const [title, setTitle] = useState('');
@@ -28,7 +29,7 @@ const GameForm = ({ selectedScenario, refreshGames, closeForm  }) => {
     };
 
     return (
-        <form className="form-container" onSubmit={handleSubmit}>
+        <form className="form-container2" onSubmit={handleSubmit}>
             <input
                 type="text"
                 placeholder="Title"
@@ -37,10 +38,10 @@ const GameForm = ({ selectedScenario, refreshGames, closeForm  }) => {
                 className="form-input"
                 required
             />
-            <div>
+            <div className='razem'>
                 <DateTimePicker label="Czas rozpoczęcia" onChange={(date) => setBeginningDate(date)} value={beginning_date} />
             </div>
-            <div>
+            <div className='razem'>
                 <DateTimePicker label="Czas zakończenia" onChange={(date) => setEndDate(date)} value={end_date} />
             </div>
             <button type="submit">Zaplanuj grę</button>
