@@ -6,6 +6,7 @@ import TaskForm from './TaskForm';
 import TaskList from './TaskList';
 import ScenarioForm from './ScenarioForm';
 import ScenarioList from './ScenarioList';
+import GameForm from './GameForm';
 
 const App = () => {
     const [scenarios, setScenarios] = useState([]);
@@ -16,6 +17,7 @@ const App = () => {
     const [games, setGames] = useState([]);
     const [isGamesListVisible, setIsGamesListVisible] = useState(true);
     const [selectedGame, setSelectedGame] = useState(null);
+    const [isGameFormVisible, setIsGameFormVisible] = useState(false);
 
 
     // const [updateTrigger, setUpdateTrigger] = useState(false);
@@ -104,7 +106,7 @@ const App = () => {
         setIsScenarioFormVisible(false);
     };
 
-    const closeTasktForm = () => {
+    const closeTaskForm = () => {
         setIsTaskFormVisible(false);
     };
 
@@ -132,6 +134,14 @@ const App = () => {
         fetchGames();
     }
 
+    const closeGameForm = () => {
+        setIsGameFormVisible(false);
+    };
+
+    const openGameForm = () => {
+        setIsGameFormVisible(true);
+    };
+
     const activateGame = async (game) => {
         if (!selectedScenario) {
             return;
@@ -156,7 +166,7 @@ const App = () => {
             {selectedScenario ? (
                 <div className="scenarioView">
                     <button className="powrot" onClick={handleBackToList}>Wróć do scenariuszy</button>
-                    <button className="activate" onClick={activateGame}>Aktywuj grę</button>
+                    <button className="activate" onClick={openGameForm}>Aktywuj grę</button>
                     <h3>{selectedScenario.title}</h3>
                     <p>{selectedScenario.description}</p>
                     {selectedScenario.image && (
@@ -185,12 +195,23 @@ const App = () => {
                             </li>
                         ))}
                     </ul>
+                    {isGameFormVisible ? (
+                        <>
+                            <div className="overlay"></div>
+                            <div className="modal">
+                                <GameForm selectedScenario={selectedScenario} refreshGames={refreshGames} closeForm={closeGameForm} />
+                                <button onClick={closeGameForm}>Zamknij</button>
+                            </div>
+                            
+                        </>
+                    ) : (<> </>) }
+
                     {isTaskFormVisible ? (
                         <>
                             <div className="overlay"></div>
                             <div className="modal">
-                                <TaskForm selectedScenario={selectedScenario} refreshScenarios={refreshScenariosAndTasks} closeForm={closeTasktForm} />
-                                <button onClick={closeTasktForm}>Zamknij</button>
+                                <TaskForm selectedScenario={selectedScenario} refreshScenarios={refreshScenariosAndTasks} closeForm={closeTaskForm} />
+                                <button onClick={closeTaskForm}>Zamknij</button>
                             </div>
                             
                         </>
@@ -210,6 +231,8 @@ const App = () => {
                                 {games.map((game) => (
                                     <li key={game.id}>
                                         <h3>{game.title}</h3>
+                                        <p>{game.beginning_date}</p>
+                                        <p>{game.end_date}</p>
                                         <p>{game.scenario.description}</p>
                                         {game.scenario.image && (
                                             <img src={game.scenario.image} alt={game.scenario.title} style={{ width: '500px' }} />

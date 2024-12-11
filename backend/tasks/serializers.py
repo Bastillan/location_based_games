@@ -24,4 +24,4 @@ class GameSerializer(serializers.ModelSerializer):
     scenario  = ScenarioSerializer()
     class Meta:
         model = Game
-        fields = ['id', 'title', 'scenario']
+        fields = ['id', 'title', 'beginning_date', 'end_date', 'scenario']

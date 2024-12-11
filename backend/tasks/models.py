@@ -23,6 +23,8 @@ class Task(models.Model):
 class Game(models.Model):
     scenario = models.ForeignKey(Scenario, related_name="games", on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
+    beginning_date = models.DateTimeField()
+    end_date = models.DateTimeField()
 
     def __str__(self):
-        return f"Game {self.title}"
+        return f"Game {self.title}: from {self.beginning_date} to {self.end_date}"
