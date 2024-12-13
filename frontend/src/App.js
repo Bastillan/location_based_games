@@ -18,6 +18,7 @@ const App = () => {
     const [isGamesListVisible, setIsGamesListVisible] = useState(true);
     const [selectedGame, setSelectedGame] = useState(null);
     const [isGameFormVisible, setIsGameFormVisible] = useState(false);
+    const [selectedTask, setSelectedTask] = useState(null);
 
 
     // const [updateTrigger, setUpdateTrigger] = useState(false);
@@ -88,6 +89,11 @@ const App = () => {
         }
     };
 
+    const handleEditTask = (task) => {
+        setSelectedTask(task); // Set the task to be edited
+        setIsTaskFormVisible(true); // Show the task form
+    };
+
     // Refresh scenarios and tasks after adding a scenario or task
     const refreshScenariosAndTasks = () => {
         fetchScenarios();
@@ -108,6 +114,7 @@ const App = () => {
 
     const closeTaskForm = () => {
         setIsTaskFormVisible(false);
+        setSelectedTask(null);
     };
 
     const openScenarioForm = () => {
@@ -191,6 +198,7 @@ const App = () => {
                                         Your browser does not support the audio element.
                                     </audio>
                                 )}
+                                <button className="mainBut" onClick={() => handleEditTask(task)}>Edytuj</button>
                                 <button className="mainBut" onClick={() => handleDeleteTask(task.id)}>Usuń</button>
                             </li>
                         ))}
@@ -210,7 +218,7 @@ const App = () => {
                         <>
                             <div className="overlay"></div>
                             <div className="modal">
-                                <TaskForm selectedScenario={selectedScenario} refreshScenarios={refreshScenariosAndTasks} closeForm={closeTaskForm} />
+                                <TaskForm selectedScenario={selectedScenario} refreshScenarios={refreshScenariosAndTasks} closeForm={closeTaskForm}  taskToEdit={selectedTask}/>
                                 <button className="mainBut" onClick={closeTaskForm}>Zamknij</button>
                             </div>
                             
@@ -225,8 +233,8 @@ const App = () => {
                 <div>
                     {isGamesListVisible ? (
                         <div className="gamesView">
-                            <button className="mainBut return" onClick={handleBackToList}>Wróć do scenariuszy</button>
-                            <h3>Aktywne gry</h3>
+                            <button className="mainBut powrot" onClick={handleBackToList}>Wróć do scenariuszy</button>
+                            <h1>Aktywne gry</h1>
                             <ul>
                                 {games.map((game) => (
                                     <li key={game.id}>
@@ -258,7 +266,7 @@ const App = () => {
                             {/* <ScenarioForm refreshScenarios={refreshScenariosAndTasks} /> */}
                             <ScenarioList scenarios={scenarios} onScenarioSelect={handleScenarioSelect} onDeleteScenario={handleDeleteScenario} />
                             <button className="mainBut addScenario" onClick={openScenarioForm}>+</button>
-                            <button className="mainBut showGames" onclick={openGamesList}>Gry</button>
+                            <button className="mainBut showGames" onClick={openGamesList}>Gry</button>
                         </div>
                     )}
                 </div>
