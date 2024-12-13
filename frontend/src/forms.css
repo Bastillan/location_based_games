@@ -6,8 +6,7 @@
     max-height: 500px;
     margin: 0 auto;
     padding: 20px;
-    max-width: 100%;
-    border:2px solid red;
+    max-width: 98%;
 }
 
 .form-input {
@@ -23,6 +22,7 @@
 .form-label {
     font-weight: bold;
     margin-bottom: 5px;
+    text-align:left;
 }
 
 input[type="file"] {
