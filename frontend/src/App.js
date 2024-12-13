@@ -19,6 +19,7 @@ const App = () => {
     const [selectedGame, setSelectedGame] = useState(null);
     const [isGameFormVisible, setIsGameFormVisible] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
+    const [scenarioToEdit, setScenarioToEdit] = useState(null);
 
 
     // const [updateTrigger, setUpdateTrigger] = useState(false);
@@ -94,6 +95,11 @@ const App = () => {
         setIsTaskFormVisible(true); // Show the task form
     };
 
+    const handleEditScenario = (scenario) => {
+        setScenarioToEdit(scenario);
+        setIsScenarioFormVisible(true); // Pokaż formularz edycji
+    };
+
     // Refresh scenarios and tasks after adding a scenario or task
     const refreshScenariosAndTasks = () => {
         fetchScenarios();
@@ -110,6 +116,7 @@ const App = () => {
 
     const closeScriptForm = () => {
         setIsScenarioFormVisible(false);
+        setScenarioToEdit(null);
     };
 
     const closeTaskForm = () => {
@@ -258,13 +265,13 @@ const App = () => {
                                 <>
                                     <div className="overlay"></div>
                                     <div className="modal">
-                                        <ScenarioForm refreshScenarios={refreshScenariosAndTasks} closeForm={closeScriptForm} />
+                                        <ScenarioForm refreshScenarios={refreshScenariosAndTasks} closeForm={closeScriptForm} scenarioToEdit={scenarioToEdit} />
                                         <button className="mainBut" onClick={closeScriptForm}>Zamknij</button>
                                     </div>
                                 </>
                             )}
                             {/* <ScenarioForm refreshScenarios={refreshScenariosAndTasks} /> */}
-                            <ScenarioList scenarios={scenarios} onScenarioSelect={handleScenarioSelect} onDeleteScenario={handleDeleteScenario} />
+                            <ScenarioList scenarios={scenarios} onScenarioSelect={handleScenarioSelect} onDeleteScenario={handleDeleteScenario} onEditScenario={handleEditScenario}/>
                             <button className="mainBut addScenario" onClick={openScenarioForm}>+</button>
                             <button className="mainBut showGames" onClick={openGamesList}>Gry</button>
                         </div>

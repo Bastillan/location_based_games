@@ -1,27 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './forms.css';
 
-const ScenarioForm = ({ refreshScenarios, closeForm }) => {
+const ScenarioForm = ({ refreshScenarios, closeForm, scenarioToEdit  }) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [image, setImage] = useState(null);
 
+    useEffect(() => {
+        if (scenarioToEdit) {
+            setTitle(scenarioToEdit.title);
+            setDescription(scenarioToEdit.description);
+            setImage(null);
+        }
+    }, [scenarioToEdit]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Tworzymy obiekt FormData do przesłania formularza
         const formData = new FormData();
         formData.append('title', title);
         formData.append('description', description);
         if (image) formData.append('image', image);
 
         try {
-            await axios.post('http://localhost:8000/api/scenarios/', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
+            if (scenarioToEdit) {
+                // Edytujemy istniejący scenariusz
+                await axios.put(`http://localhost:8000/api/scenarios/${scenarioToEdit.id}/`, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
+            } else {
+                // Tworzymy nowy scenariusz
+                await axios.post('http://localhost:8000/api/scenarios/', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
+            }
+
             refreshScenarios();
             closeForm();
         } catch (error) {
-            console.error(error);
+            console.error('Error handling form submission:', error);
         }
     };
 
@@ -45,7 +64,7 @@ const ScenarioForm = ({ refreshScenarios, closeForm }) => {
                 Obrazek:
                 <input className="form-input" type="file" onChange={(e) => setImage(e.target.files[0])} />
             </label>
-            <button type="submit">Dodaj Scenariusz</button>
+            <button type="submit">{scenarioToEdit ? 'Edytuj Scenariusz' : 'Dodaj Scenariusz'}</button>
         </form>
     );
 };

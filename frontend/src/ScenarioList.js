@@ -3,7 +3,7 @@ import axios from 'axios';
 import './ScenarioList.css';
 
 
-const ScenarioList = ({ scenarios, onScenarioSelect, onDeleteScenario }) => {
+const ScenarioList = ({ scenarios, onScenarioSelect, onDeleteScenario, onEditScenario }) => {
     return (
         <div>
             <h1>Scenariusze</h1>
@@ -17,7 +17,8 @@ const ScenarioList = ({ scenarios, onScenarioSelect, onDeleteScenario }) => {
                         )}
                         <div className="butons">
                             <button className="select" onClick={() => onScenarioSelect(scenario)}>Zadania</button>
-                            <button className="delete" onClick={() => onDeleteScenario(scenario.id)}>Usuń Scenariusz</button>
+                            <button className="edit" onClick={() => onEditScenario(scenario)}>Edytuj</button>
+                            <button className="delete" onClick={() => onDeleteScenario(scenario.id)}>Usuń</button>
                         </div>
                     </li>
                 ))}
