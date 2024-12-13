@@ -18,7 +18,9 @@ ul {
     padding: 0%;
 }
 
-button {
+button.select, button.delete {
+    margin-left:5px;
+    margin-right:5px;
     padding: 10px 15px;
     background-color: #323232;
     border: none;
@@ -27,6 +29,6 @@ button {
     border-radius: 10px;
 }
 
-button:hover {
+button:hover.select, button:hover.delete {
     background-color: #1a1919;
 }  

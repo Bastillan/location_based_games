@@ -165,8 +165,8 @@ const App = () => {
         <div className="main">
             {selectedScenario ? (
                 <div className="scenarioView">
-                    <button className="powrot" onClick={handleBackToList}>Wróć do scenariuszy</button>
-                    <button className="activate" onClick={openGameForm}>Aktywuj grę</button>
+                    <button className="mainBut powrot" onClick={handleBackToList}>Wróć do scenariuszy</button>
+                    <button className="mainBut activate" onClick={openGameForm}>Aktywuj grę</button>
                     <h3>{selectedScenario.title}</h3>
                     <p>{selectedScenario.description}</p>
                     {selectedScenario.image && (
@@ -191,7 +191,7 @@ const App = () => {
                                         Your browser does not support the audio element.
                                     </audio>
                                 )}
-                                <button onClick={() => handleDeleteTask(task.id)}>Usuń</button>
+                                <button className="mainBut" onClick={() => handleDeleteTask(task.id)}>Usuń</button>
                             </li>
                         ))}
                     </ul>
@@ -200,7 +200,7 @@ const App = () => {
                             <div className="overlay"></div>
                             <div className="modal">
                                 <GameForm selectedScenario={selectedScenario} refreshGames={refreshGames} closeForm={closeGameForm} />
-                                <button onClick={closeGameForm}>Zamknij</button>
+                                <button className="mainBut" onClick={closeGameForm}>Zamknij</button>
                             </div>
                             
                         </>
@@ -211,13 +211,13 @@ const App = () => {
                             <div className="overlay"></div>
                             <div className="modal">
                                 <TaskForm selectedScenario={selectedScenario} refreshScenarios={refreshScenariosAndTasks} closeForm={closeTaskForm} />
-                                <button onClick={closeTaskForm}>Zamknij</button>
+                                <button className="mainBut" onClick={closeTaskForm}>Zamknij</button>
                             </div>
                             
                         </>
                     ) : (
                         <div>
-                            <button className="addTask" onClick={openTaskForm}>+</button>
+                            <button className="mainBut addTask" onClick={openTaskForm}>+</button>
                         </div>
                     )}
                 </div>
@@ -225,7 +225,7 @@ const App = () => {
                 <div>
                     {isGamesListVisible ? (
                         <div className="gamesView">
-                            <button className="return" onClick={handleBackToList}>Wróć do scenariuszy</button>
+                            <button className="mainBut return" onClick={handleBackToList}>Wróć do scenariuszy</button>
                             <h3>Aktywne gry</h3>
                             <ul>
                                 {games.map((game) => (
@@ -238,7 +238,7 @@ const App = () => {
                                             <img src={game.scenario.image} alt={game.scenario.title} style={{ width: '500px' }} />
                                         )}
                                         <div className="butons">
-                                            <button className="select" onClick={() => onGameSelect(game)}>Zagraj</button>
+                                            <button className="mainBut select" onClick={() => onGameSelect(game)}>Zagraj</button>
                                         </div>
                                     </li>
                                 ))}
@@ -251,14 +251,14 @@ const App = () => {
                                     <div className="overlay"></div>
                                     <div className="modal">
                                         <ScenarioForm refreshScenarios={refreshScenariosAndTasks} closeForm={closeScriptForm} />
-                                        <button onClick={closeScriptForm}>Zamknij</button>
+                                        <button className="mainBut" onClick={closeScriptForm}>Zamknij</button>
                                     </div>
                                 </>
                             )}
                             {/* <ScenarioForm refreshScenarios={refreshScenariosAndTasks} /> */}
                             <ScenarioList scenarios={scenarios} onScenarioSelect={handleScenarioSelect} onDeleteScenario={handleDeleteScenario} />
-                            <button className="addScenario" onClick={openScenarioForm}>+</button>
-                            <button className="showGames" onclick={openGamesList}>Gry</button>
+                            <button className="mainBut addScenario" onClick={openScenarioForm}>+</button>
+                            <button className="mainBut showGames" onclick={openGamesList}>Gry</button>
                         </div>
                     )}
                 </div>

@@ -29,7 +29,7 @@ const GameForm = ({ selectedScenario, refreshGames, closeForm  }) => {
     };
 
     return (
-        <form className="form-container2" onSubmit={handleSubmit}>
+        <form className="form-container" onSubmit={handleSubmit}>
             <input
                 type="text"
                 placeholder="Title"
@@ -39,10 +39,14 @@ const GameForm = ({ selectedScenario, refreshGames, closeForm  }) => {
                 required
             />
             <div className='razem'>
-                <DateTimePicker label="Czas rozpoczęcia" onChange={(date) => setBeginningDate(date)} value={beginning_date} />
-            </div>
-            <div className='razem'>
-                <DateTimePicker label="Czas zakończenia" onChange={(date) => setEndDate(date)} value={end_date} />
+                <div className='date'>
+                    <label htmlFor="beginning-date">Czas rozpoczęcia</label>
+                    <DateTimePicker id="beginning-date" onChange={(date) => setBeginningDate(date)} value={beginning_date} />
+                </div>
+                <div className='date'>
+                    <label htmlFor="end-date">Czas zakończenia</label>
+                    <DateTimePicker id="end-date" label="Czas zakończenia" onChange={(date) => setEndDate(date)} value={end_date} />
+                </div>
             </div>
             <button type="submit">Zaplanuj grę</button>
         </form>
