@@ -4,6 +4,7 @@ import './forms.css';
 
 const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit }) => {
     const [description, setDescription] = useState(taskToEdit ? taskToEdit.description : '');
+    const [correct_answer, setCorrectAnswer] = useState(taskToEdit ? taskToEdit.correct_answer : "")
     const [number, setNumber] = useState(taskToEdit ? taskToEdit.number : '');
     const [image, setImage] = useState(null);
     const [audio, setAudio] = useState(null);
@@ -46,6 +47,7 @@ const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit })
         const formData = new FormData();
         formData.append('number', taskNumber);
         formData.append('description', description);
+        formData.append("correct_answer", correct_answer);
         formData.append('scenario', selectedScenario.id);
         if (image) formData.append('image', image);
         if (audio) formData.append('audio', audio);
@@ -65,6 +67,7 @@ const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit })
 
             refreshScenarios();
             setDescription('');
+            setCorrectAnswer('');
             setNumber('');
             setImage(null);
             setAudio(null);
@@ -93,6 +96,14 @@ const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit })
                 placeholder="Opis zadania"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                required
+                className="form-input"
+            ></textarea>
+
+            <textarea
+                placeholder="Poprawna odpowiedź"
+                value={correct_answer}
+                onChange={(e) => setCorrectAnswer(e.target.value)}
                 required
                 className="form-input"
             ></textarea>

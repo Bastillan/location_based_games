@@ -14,6 +14,7 @@ class Task(models.Model):
     scenario = models.ForeignKey(Scenario, related_name='tasks', on_delete=models.CASCADE, null=True)
     number = models.PositiveIntegerField()
     description = models.TextField()
+    correct_answer = models.TextField()
     image = models.ImageField(upload_to='images/', blank=True, null=True)
     audio = models.FileField(upload_to='audio/', blank=True, null=True)
 
