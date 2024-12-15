@@ -62,7 +62,6 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
                 <button className="submit" onClick={() => handleSubmit()} disabled={isSubmitDisabled}>Zatwierdź odpowiedź</button>
                 <button className="next" onClick={() => handleNext()} disabled={isNextDisabled}>Następne</button>
             </div>
-            <pre></pre>
         </div>
     );
 };
