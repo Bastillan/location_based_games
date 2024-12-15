@@ -23,7 +23,13 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
             <button className="mainBut powrot" onClick={handleBackToGamesList}> Wróć do listy gier</button>
             <div>
                 <h3>Zadanie {currentIndex + 1}</h3>
-                <p>Liczba zadań: {tasks.length}; index zadania: {currentIndex}</p>
+                <p>Opis zadania: {tasks[currentIndex].description}</p>
+                {tasks[currentIndex].image && (
+                    <img src={tasks[currentIndex].image} alt="obraz" />
+                )}
+                {tasks[currentIndex].audio && (
+                    <img src={tasks[currentIndex].audio} alt="audio" />
+                )}
             </div>
 
             <div className="butons">
