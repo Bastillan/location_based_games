@@ -21,7 +21,8 @@ class ScenarioSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'image', 'tasks']
 
 class GameSerializer(serializers.ModelSerializer):
-    scenario = serializers.PrimaryKeyRelatedField(queryset=Scenario.objects.all())
+    scenario = ScenarioSerializer(read_only=True)
+    scenario_id = serializers.PrimaryKeyRelatedField(queryset=Scenario.objects.all(), write_only=True, source='scenario')
     class Meta:
         model = Game
-        fields = ['id', 'title', 'beginning_date', 'end_date', 'scenario']
+        fields = ['id', 'title', 'beginning_date', 'end_date', 'scenario', 'scenario_id']

@@ -132,20 +132,19 @@ class GameViewSet(viewsets.ModelViewSet):
         end_date = datetime.strptime(end_date,  "%a %b %d %Y %H:%M:%S GMT%z")
         beginning_date = beginning_date.isoformat()
         end_date = end_date.isoformat()
-        scenario = request.data.get('scenario')
-        # scenario = datetime.strptime(scenario,  "%a %b %d %Y %H:%M:%S GMT%z")
+        scenario_id = request.data.get('scenario_id')
         data = {
         'title': title,
         'beginning_date': beginning_date,
         'end_date': end_date,
-        'scenario': scenario
+        'scenario_id': scenario_id
         }
 
         serializer = GameSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_429_TOO_MANY_REQUESTS)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
         games = Game.objects.all()

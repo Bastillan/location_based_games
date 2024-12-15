@@ -13,7 +13,7 @@ const GameForm = ({ selectedScenario, refreshGames, closeForm  }) => {
         e.preventDefault();
         const formData = new FormData();
         formData.append('title', title);
-        formData.append('scenario', selectedScenario.id);
+        formData.append('scenario_id', selectedScenario.id);
         formData.append('beginning_date', beginning_date);
         formData.append('end_date', end_date);
 

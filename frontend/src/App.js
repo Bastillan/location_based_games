@@ -217,7 +217,7 @@ const App = () => {
                                 <GameForm selectedScenario={selectedScenario} refreshGames={refreshGames} closeForm={closeGameForm} />
                                 <button className="mainBut" onClick={closeGameForm}>Zamknij</button>
                             </div>
-                            
+
                         </>
                     ) : (<> </>) }
 
@@ -228,7 +228,7 @@ const App = () => {
                                 <TaskForm selectedScenario={selectedScenario} refreshScenarios={refreshScenariosAndTasks} closeForm={closeTaskForm}  taskToEdit={selectedTask}/>
                                 <button className="mainBut" onClick={closeTaskForm}>Zamknij</button>
                             </div>
-                            
+
                         </>
                     ) : (
                         <div>
