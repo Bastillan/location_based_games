@@ -7,6 +7,7 @@ import TaskList from './TaskList';
 import ScenarioForm from './ScenarioForm';
 import ScenarioList from './ScenarioList';
 import GameForm from './GameForm';
+import TasksPlayList from './TasksPlayList';
 
 const App = () => {
     const [scenarios, setScenarios] = useState([]);
@@ -21,6 +22,7 @@ const App = () => {
     const [selectedTask, setSelectedTask] = useState(null);
     const [scenarioToEdit, setScenarioToEdit] = useState(null);
     const [scenarioForGame, setScenarioForGame] = useState(null);
+
 
 
     // const [updateTrigger, setUpdateTrigger] = useState(false);
@@ -158,6 +160,10 @@ const App = () => {
         setIsGameFormVisible(true);
     };
 
+    const handleBackToGamesList = () => {
+        setSelectedGame(null);
+    };
+
     return (
         <div className="main">
             {selectedScenario ? (
@@ -210,25 +216,31 @@ const App = () => {
             ) : (
                 <div>
                     {isGamesListVisible ? (
-                        <div className="gamesView">
-                            <button className="mainBut powrot" onClick={handleBackToList}>Wróć do scenariuszy</button>
-                            <h1>Aktywne gry</h1>
-                            <ul>
-                                {games.map((game) => (
-                                    <li key={game.id}>
-                                        <h3>{game.title}</h3>
-                                        <p>{game.beginning_date}</p>
-                                        <p>{game.end_date}</p>
-                                        <p>{game.scenario.description}</p>
-                                        {game.scenario.image && (
-                                            <img src={game.scenario.image} alt={game.scenario.title} style={{ width: '500px' }} />
-                                        )}
-                                        <div className="butons">
-                                            <button className="mainBut select" onClick={() => onGameSelect(game)}>Zagraj</button>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
+                        <div>
+                            {selectedGame ? (
+                                <TasksPlayList tasks={tasks} handleBackToGamesList={handleBackToGamesList} />
+                            ) : (
+                                <div className="gamesView">
+                                    <button className="mainBut powrot" onClick={handleBackToList}>Wróć do scenariuszy</button>
+                                    <h1>Aktywne gry</h1>
+                                    <ul>
+                                        {games.map((game) => (
+                                            <li key={game.id}>
+                                                <h3>{game.title}</h3>
+                                                <p>{game.beginning_date}</p>
+                                                <p>{game.end_date}</p>
+                                                <p>{game.scenario.description}</p>
+                                                {game.scenario.image && (
+                                                    <img src={game.scenario.image} alt={game.scenario.title} style={{ width: '500px' }} />
+                                                )}
+                                                <div className="butons">
+                                                    <button className="mainBut select" onClick={() => onGameSelect(game)}>Zagraj</button>
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <div>
