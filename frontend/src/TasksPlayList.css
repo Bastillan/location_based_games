@@ -13,6 +13,6 @@ button:hover.previous, button:hover.submit, button:hover.next {
     background-color: #1a1919;
 }
 
-button:disabled.previous, button:hover.submit, button:disabled.next {
+button:disabled.previous, button:disabled.submit, button:disabled.next {
     background-color: #747171;
 }
