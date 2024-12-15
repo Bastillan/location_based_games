@@ -45,7 +45,11 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
                         <img src={tasks[currentIndex].image} alt="obraz" />
                     )}
                     {tasks[currentIndex].audio && (
-                        <img src={tasks[currentIndex].audio} alt="audio" />
+                        // <audio control src={tasks[currentIndex].audio} alt="audio" />
+                        <audio controls>
+                            <source src={tasks[currentIndex].audio} type="audio/mpeg" />
+                            Your browser does not support the audio element.
+                        </audio>
                     )}
                 </div>
             )}
