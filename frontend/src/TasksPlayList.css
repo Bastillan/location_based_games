@@ -11,4 +11,8 @@ button.previous, button.next {
 
 button:hover.previous, button:hover.next {
     background-color: #1a1919;
-}  
+}
+
+button:disabled.previous, button:disabled.next {
+    background-color: #747171;
+}
