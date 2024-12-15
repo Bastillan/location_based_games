@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.decorators import action
 from django.db.models import F
 from rest_framework import serializers
+from datetime import datetime
 
 
 class ScenarioViewSet(viewsets.ModelViewSet):
@@ -16,7 +17,7 @@ class ScenarioViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def get_tasks(self, request, pk=None):
         scenario = self.get_object()
-        tasks = scenario.tasks.all() 
+        tasks = scenario.tasks.all()
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
 
@@ -104,7 +105,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         task = self.get_object()
         Task.objects.filter(number__gt=task.number).update(number=F('number') + 1)
         task.number = task.number
-        task.save()        
+        task.save()
         return Response({"status": "updated"})
 
     def get_queryset(self):
@@ -118,20 +119,33 @@ class TaskViewSet(viewsets.ModelViewSet):
         if scenario_id:
             self.queryset = self.queryset.filter(scenario_id=scenario_id)
         return super().list(request, *args, **kwargs)
-    
+
 class GameViewSet(viewsets.ModelViewSet):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
 
-    @action(detail=True, methods=['post'])
-    def activate(self, request, pk=None):
-        data = request.data.copy()
+    def create(self, request):
+        title = request.data.get('title')
+        beginning_date = request.data.get('beginning_date').split(" (")[0]
+        end_date = request.data.get('end_date').split(" (")[0]
+        beginning_date = datetime.strptime(beginning_date,  "%a %b %d %Y %H:%M:%S GMT%z")
+        end_date = datetime.strptime(end_date,  "%a %b %d %Y %H:%M:%S GMT%z")
+        beginning_date = beginning_date.isoformat()
+        end_date = end_date.isoformat()
+        scenario = request.data.get('scenario')
+        # scenario = datetime.strptime(scenario,  "%a %b %d %Y %H:%M:%S GMT%z")
+        data = {
+        'title': title,
+        'beginning_date': beginning_date,
+        'end_date': end_date,
+        'scenario': scenario
+        }
 
         serializer = GameSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_429_TOO_MANY_REQUESTS)
 
     def get(self, request):
         games = Game.objects.all()

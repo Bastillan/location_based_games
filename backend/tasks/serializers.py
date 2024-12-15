@@ -11,7 +11,7 @@ class TaskSerializer(serializers.ModelSerializer):
         if value <= 0:
             raise serializers.ValidationError("Number must be a positive integer.")
         return value
-    
+
 
 class ScenarioSerializer(serializers.ModelSerializer):
     tasks = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
@@ -21,7 +21,7 @@ class ScenarioSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'image', 'tasks']
 
 class GameSerializer(serializers.ModelSerializer):
-    scenario  = ScenarioSerializer()
+    scenario = serializers.PrimaryKeyRelatedField(queryset=Scenario.objects.all())
     class Meta:
         model = Game
         fields = ['id', 'title', 'beginning_date', 'end_date', 'scenario']
