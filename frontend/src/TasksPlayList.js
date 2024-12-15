@@ -13,8 +13,8 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
 
     const handleNext = () => {
         if (currentIndex < tasks.length - 1) {
-            setIsNextDisabled(currentIndex == globalIndex - 1);
-            setIsSubmitDisabled(currentIndex != globalIndex - 1);
+            setIsNextDisabled(currentIndex === globalIndex - 1);
+            setIsSubmitDisabled(currentIndex !== globalIndex - 1);
             setCurrentIndex(currentIndex + 1);
             setAnswer("");
             setMessage(null);
