@@ -243,9 +243,9 @@ const App = () => {
                                             return(
                                                 <li key={game.id}>
                                                     <h3>{game.title}</h3>
-                                                    <p>{formattedBeginningDate}</p>
-                                                    <p>{formattedEndDate}</p>
-                                                    <p>{game.scenario.description}</p>
+                                                    <p>Start: {formattedBeginningDate}</p>
+                                                    <p>Koniec: {formattedEndDate}</p>
+                                                    <p>Opis: {game.scenario.description}</p>
                                                     {game.scenario.image && (
                                                         <img src={game.scenario.image} alt={game.scenario.title} style={{ width: '500px' }} />
                                                     )}
