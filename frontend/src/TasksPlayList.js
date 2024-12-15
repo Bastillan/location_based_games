@@ -5,14 +5,12 @@ import './TasksPlayList.css';
 
 const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [task, setTask] = useState(tasks[currentIndex]);
     const [isNextDisabled, setIsNextDisabled] = useState(true);
     const [answer, setAnswer] = useState("");
 
     const handleNext = () => {
         if (currentIndex < tasks.length - 1) {
             setCurrentIndex(currentIndex + 1);
-            setTask(tasks[currentIndex]);
             setIsNextDisabled(true);
         }
     };
@@ -20,7 +18,6 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
     const handlePrevious = () => {
         if (currentIndex > 0) {
             setCurrentIndex(currentIndex - 1);
-            setTask(tasks[currentIndex]);
         }
     };
 
