@@ -12,8 +12,8 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
 
     const handleNext = () => {
         if (currentIndex < tasks.length - 1) {
-            setIsNextDisabled(currentIndex === globalIndex - 1);
-            setIsSubmitDisabled(currentIndex !== globalIndex - 1);
+            setIsNextDisabled(currentIndex == globalIndex - 1);
+            setIsSubmitDisabled(currentIndex != globalIndex - 1);
             setCurrentIndex(currentIndex + 1);
         }
     };
@@ -35,30 +35,33 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
     }
 
     return (
-        <div>
-            <button className='mainBut powrot' onClick={handleBackToGamesList}>Wróć do listy gier</button>
-            {tasks.length > 0 && tasks[currentIndex] && (
-                <div>
-                    <h3>Zadanie {currentIndex + 1}</h3>
-                    <p>Opis zadania: {tasks[currentIndex].description}</p>
-                    {tasks[currentIndex].image && (
-                        <img src={tasks[currentIndex].image} alt="obraz" />
-                    )}
-                    {tasks[currentIndex].audio && (
-                        <img src={tasks[currentIndex].audio} alt="audio" />
-                    )}
-                </div>
-            )}
-
+        <ul>
             <div>
-            <textarea placeholder='Wprowadź odpowiedź' value={answer} onChange={(e) => setAnswer(e.target.value)}></textarea>
+                <button className='mainBut powrot' onClick={handleBackToGamesList}>Wróć do listy gier</button>
+                {tasks.length > 0 && tasks[currentIndex] && (
+                    <div>
+                        <h3>Zadanie {currentIndex + 1}</h3>
+                        <p>Opis zadania: {tasks[currentIndex].description}</p>
+                        {tasks[currentIndex].image && (
+                            <img src={tasks[currentIndex].image} alt="obraz" />
+                        )}
+                        {tasks[currentIndex].audio && (
+                            <img src={tasks[currentIndex].audio} alt="audio" />
+                        )}
+                    </div>
+                )}
+
+                <div>
+                <textarea placeholder='Wprowadź odpowiedź' value={answer} onChange={(e) => setAnswer(e.target.value)}></textarea>
+                </div>
+                <div className="butons">
+                    <button className="previous" onClick={() => handlePrevious()} disabled={currentIndex === 0}>Poprzednie</button>
+                    <button className="submit" onClick={() => handleSubmit()} disabled={isSubmitDisabled}>Zatwierdź odpowiedź</button>
+                    <button className="next" onClick={() => handleNext()} disabled={isNextDisabled}>Następne</button>
+                </div>
+                <pre></pre>
             </div>
-            <div className="butons">
-                <button className="previous" onClick={() => handlePrevious()} disabled={currentIndex === 0}>Poprzednie</button>
-                <button className="submit" onClick={() => handleSubmit()} disabled={isSubmitDisabled}>Zatwierdź odpowiedź</button>
-                <button className="next" onClick={() => handleNext()} disabled={isNextDisabled}>Następne</button>
-            </div>
-        </div>
+        </ul>
     );
 };
 

@@ -16,3 +16,10 @@ button:hover.previous, button:hover.submit, button:hover.next {
 button:disabled.previous, button:disabled.submit, button:disabled.next {
     background-color: #747171;
 }
+
+ul {
+    border: 2px solid #323232;
+    border-radius: 10px;
+    background-color: #cfc3bb;
+    margin-bottom: 10px;
+  }
