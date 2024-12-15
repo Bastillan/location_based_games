@@ -35,33 +35,31 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
     }
 
     return (
-        <ul>
-            <div>
-                <button className='mainBut powrot' onClick={handleBackToGamesList}>Wróć do listy gier</button>
-                {tasks.length > 0 && tasks[currentIndex] && (
-                    <div>
-                        <h3>Zadanie {currentIndex + 1}</h3>
-                        <p>Opis zadania: {tasks[currentIndex].description}</p>
-                        {tasks[currentIndex].image && (
-                            <img src={tasks[currentIndex].image} alt="obraz" />
-                        )}
-                        {tasks[currentIndex].audio && (
-                            <img src={tasks[currentIndex].audio} alt="audio" />
-                        )}
-                    </div>
-                )}
-
+        <div className='task'>
+            <button className='mainBut powrot' onClick={handleBackToGamesList}>Wróć do listy gier</button>
+            {tasks.length > 0 && tasks[currentIndex] && (
                 <div>
-                <textarea placeholder='Wprowadź odpowiedź' value={answer} onChange={(e) => setAnswer(e.target.value)}></textarea>
+                    <h3>Zadanie {currentIndex + 1}</h3>
+                    <p>Opis zadania: {tasks[currentIndex].description}</p>
+                    {tasks[currentIndex].image && (
+                        <img src={tasks[currentIndex].image} alt="obraz" />
+                    )}
+                    {tasks[currentIndex].audio && (
+                        <img src={tasks[currentIndex].audio} alt="audio" />
+                    )}
                 </div>
-                <div className="butons">
-                    <button className="previous" onClick={() => handlePrevious()} disabled={currentIndex === 0}>Poprzednie</button>
-                    <button className="submit" onClick={() => handleSubmit()} disabled={isSubmitDisabled}>Zatwierdź odpowiedź</button>
-                    <button className="next" onClick={() => handleNext()} disabled={isNextDisabled}>Następne</button>
-                </div>
-                <pre></pre>
+            )}
+
+            <div>
+            <textarea placeholder='Wprowadź odpowiedź' value={answer} onChange={(e) => setAnswer(e.target.value)}></textarea>
             </div>
-        </ul>
+            <div className="butons">
+                <button className="previous" onClick={() => handlePrevious()} disabled={currentIndex === 0}>Poprzednie</button>
+                <button className="submit" onClick={() => handleSubmit()} disabled={isSubmitDisabled}>Zatwierdź odpowiedź</button>
+                <button className="next" onClick={() => handleNext()} disabled={isNextDisabled}>Następne</button>
+            </div>
+            <pre></pre>
+        </div>
     );
 };
 
