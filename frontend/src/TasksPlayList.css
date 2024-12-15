@@ -17,10 +17,15 @@ button:disabled.previous, button:disabled.submit, button:disabled.next {
     background-color: #747171;
 }
 
+div.buttons {
+    margin-top: 10px;
+}
+
 div.task {
     border: 2px solid #323232;
     border-radius: 10px;
     background-color: #cfc3bb;
+    margin-top: 10px;
     margin-bottom: 10px;
     margin-left: 250px;
     margin-right: 250px;
@@ -28,3 +33,7 @@ div.task {
     padding-right: 10px;
     padding-left: 10px;
   }
+
+p.message {
+    color:#9a0a0a;
+}

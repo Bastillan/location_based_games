@@ -15,7 +15,7 @@ const ScenarioList = ({ scenarios, onScenarioSelect, onDeleteScenario, onEditSce
                         {scenario.image && (
                             <img src={scenario.image} alt={scenario.title} style={{ width: '500px' }} />
                         )}
-                        <div className="butons">
+                        <div className="buttons">
                             <button className="activate" onClick={() => onActivateGame(scenario)}>Aktywuj grę</button>
                             <button className="select" onClick={() => onScenarioSelect(scenario)}>Zadania</button>
                             <button className="edit" onClick={() => onEditScenario(scenario)}>Edytuj</button>

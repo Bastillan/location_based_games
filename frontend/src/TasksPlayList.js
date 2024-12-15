@@ -9,13 +9,15 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
     const [isNextDisabled, setIsNextDisabled] = useState(true);
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
     const [answer, setAnswer] = useState("");
+    const [message, setMessage] = useState(null);
 
     const handleNext = () => {
         if (currentIndex < tasks.length - 1) {
             setIsNextDisabled(currentIndex == globalIndex - 1);
             setIsSubmitDisabled(currentIndex != globalIndex - 1);
             setCurrentIndex(currentIndex + 1);
-            setAnswer("")
+            setAnswer("");
+            setMessage(null);
         }
     };
 
@@ -24,6 +26,8 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
             setCurrentIndex(currentIndex - 1);
             setIsNextDisabled(false);
             setIsSubmitDisabled(true);
+            setAnswer("");
+            setMessage(null);
         }
     };
 
@@ -32,6 +36,9 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
             setIsNextDisabled(currentIndex === tasks.length -1);
             setGlobalIndex(globalIndex + 1);
             setIsSubmitDisabled(true);
+            setMessage(null);
+        } else {
+            setMessage("Niepoprawna odpowiedź");
         }
     }
 
@@ -56,9 +63,12 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
             )}
 
             <div>
-            <textarea placeholder='Wprowadź odpowiedź' value={answer} onChange={(e) => setAnswer(e.target.value)}></textarea>
+                {message && (
+                    <p className='message'>{message}</p>
+                )}
+                <textarea placeholder='Wprowadź odpowiedź' value={answer} onChange={(e) => setAnswer(e.target.value)}></textarea>
             </div>
-            <div className="butons">
+            <div className="buttons">
                 <button className="previous" onClick={() => handlePrevious()} disabled={currentIndex === 0}>Poprzednie</button>
                 <button className="submit" onClick={() => handleSubmit()} disabled={isSubmitDisabled}>Zatwierdź odpowiedź</button>
                 <button className="next" onClick={() => handleNext()} disabled={isNextDisabled}>Następne</button>
