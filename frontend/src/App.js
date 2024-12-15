@@ -20,6 +20,7 @@ const App = () => {
     const [isGameFormVisible, setIsGameFormVisible] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [scenarioToEdit, setScenarioToEdit] = useState(null);
+    const [scenarioForGame, setScenarioForGame] = useState(null);
 
 
     // const [updateTrigger, setUpdateTrigger] = useState(false);
@@ -152,35 +153,16 @@ const App = () => {
         setIsGameFormVisible(false);
     };
 
-    const openGameForm = () => {
+    const handleActivateGame = (scenario) => {
+        setScenarioForGame(scenario)
         setIsGameFormVisible(true);
     };
-
-    const activateGame = async (game) => {
-        if (!selectedScenario) {
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('scenario', selectedScenario.id);
-        formData.append('title', selectedScenario.title);
-
-        try {
-            await axios.post('http://localhost:8000/api/games/', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
-            refreshGames();
-        } catch (error) {
-            console.error('Error activating game:', error);
-        }
-    }
 
     return (
         <div className="main">
             {selectedScenario ? (
                 <div className="scenarioView">
                     <button className="mainBut powrot" onClick={handleBackToList}>Wróć do scenariuszy</button>
-                    <button className="mainBut activate" onClick={openGameForm}>Aktywuj grę</button>
                     <h3>{selectedScenario.title}</h3>
                     <p>{selectedScenario.description}</p>
                     {selectedScenario.image && (
@@ -210,17 +192,6 @@ const App = () => {
                             </li>
                         ))}
                     </ul>
-                    {isGameFormVisible ? (
-                        <>
-                            <div className="overlay"></div>
-                            <div className="modal">
-                                <GameForm selectedScenario={selectedScenario} refreshGames={refreshGames} closeForm={closeGameForm} />
-                                <button className="mainBut" onClick={closeGameForm}>Zamknij</button>
-                            </div>
-
-                        </>
-                    ) : (<> </>) }
-
                     {isTaskFormVisible ? (
                         <>
                             <div className="overlay"></div>
@@ -270,8 +241,17 @@ const App = () => {
                                     </div>
                                 </>
                             )}
+                            {isGameFormVisible && (
+                                <>
+                                    <div className="overlay"></div>
+                                    <div className="modal">
+                                        <GameForm selectedScenario={scenarioForGame} refreshGames={refreshGames} closeForm={closeGameForm} />
+                                        <button className="mainBut" onClick={closeGameForm}>Zamknij</button>
+                                    </div>
+                                </>
+                            )}
                             {/* <ScenarioForm refreshScenarios={refreshScenariosAndTasks} /> */}
-                            <ScenarioList scenarios={scenarios} onScenarioSelect={handleScenarioSelect} onDeleteScenario={handleDeleteScenario} onEditScenario={handleEditScenario}/>
+                            <ScenarioList scenarios={scenarios} onScenarioSelect={handleScenarioSelect} onDeleteScenario={handleDeleteScenario} onEditScenario={handleEditScenario} onActivateGame={handleActivateGame}/>
                             <button className="mainBut addScenario" onClick={openScenarioForm}>+</button>
                             <button className="mainBut showGames" onClick={openGamesList}>Gry</button>
                         </div>

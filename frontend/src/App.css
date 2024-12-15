@@ -152,12 +152,6 @@ button.addTask {
   margin-bottom: 40px;
 }
 
-button.activate {
-  position: absolute;
-  left: 6%;
-  top: 10%;
-}
-
 .main {
   text-align: center;
 }
