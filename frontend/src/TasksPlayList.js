@@ -5,36 +5,55 @@ import './TasksPlayList.css';
 
 const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [task, setTask] = useState(tasks[currentIndex]);
+    const [isNextDisabled, setIsNextDisabled] = useState(true);
+    const [answer, setAnswer] = useState("");
 
     const handleNext = () => {
         if (currentIndex < tasks.length - 1) {
             setCurrentIndex(currentIndex + 1);
+            setTask(tasks[currentIndex]);
+            setIsNextDisabled(true);
         }
     };
 
     const handlePrevious = () => {
         if (currentIndex > 0) {
             setCurrentIndex(currentIndex - 1);
+            setTask(tasks[currentIndex]);
         }
     };
 
+    const handleSubmit = () => {
+        if (tasks[currentIndex].correct_answer === answer) {
+            setIsNextDisabled(currentIndex === tasks.length -1);
+        }
+    }
+
     return (
         <div>
-            <button className="mainBut powrot" onClick={handleBackToGamesList}> Wróć do listy gier</button>
-            <div>
-                <h3>Zadanie {currentIndex + 1}</h3>
-                <p>Opis zadania: {tasks[currentIndex].description}</p>
-                {tasks[currentIndex].image && (
-                    <img src={tasks[currentIndex].image} alt="obraz" />
-                )}
-                {tasks[currentIndex].audio && (
-                    <img src={tasks[currentIndex].audio} alt="audio" />
-                )}
-            </div>
+            <button className='mainBut powrot' onClick={handleBackToGamesList}>Wróć do listy gier</button>
+            {tasks.length > 0 && tasks[currentIndex] && (
+                <div>
+                    <h3>Zadanie {currentIndex + 1}</h3>
+                    <p>Opis zadania: {tasks[currentIndex].description}</p>
+                    {tasks[currentIndex].image && (
+                        <img src={tasks[currentIndex].image} alt="obraz" />
+                    )}
+                    {tasks[currentIndex].audio && (
+                        <img src={tasks[currentIndex].audio} alt="audio" />
+                    )}
+                    <p>{tasks[currentIndex].correct_answer}</p>
+                </div>
+            )}
 
+            <div>
+            <textarea placeholder='Wprowadź odpowiedź' value={answer} onChange={(e) => setAnswer(e.target.value)}></textarea>
+            </div>
             <div className="butons">
                 <button className="previous" onClick={() => handlePrevious()} disabled={currentIndex === 0}>Poprzednie</button>
-                <button className="next" onClick={() => handleNext()} disabled={currentIndex === tasks.length - 1}>Następne</button>
+                <button className="submit" onClick={() => handleSubmit()}>Zatwierdź odpowiedź</button>
+                <button className="next" onClick={() => handleNext()} disabled={isNextDisabled}>Następne</button>
             </div>
         </div>
     );

@@ -1,4 +1,4 @@
-button.previous, button.next {
+button.previous, button.submit, button.next {
     margin-left:5px;
     margin-right:5px;
     padding: 10px 15px;
@@ -9,10 +9,10 @@ button.previous, button.next {
     border-radius: 10px;
 }
 
-button:hover.previous, button:hover.next {
+button:hover.previous, button:hover.submit, button:hover.next {
     background-color: #1a1919;
 }
 
-button:disabled.previous, button:disabled.next {
+button:disabled.previous, button:hover.submit, button:disabled.next {
     background-color: #747171;
 }
