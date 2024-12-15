@@ -163,7 +163,6 @@ const App = () => {
     const handleBackToGamesList = () => {
         setSelectedGame(null);
     };
-
     return (
         <div className="main">
             {selectedScenario ? (
@@ -224,20 +223,38 @@ const App = () => {
                                     <button className="mainBut powrot" onClick={handleBackToList}>Wróć do scenariuszy</button>
                                     <h1>Aktywne gry</h1>
                                     <ul>
-                                        {games.map((game) => (
-                                            <li key={game.id}>
-                                                <h3>{game.title}</h3>
-                                                <p>{game.beginning_date}</p>
-                                                <p>{game.end_date}</p>
-                                                <p>{game.scenario.description}</p>
-                                                {game.scenario.image && (
-                                                    <img src={game.scenario.image} alt={game.scenario.title} style={{ width: '500px' }} />
-                                                )}
-                                                <div className="butons">
-                                                    <button className="mainBut select" onClick={() => onGameSelect(game)}>Zagraj</button>
-                                                </div>
-                                            </li>
-                                        ))}
+                                        {games.map((game) => {
+                                            const TempBeginningDate = new Date(game.beginning_date);
+                                            const TempEndDate = new Date(game.end_date);
+                                            const formattedBeginningDate = TempBeginningDate.toLocaleDateString('pl-PL', {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                            });
+                                            const formattedEndDate = TempEndDate.toLocaleDateString('pl-PL', {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                            });
+                                            return(
+                                                <li key={game.id}>
+                                                    <h3>{game.title}</h3>
+                                                    <p>{formattedBeginningDate}</p>
+                                                    <p>{formattedEndDate}</p>
+                                                    <p>{game.scenario.description}</p>
+                                                    {game.scenario.image && (
+                                                        <img src={game.scenario.image} alt={game.scenario.title} style={{ width: '500px' }} />
+                                                    )}
+                                                    <div className="butons">
+                                                        <button className="mainBut select" onClick={() => onGameSelect(game)}>Zagraj</button>
+                                                    </div>
+                                                </li>
+                                            )
+                                        })}
                                     </ul>
                                 </div>
                             )}
