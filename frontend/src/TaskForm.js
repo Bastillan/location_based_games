@@ -4,6 +4,7 @@ import './forms.css';
 
 const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit }) => {
     const [description, setDescription] = useState(taskToEdit ? taskToEdit.description : '');
+    const [answer_type, setAnswerType] = useState(taskToEdit ? taskToEdit.answer_type : '');
     const [correct_answer, setCorrectAnswer] = useState(taskToEdit ? taskToEdit.correct_answer : "")
     const [number, setNumber] = useState(taskToEdit ? taskToEdit.number : '');
     const [image, setImage] = useState(null);
@@ -47,8 +48,9 @@ const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit })
         const formData = new FormData();
         formData.append('number', taskNumber);
         formData.append('description', description);
-        formData.append("correct_answer", correct_answer);
+        formData.append('answer_type', answer_type);
         formData.append('scenario', selectedScenario.id);
+        formData.append('correct_answer', correct_answer);
         if (image) formData.append('image', image);
         if (audio) formData.append('audio', audio);
 
@@ -67,6 +69,7 @@ const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit })
 
             refreshScenarios();
             setDescription('');
+            setAnswerType(null);
             setCorrectAnswer('');
             setNumber('');
             setImage(null);
@@ -99,7 +102,17 @@ const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit })
                 required
                 className="form-input"
             ></textarea>
-
+            <select
+                id="answer_type"
+                value={answer_type}
+                onChange={(e) => setAnswerType(e.target.value)}
+                required
+                className="form-input"
+            >
+                <option value="">Wybierz typ odpowiedzi</option>
+                <option value="text">Tekst</option>
+            </select>
+            {answer_type === "text" &&
             <textarea
                 placeholder="Poprawna odpowiedź"
                 value={correct_answer}
@@ -107,7 +120,7 @@ const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit })
                 required
                 className="form-input"
             ></textarea>
-
+            }
             <label className="form-label">
                 Obrazek:
                 <input className="form-input" type="file" onChange={(e) => setImage(e.target.files[0])} />
