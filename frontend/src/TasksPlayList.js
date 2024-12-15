@@ -39,7 +39,7 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
             <button className='mainBut powrot' onClick={handleBackToGamesList}>Wróć do listy gier</button>
             {tasks.length > 0 && tasks[currentIndex] && (
                 <div>
-                    <h3>Zadanie {currentIndex + 1} current_index/global_index: {currentIndex}/{globalIndex}</h3>
+                    <h3>Zadanie {currentIndex + 1}</h3>
                     <p>Opis zadania: {tasks[currentIndex].description}</p>
                     {tasks[currentIndex].image && (
                         <img src={tasks[currentIndex].image} alt="obraz" />
@@ -47,7 +47,6 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
                     {tasks[currentIndex].audio && (
                         <img src={tasks[currentIndex].audio} alt="audio" />
                     )}
-                    <p>{tasks[currentIndex].correct_answer}</p>
                 </div>
             )}
 
