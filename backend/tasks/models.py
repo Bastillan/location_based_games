@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 class Scenario(models.Model):
@@ -30,3 +31,6 @@ class Game(models.Model):
 
     def __str__(self):
         return f"Game {self.title}: from {self.beginning_date} to {self.end_date}"
+
+class User(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
