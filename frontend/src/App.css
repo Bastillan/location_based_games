@@ -156,3 +156,8 @@ button.addTask {
 .main {
   text-align: center;
 }
+
+.logNav {
+  width: 100%;
+  padding: 10px 20px;
+}

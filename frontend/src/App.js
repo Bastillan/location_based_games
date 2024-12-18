@@ -8,6 +8,7 @@ import ScenarioForm from './ScenarioForm';
 import ScenarioList from './ScenarioList';
 import GameForm from './GameForm';
 import TasksPlayList from './TasksPlayList';
+import Register from './Register';
 
 const App = () => {
     const [scenarios, setScenarios] = useState([]);
@@ -22,8 +23,16 @@ const App = () => {
     const [selectedTask, setSelectedTask] = useState(null);
     const [scenarioToEdit, setScenarioToEdit] = useState(null);
     const [scenarioForGame, setScenarioForGame] = useState(null);
+    const [isRegisterFormVisible, setIsRegisterFormVisible] = useState(false);
 
 
+    const openRegisterForm = () => {
+        setIsRegisterFormVisible(true);
+    };
+
+    const closeRegisterForm = () => {
+        setIsRegisterFormVisible(false);
+    };
 
     // const [updateTrigger, setUpdateTrigger] = useState(false);
     // const refreshTasks = () => {
@@ -165,6 +174,9 @@ const App = () => {
     };
     return (
         <div className="main">
+            <nav class="logNav">
+                <button className="mainBut register" onClick={openRegisterForm}>Zarejestruj się</button>
+            </nav>
             {selectedScenario ? (
                 <div className="scenarioView">
                     <button className="mainBut powrot" onClick={handleBackToList}>Wróć do scenariuszy</button>
@@ -286,6 +298,15 @@ const App = () => {
                         </div>
                     )}
                 </div>
+            )}
+            {isRegisterFormVisible && (
+                <>
+                    <div className="overlay"></div>
+                    <div className="modal">
+                        <Register />
+                        <button className="mainBut" onClick={closeRegisterForm}>Zamknij</button>
+                    </div>
+                </>
             )}
         </div>
     );
