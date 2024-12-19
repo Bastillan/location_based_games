@@ -9,6 +9,7 @@ import ScenarioList from './ScenarioList';
 import GameForm from './GameForm';
 import TasksPlayList from './TasksPlayList';
 import Register from './Register';
+import Login from './Login';
 
 const App = () => {
     const [scenarios, setScenarios] = useState([]);
@@ -24,6 +25,9 @@ const App = () => {
     const [scenarioToEdit, setScenarioToEdit] = useState(null);
     const [scenarioForGame, setScenarioForGame] = useState(null);
     const [isRegisterFormVisible, setIsRegisterFormVisible] = useState(false);
+    const [isLoginFormVisible, setIsLoginFormVisible] = useState(false);
+    const [token, setToken] = useState(localStorage.getItem('authToken') || null);
+
 
 
     const openRegisterForm = () => {
@@ -32,6 +36,14 @@ const App = () => {
 
     const closeRegisterForm = () => {
         setIsRegisterFormVisible(false);
+    };
+
+    const openLoginForm = () => setIsLoginFormVisible(true);
+    const closeLoginForm = () => setIsLoginFormVisible(false);
+
+    const handleLogout = () => {
+        setToken(null);
+        localStorage.removeItem('authToken');
     };
 
     // const [updateTrigger, setUpdateTrigger] = useState(false);
@@ -176,6 +188,7 @@ const App = () => {
         <div className="main">
             <nav class="logNav">
                 <button className="mainBut register" onClick={openRegisterForm}>Zarejestruj się</button>
+                <button className="mainBut login" onClick={openLoginForm}>Zaloguj się</button>
             </nav>
             {selectedScenario ? (
                 <div className="scenarioView">
@@ -308,6 +321,16 @@ const App = () => {
                     </div>
                 </>
             )}
+             {isLoginFormVisible && (
+                <>
+                    <div className="overlay"></div>
+                    <div className="modal">
+                        <Login setToken={setToken} />
+                        <button className="mainBut" onClick={closeLoginForm}>Zamknij</button>
+                    </div>
+                </>
+            )}
+
         </div>
     );
 };
