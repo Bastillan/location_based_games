@@ -188,8 +188,14 @@ const App = () => {
     return (
         <div className="main">
             <nav className="logNav">
-                <button className="mainBut register" onClick={openRegisterForm}>Zarejestruj się</button>
-                <button className="mainBut login" onClick={openLoginForm}>Zaloguj się</button>
+                {token ? (
+                    <button className="mainBut logout" onClick={handleLogout}>Wyloguj się</button>
+                ) : (
+                    <>
+                        <button className="mainBut register" onClick={openRegisterForm}>Zarejestruj się</button>
+                        <button className="mainBut login" onClick={openLoginForm}>Zaloguj się</button>
+                    </>
+                )}
             </nav>
             {selectedScenario ? (
                 <div className="scenarioView">
