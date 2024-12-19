@@ -10,6 +10,7 @@ import GameForm from './GameForm';
 import TasksPlayList from './TasksPlayList';
 import Register from './Register';
 import Login from './Login';
+import api from './api'; // if api key should be attached to the api request replace axios with api
 
 const App = () => {
     const [scenarios, setScenarios] = useState([]);
@@ -186,7 +187,7 @@ const App = () => {
     };
     return (
         <div className="main">
-            <nav class="logNav">
+            <nav className="logNav">
                 <button className="mainBut register" onClick={openRegisterForm}>Zarejestruj się</button>
                 <button className="mainBut login" onClick={openLoginForm}>Zaloguj się</button>
             </nav>
