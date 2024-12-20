@@ -7,13 +7,13 @@ const ScenarioList = ({ scenarios, onScenarioSelect, onDeleteScenario, onEditSce
     return (
         <div>
             <h1>Scenariusze</h1>
-            <ul>
+            <div className="scenariosList">
                 {scenarios.map((scenario) => (
-                    <li key={scenario.id}>
+                    <div className="scenarioItem" key={scenario.id}>
                         <h3>{scenario.title}</h3>
                         <p>{scenario.description}</p>
                         {scenario.image && (
-                            <img src={scenario.image} alt={scenario.title} style={{ width: '500px' }} />
+                            <img src={scenario.image} alt={scenario.title} style={{ width: '100%' }} />
                         )}
                         <div className="buttons">
                             <button className="activate" onClick={() => onActivateGame(scenario)}>Aktywuj grę</button>
@@ -21,9 +21,9 @@ const ScenarioList = ({ scenarios, onScenarioSelect, onDeleteScenario, onEditSce
                             <button className="edit" onClick={() => onEditScenario(scenario)}>Edytuj</button>
                             <button className="delete" onClick={() => onDeleteScenario(scenario.id)}>Usuń</button>
                         </div>
-                    </li>
+                    </div>
                 ))}
-            </ul>
+            </div>
         </div>
     );
 };

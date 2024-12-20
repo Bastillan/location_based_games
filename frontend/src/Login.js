@@ -26,27 +26,29 @@ const Login = ({ setToken }) => {
         <div>
             <h2>Logowanie</h2>
             <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Nazwa uzytkownika:</label>
-                    <input
-                        type="text"
-                        name="username"
-                        value={credentials.username}
-                        onChange={handleChange}
-                        required
-                    />
+                <div className="loginForm">
+                    <div>
+                        <label>Nazwa uzytkownika:</label>
+                        <input
+                            type="text"
+                            name="username"
+                            value={credentials.username}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label>Hasło:</label>
+                        <input
+                            type="password"
+                            name="password"
+                            value={credentials.password}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
                 </div>
-                <div>
-                    <label>Hasło:</label>
-                    <input
-                        type="password"
-                        name="password"
-                        value={credentials.password}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <button type="submit">Zaloguj się</button>
+                <button className="mainBut" type="submit">Zaloguj się</button>
             </form>
             {message && <p>{message}</p>}
         </div>

@@ -36,35 +36,40 @@ const Register = () => {
         <div>
             <h2>Rejestracja</h2>
             <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Nazwa użytkownika:</label>
-                    <input
-                        type="text"
-                        name="username"
-                        value={formData.username}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Email:</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Hasło:</label>
-                    <input
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                    />
+                <div className="loginForm">
+                    <div>
+                        <label>Nazwa użytkownika:</label>
+                        <input
+                            type="text"
+                            name="username"
+                            value={formData.username}
+                            onChange={handleChange}
+                            required
+                        />
+                        {errors.username && <p className="error">{errors.username}</p>}
+                    </div>
+                    <div>
+                        <label>Email:</label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
+                        />
+                        {errors.email && <p className="error">{errors.email}</p>}
+                    </div>
+                    <div>
+                        <label>Hasło:</label>
+                        <input
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            required
+                        />
+                        {errors.password && <p className="error">{errors.password}</p>}
+                    </div>
                 </div>
                 <button type="submit" class="mainBut">Zarejestruj się</button>
             </form>

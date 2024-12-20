@@ -25,27 +25,6 @@ const App = () => {
     const [selectedTask, setSelectedTask] = useState(null);
     const [scenarioToEdit, setScenarioToEdit] = useState(null);
     const [scenarioForGame, setScenarioForGame] = useState(null);
-    const [isRegisterFormVisible, setIsRegisterFormVisible] = useState(false);
-    const [isLoginFormVisible, setIsLoginFormVisible] = useState(false);
-    const [token, setToken] = useState(localStorage.getItem('authToken') || null);
-
-
-
-    const openRegisterForm = () => {
-        setIsRegisterFormVisible(true);
-    };
-
-    const closeRegisterForm = () => {
-        setIsRegisterFormVisible(false);
-    };
-
-    const openLoginForm = () => setIsLoginFormVisible(true);
-    const closeLoginForm = () => setIsLoginFormVisible(false);
-
-    const handleLogout = () => {
-        setToken(null);
-        localStorage.removeItem('authToken');
-    };
 
     // Fetch scenarios from API
     const fetchScenarios = async () => {
@@ -181,37 +160,23 @@ const App = () => {
         setSelectedGame(null);
     };
     return (
-        <div className="main">
-            <nav className="logNav">
-                {token ? (
-                    <button className="mainBut logout" onClick={handleLogout}>Wyloguj się</button>
-                ) : (
-                    <>
-                        <button className="mainBut register" onClick={openRegisterForm}>Zarejestruj się</button>
-                        <button className="mainBut login" onClick={openLoginForm}>Zaloguj się</button>
-                    </>
-                )}
-            </nav>
+        <div>
             {selectedScenario ? (
                 <div className="scenarioView">
-                    <button className="mainBut powrot" onClick={handleBackToList}>Wróć do scenariuszy</button>
+                    <button className="mainBut powrot" onClick={handleBackToList}>Scenariusze</button>
                     <h3>{selectedScenario.title}</h3>
                     <p>{selectedScenario.description}</p>
                     {selectedScenario.image && (
-                        <img src={selectedScenario.image} alt={selectedScenario.title} style={{ width: '500px' }} />
+                        <img src={selectedScenario.image} alt={selectedScenario.title} style={{ width: '100%' }} />
                     )}
                     <h3>Zadania do scenariusza:</h3>
-                    <ul>
+                    <div className="tasksList">
                         {tasks.map((task) => (
-                            <li key={task.id}>
-                                <h4>zadanie {task.number}</h4>
+                            <div className="taskItem" key={task.id}>
+                                <h4>Zadanie {task.number}</h4>
                                 <p>{task.description}</p>
                                 {task.image && (
-                                    <img
-                                        src={task.image}
-                                        alt="Task"
-                                        style={{ width: '500px' }}
-                                    />
+                                    <img src={task.image} alt="Task" style={{ width: '100%' }} />
                                 )}
                                 {task.audio && (
                                     <audio controls>
@@ -219,11 +184,13 @@ const App = () => {
                                         Your browser does not support the audio element.
                                     </audio>
                                 )}
-                                <button className="mainBut" onClick={() => handleEditTask(task)}>Edytuj</button>
-                                <button className="mainBut" onClick={() => handleDeleteTask(task.id)}>Usuń</button>
-                            </li>
+                                <div className="taskButtons">
+                                    <button className="mainBut" onClick={() => handleEditTask(task)}>Edytuj</button>
+                                    <button className="mainBut" onClick={() => handleDeleteTask(task.id)}>Usuń</button>
+                                </div>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                     {isTaskFormVisible ? (
                         <>
                             <div className="overlay"></div>
@@ -247,9 +214,9 @@ const App = () => {
                                 <TasksPlayList tasks={tasks} handleBackToGamesList={handleBackToGamesList} />
                             ) : (
                                 <div className="gamesView">
-                                    <button className="mainBut powrot" onClick={handleBackToList}>Wróć do scenariuszy</button>
+                                    <button className="mainBut powrot" onClick={handleBackToList}>Scenariusze</button>
                                     <h1>Aktywne gry</h1>
-                                    <ul>
+                                    <div className="gamesList">
                                         {games.map((game) => {
                                             const TempBeginningDate = new Date(game.beginning_date);
                                             const TempEndDate = new Date(game.end_date);
@@ -268,21 +235,21 @@ const App = () => {
                                                 minute: '2-digit',
                                             });
                                             return(
-                                                <li key={game.id}>
+                                                <div className="gameItem" key={game.id}>
                                                     <h3>{game.title}</h3>
                                                     <p>Start: {formattedBeginningDate}</p>
                                                     <p>Koniec: {formattedEndDate}</p>
                                                     <p>Opis: {game.scenario.description}</p>
                                                     {game.scenario.image && (
-                                                        <img src={game.scenario.image} alt={game.scenario.title} style={{ width: '500px' }} />
+                                                        <img src={game.scenario.image} alt={game.scenario.title} style={{ width: '100%' }} />
                                                     )}
                                                     <div className="butons">
                                                         <button className="mainBut select" onClick={() => onGameSelect(game)}>Zagraj</button>
                                                     </div>
-                                                </li>
+                                                </div>
                                             )
                                         })}
-                                    </ul>
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -314,25 +281,6 @@ const App = () => {
                     )}
                 </div>
             )}
-            {isRegisterFormVisible && (
-                <>
-                    <div className="overlay"></div>
-                    <div className="modal">
-                        <Register />
-                        <button className="mainBut" onClick={closeRegisterForm}>Zamknij</button>
-                    </div>
-                </>
-            )}
-             {isLoginFormVisible && (
-                <>
-                    <div className="overlay"></div>
-                    <div className="modal">
-                        <Login setToken={setToken} />
-                        <button className="mainBut" onClick={closeLoginForm}>Zamknij</button>
-                    </div>
-                </>
-            )}
-
         </div>
     );
 };

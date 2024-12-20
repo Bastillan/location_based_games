@@ -1,0 +1,80 @@
+.main {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+}
+
+.header {
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.nav {
+    margin-bottom: 20px;
+}
+
+.gamesView {
+    text-align: left;
+}
+
+.gamesView ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.gamesView li {
+    margin-bottom: 20px;
+}
+
+.loginForm label{
+    display: block;
+    margin-top: 2px;
+}
+
+.error {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 1px;
+}
+
+
+.gamesList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Odstępy między elementami */
+    justify-content: center; /* Wyśrodkowanie gier */
+    padding: 0;
+    margin: 0;
+}
+
+.gameItem {
+    display: inline-block;
+    width: 300px; /* Dopasowanie szerokości kart */
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    background-color: #cfc3bb;
+    border: 2px solid #323232;
+}
+
+.gameItem img {
+    width: 100%; /* Dopasowanie szerokości obrazka do kontenera */
+    border-radius: 5px;
+}
+
+.gameItem h3 {
+    margin: 10px 0;
+    font-size: 18px;
+}
+
+.gameItem p {
+    font-size: 14px;
+    color:#323232;
+}
+
+.logNav {
+    position: absolute;
+    right: 6%;
+    top: 2%;
+}

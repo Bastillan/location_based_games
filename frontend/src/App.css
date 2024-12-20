@@ -89,6 +89,8 @@ body, html {
 button.mainBut {
   margin-left:5px;
   margin-right:5px;
+  margin-top: 2px;
+  margin-bottom: 2px;
   padding: 10px 15px;
   background-color: #323232;
   border: none;
@@ -108,33 +110,6 @@ h1, h3 {
 
 p {
   color:#323232;
-}
-
-img {
-  display: block;
-  margin-bottom: 10px;
-  margin-left: auto;
-  margin-right: auto;
-  width: 500px;
-}
-
-audio {
-  display: block;
-  margin-bottom: 10px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-li {
-  border: 2px solid #323232;
-  border-radius: 10px;
-  background-color: #cfc3bb;
-  margin-bottom: 10px;
-}
-
-ul {
-  list-style-type: none;
-  width:600px;
 }
 
 button.addScenario {
@@ -157,7 +132,47 @@ button.addTask {
   text-align: center;
 }
 
-.logNav {
+.tasksList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  margin-bottom: 10px;
+}
+
+.taskItem {
+  display: inline-block;
+  width: 400px;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  background-color: #cfc3bb;
+  border: 2px solid #323232;
+}
+
+.taskItem img {
   width: 100%;
-  padding: 10px 20px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.taskItem h4 {
+  margin: 10px 0;
+  font-size: 18px;
+}
+
+.taskItem p {
+  font-size: 14px;
+  color:#323232;
+}
+
+.taskButtons {
+  margin-top: 10px;
+}
+
+.taskButtons button {
+  margin: 5px;
 }
