@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 
 const Register = () => {
+    const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState({
         username: "",
         email: "",
@@ -16,11 +17,18 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setMessage(null);
+        setErrors({});
         try {
             const response = await axios.post("http://localhost:8000/auth/users/", formData);
             setMessage("Pomyślnie zarejestrowano");
         } catch (error) {
-            setMessage("Wprowadź silniejsze hasło");
+            if (error.response && error.response.data) {
+                setErrors(error.response.data);
+            } 
+            else {
+                setMessage("Wystąpił błąd. Spróbuj ponownie.");
+            }
         }
     };
 
