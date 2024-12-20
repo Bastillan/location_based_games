@@ -89,6 +89,15 @@ const App = () => {
         }
     };
 
+    const handleDeleteGame = async (gameId) => {
+        try {
+            await axios.delete(`http://localhost:8000/api/games/${gameId}/`);
+            fetchGames();
+        } catch (error) {
+            console.error("Error deleting game:", error);
+        }
+    };
+
     const handleEditTask = (task) => {
         setSelectedTask(task); // Set the task to be edited
         setIsTaskFormVisible(true); // Show the task form
@@ -246,6 +255,7 @@ const App = () => {
                                                     <div className="butons">
                                                         <button className="mainBut select" onClick={() => onGameSelect(game)}>Zagraj</button>
                                                     </div>
+                                                    <button className="mainBut" onClick={() => handleDeleteGame(game.id)}>Usuń</button>
                                                 </div>
                                             )
                                         })}
