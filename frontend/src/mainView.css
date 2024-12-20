@@ -55,8 +55,11 @@
     border-radius: 5px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     text-align: center;
-    background-color: #cfc3bb;
+    background: linear-gradient(135deg,  #cfc3bb, #443e37);
     border: 2px solid #323232;
+    background-image: url('https://www.transparenttextures.com/patterns/light-paper-fibers.png'); 
+    background-attachment: fixed;
+    background-repeat: repeat;
 }
 
 .gameItem img {
