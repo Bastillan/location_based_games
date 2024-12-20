@@ -106,6 +106,7 @@ button:hover.mainBut {
 h1, h3 {
   text-align: center;
   color:#323232;
+  display: block;
 }
 
 p {
@@ -118,9 +119,7 @@ button.addScenario {
 }
 
 button.powrot, button.showGames {
-  position: absolute;
-  left: 6%;
-  top: 6%;
+  display:block;
 }
 
 button.addTask {
@@ -144,7 +143,8 @@ button.addTask {
 
 .taskItem {
   display: inline-block;
-  width: 400px;
+  max-width: 400px;
+  min-width: 290;
   padding: 10px;
   border-radius: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);

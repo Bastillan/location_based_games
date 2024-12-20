@@ -237,9 +237,9 @@ const App = () => {
                                             return(
                                                 <div className="gameItem" key={game.id}>
                                                     <h3>{game.title}</h3>
-                                                    <p>Start: {formattedBeginningDate}</p>
-                                                    <p>Koniec: {formattedEndDate}</p>
-                                                    <p>Opis: {game.scenario.description}</p>
+                                                    <p><b>Start:</b> {formattedBeginningDate}</p>
+                                                    <p><b>Koniec:</b> {formattedEndDate}</p>
+                                                    <p><b>Opis:</b> {game.scenario.description}</p>
                                                     {game.scenario.image && (
                                                         <img src={game.scenario.image} alt={game.scenario.title} style={{ width: '100%' }} />
                                                     )}
@@ -255,6 +255,7 @@ const App = () => {
                         </div>
                     ) : (
                         <div>
+                            <button className="mainBut showGames" onClick={openGamesList}>Gry</button>
                             {isScenarioFormVisible && (
                                 <>
                                     <div className="overlay"></div>
@@ -276,7 +277,6 @@ const App = () => {
                             {/* <ScenarioForm refreshScenarios={refreshScenariosAndTasks} /> */}
                             <ScenarioList scenarios={scenarios} onScenarioSelect={handleScenarioSelect} onDeleteScenario={handleDeleteScenario} onEditScenario={handleEditScenario} onActivateGame={handleActivateGame}/>
                             <button className="mainBut addScenario" onClick={openScenarioForm}>+</button>
-                            <button className="mainBut showGames" onClick={openGamesList}>Gry</button>
                         </div>
                     )}
                 </div>

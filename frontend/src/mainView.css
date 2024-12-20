@@ -41,15 +41,16 @@
 .gamesList {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px; /* Odstępy między elementami */
-    justify-content: center; /* Wyśrodkowanie gier */
+    gap: 20px;
+    justify-content: center;
     padding: 0;
     margin: 0;
 }
 
 .gameItem {
     display: inline-block;
-    width: 300px; /* Dopasowanie szerokości kart */
+    max-width: 400px;
+    min-width: 290;
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -59,7 +60,7 @@
 }
 
 .gameItem img {
-    width: 100%; /* Dopasowanie szerokości obrazka do kontenera */
+    width: 100%;
     border-radius: 5px;
 }
 
@@ -74,7 +75,8 @@
 }
 
 .logNav {
-    position: absolute;
-    right: 6%;
-    top: 2%;
+    float:right;
+    width:230px;
+    display:block;
+    clear: both;
 }

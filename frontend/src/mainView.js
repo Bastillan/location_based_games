@@ -80,13 +80,6 @@ const MainView = () => {
                         <TasksPlayList tasks={tasks} handleBackToGamesList={handleBackToGamesList} />
                     ) : (
                     <div>
-                        <button onClick={handleAdminClick} style={{ margin: '10px', padding: '10px' }}>
-                            Admin
-                        </button>
-                        <header className="header">
-                            <h1>Platforma do Gier Miejskich</h1>
-                            <p>Witamy na naszej platformie. Zaloguj się lub zarejestruj, aby rozpocząć grę!</p>
-                        </header>
                         <nav className="logNav">
                             {token ? (
                                 <button className="mainBut logout" onClick={handleLogout}>Wyloguj się</button>
@@ -97,6 +90,13 @@ const MainView = () => {
                                 </>
                             )}
                         </nav>
+                        <button onClick={handleAdminClick} style={{ margin: '10px', padding: '10px' }}>
+                            Admin
+                        </button>
+                        <header className="header">
+                            <h1>Platforma do Gier Miejskich</h1>
+                            <p>Witamy na naszej platformie. Zaloguj się lub zarejestruj, aby rozpocząć grę!</p>
+                        </header>
                         <main>
                             <div className="gamesView">
                                 <h2>Lista Gier</h2>
@@ -121,9 +121,9 @@ const MainView = () => {
                                         return(
                                             <div className="gameItem" key={game.id}>
                                                 <h3>{game.title}</h3>
-                                                <p>Start: {formattedBeginningDate}</p>
-                                                <p>Koniec: {formattedEndDate}</p>
-                                                <p>Opis: {game.scenario.description}</p>
+                                                <p><b>Start:</b> {formattedBeginningDate}</p>
+                                                <p><b>Koniec:</b> {formattedEndDate}</p>
+                                                <p><b>Opis:</b> {game.scenario.description}</p>
                                                 {game.scenario.image && (
                                                     <img src={game.scenario.image} alt={game.scenario.title} style={{ width: '100%' }} />
                                                 )}
