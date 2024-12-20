@@ -15,7 +15,7 @@ import api from './api'; // if api key should be attached to the api request rep
 const App = () => {
     const [scenarios, setScenarios] = useState([]);
     const [selectedScenario, setSelectedScenario] = useState(null);
-    const [tasks, setTasks] = useState([]); // To store tasks for the selected scenario
+    const [tasks, setTasks] = useState([]);
     const [isTaskFormVisible, setIsTaskFormVisible] = useState(false);
     const [isScenarioFormVisible, setIsScenarioFormVisible] = useState(false);
     const [games, setGames] = useState([]);
@@ -46,11 +46,6 @@ const App = () => {
         setToken(null);
         localStorage.removeItem('authToken');
     };
-
-    // const [updateTrigger, setUpdateTrigger] = useState(false);
-    // const refreshTasks = () => {
-    //     setUpdateTrigger(!updateTrigger);
-    // };
 
     // Fetch scenarios from API
     const fetchScenarios = async () => {

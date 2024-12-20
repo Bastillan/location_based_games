@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Task, Scenario, Game
+from .models import Task, Scenario, Game, User
+from django.contrib.auth import get_user_model
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -26,3 +27,11 @@ class GameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
         fields = ['id', 'title', 'beginning_date', 'end_date', 'scenario', 'scenario_id']
+
+class UserSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    email = serializers.EmailField(source='user.email', read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email']
