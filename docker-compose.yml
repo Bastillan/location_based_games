@@ -5,13 +5,11 @@ services:
     ports:
       - '5432:5432'
 
-    environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=postgres
-
     volumes:
       - ./data/db:/var/lib/postgresql/data/
+
+    env_file:
+      - ./.env.db.dev
 
   backend:
     build:
@@ -29,6 +27,9 @@ services:
     volumes:
       - ./backend:/app/backend
       - ./media:/app/media
+
+    env_file:
+      - ./.env.dev
 
     depends_on:
       - db
