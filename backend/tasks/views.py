@@ -105,7 +105,8 @@ class TaskViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         scenario_id = instance.scenario_id
         new_number = serializer.validated_data.get('number')
-
+        correct_images = self.request.FILES.getlist('correctImages')
+        incorrect_images = self.request.FILES.getlist('incorrectImages')
         if new_number and instance.number != new_number:
             if new_number > instance.number:
                 Task.objects.filter(
@@ -120,7 +121,17 @@ class TaskViewSet(viewsets.ModelViewSet):
                     scenario_id=scenario_id
                 ).update(number=F('number') + 1)
 
-        serializer.save()
+        task = serializer.save()
+        if len(correct_images) > 0:
+            AnswerImages.objects.filter(task=task, is_correct=True).delete()
+            for correct_image in correct_images:
+                AnswerImages.objects.create(task=task, is_correct=True, image=correct_image)
+
+        if len(incorrect_images) > 0:
+            AnswerImages.objects.filter(task=task, is_correct=False).delete()
+            for incorrect_image in incorrect_images:
+                AnswerImages.objects.create(task=task, is_correct=False, image=incorrect_image)
+
 
     @action(detail=True, methods=['get'])
     def shift_task_numbers(self, request, pk=None):
