@@ -5,8 +5,10 @@ import './forms.css';
 const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit }) => {
     const [description, setDescription] = useState(taskToEdit ? taskToEdit.description : '');
     const [answer_type, setAnswerType] = useState(taskToEdit ? taskToEdit.answer_type : '');
-    const [correct_answer, setCorrectAnswer] = useState(taskToEdit ? taskToEdit.correct_answer : "")
+    const [correct_text_answer, setCorrectAnswer] = useState(taskToEdit ? taskToEdit.correct_text_answer : "")
     const [number, setNumber] = useState(taskToEdit ? taskToEdit.number : '');
+    const [correctImages, setCorrectImages] = useState(null);
+    const [incorrectImages, setInorrectImages] = useState(null);
     const [image, setImage] = useState(null);
     const [audio, setAudio] = useState(null);
     const [error, setError] = useState('');
@@ -48,9 +50,20 @@ const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit })
         const formData = new FormData();
         formData.append('number', taskNumber);
         formData.append('description', description);
-        formData.append('answer_type', answer_type);
         formData.append('scenario', selectedScenario.id);
-        formData.append('correct_answer', correct_answer);
+        formData.append('answer_type', answer_type);
+        formData.append('correct_text_answer', correct_text_answer);
+        if (correct_text_answer && answer_type === 'text') formData.append('answer_type', answer_type);
+        if (correctImages && answer_type === 'image'){
+            for (let i = 0 ; i < correctImages.length ; i++) {
+                formData.append("correctImages", correctImages[i]);
+            }
+        };
+        if (incorrectImages && answer_type === 'image') {
+            for (let i = 0 ; i < incorrectImages.length ; i++) {
+                formData.append("incorrectImages", incorrectImages[i]);
+            }
+        };
         if (image) formData.append('image', image);
         if (audio) formData.append('audio', audio);
 
@@ -111,15 +124,24 @@ const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit })
             >
                 <option value="">Wybierz typ odpowiedzi</option>
                 <option value="text">Tekst</option>
+                <option value="image">Obraz</option>
             </select>
             {answer_type === "text" &&
             <textarea
                 placeholder="Poprawna odpowiedź"
-                value={correct_answer}
+                value={correct_text_answer}
                 onChange={(e) => setCorrectAnswer(e.target.value)}
                 required
                 className="form-input"
             ></textarea>
+            }
+            {answer_type === "image" &&
+                <label className="form-label">
+                Poprawne obrazy:
+                <input className="form-input" multiple type="file" onChange={(e) => setCorrectImages(e.target.files)} />
+                Niepoprawne obrazy:
+                <input className="form-input" multiple type="file" onChange={(e) => setInorrectImages(e.target.files)} />
+            </label>
             }
             <label className="form-label">
                 Obrazek:

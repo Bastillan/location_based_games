@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Task, Scenario, Game
+from .models import Task, Scenario, Game, AnswerImages
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -12,6 +12,10 @@ class TaskSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Number must be a positive integer.")
         return value
 
+class AnswerImagesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AnswerImages
+        fields = '__all__'
 
 class ScenarioSerializer(serializers.ModelSerializer):
     tasks = serializers.PrimaryKeyRelatedField(many=True, read_only=True)

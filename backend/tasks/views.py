@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import Task, Scenario, Game
-from .serializers import TaskSerializer, ScenarioSerializer, GameSerializer
+from .models import Task, Scenario, Game, AnswerImages
+from .serializers import TaskSerializer, ScenarioSerializer, GameSerializer, AnswerImagesSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from django.db.models import F
 from rest_framework import serializers
 from datetime import datetime
+from random import sample
 
 
 class ScenarioViewSet(viewsets.ModelViewSet):
@@ -49,6 +50,18 @@ class ScenarioViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class AnswerImagesSet(viewsets.ModelViewSet):
+    queryset = AnswerImages.objects.all()
+    serializer_class = AnswerImagesSerializer
+
+    def list(self, request, *args, **kwargs):
+        task_id = request.query_params.get('task_id', None)
+        if task_id:
+            self.queryset = self.queryset.filter(task=task_id)
+        correct_images = self.queryset.filter(is_correct=True).order_by('?')[:1]
+        incorrect_images = self.queryset.filter(is_correct=False).order_by('?')[:3]
+        self.queryset = correct_images | incorrect_images
+        return super().list(request, *args, **kwargs)
 
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all().order_by('number')
@@ -61,6 +74,8 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         scenario_id = self.request.data.get('scenario')
+        correct_images = self.request.FILES.getlist('correctImages')
+        incorrect_images = self.request.FILES.getlist('incorrectImages')
         if not scenario_id:
             raise serializers.ValidationError({"scenario": "Scenario ID is required."})
 
@@ -77,7 +92,12 @@ class TaskViewSet(viewsets.ModelViewSet):
             # Default to the next available number within the scenario
             number = Task.objects.filter(scenario_id=scenario_id).count() + 1
 
-        serializer.save(number=number, scenario_id=scenario_id)
+        task = serializer.save(number=number, scenario_id=scenario_id)
+        for correct_image in correct_images:
+            AnswerImages.objects.create(task=task, is_correct=True, image=correct_image)
+        for incorrect_image in incorrect_images:
+            AnswerImages.objects.create(task=task, is_correct=False, image=incorrect_image)
+
 
     def perform_update(self, serializer):
         instance = self.get_object()

@@ -10,6 +10,7 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
     const [answer, setAnswer] = useState("");
     const [message, setMessage] = useState(null);
+    const [AnswerImages, setAnswerImages] = useState([]);
 
     const handleNext = () => {
         if (currentIndex < tasks.length - 1) {
@@ -32,7 +33,8 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
     };
 
     const handleSubmit = () => {
-        if (tasks[currentIndex].correct_answer === answer) {
+        if (tasks[currentIndex].correct_text_answer
+             === answer) {
             setIsNextDisabled(currentIndex === tasks.length -1);
             setGlobalIndex(globalIndex + 1);
             setIsSubmitDisabled(true);
@@ -41,6 +43,22 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
             setMessage("Niepoprawna odpowiedź");
         }
     }
+
+    const fetchImageAnswers = async (TaskId) => {
+        try {
+            const response = await axios.get(`http://localhost:8000/api/answerimages/?task_id=${TaskId}`);
+            setAnswerImages(response.data);
+        } catch (error) {
+            console.error("Error fetching tasks:", error);
+        }
+    };
+
+    useEffect(() => {
+        const currentTaskId = tasks[currentIndex]?.id;
+        if (currentTaskId) {
+            fetchImageAnswers(currentTaskId);
+        }
+    }, [currentIndex, tasks]);
 
     return (
         <div className='task'>
@@ -53,21 +71,27 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
                         <img src={tasks[currentIndex].image} alt="obraz" />
                     )}
                     {tasks[currentIndex].audio && (
-                        // <audio control src={tasks[currentIndex].audio} alt="audio" />
                         <audio controls>
                             <source src={tasks[currentIndex].audio} type="audio/mpeg" />
                             Your browser does not support the audio element.
                         </audio>
                     )}
+                    {message && (
+                        <p className='message'>{message}</p>
+                    )}
+                    {tasks[currentIndex].answer_type === "text" && (
+                        <textarea placeholder='Wprowadź odpowiedź' value={answer} onChange={(e) => setAnswer(e.target.value)}></textarea>
+                    )}
+                    {
+                        tasks[currentIndex].answer_type === "image" && (
+                        AnswerImages.map((answerImage) => (
+                            <li key={answerImage.id}>
+                                <img src={answerImage.image} alt="obraz" />
+                            </li>
+                        ))
+                    )}
                 </div>
             )}
-
-            <div>
-                {message && (
-                    <p className='message'>{message}</p>
-                )}
-                <textarea placeholder='Wprowadź odpowiedź' value={answer} onChange={(e) => setAnswer(e.target.value)}></textarea>
-            </div>
             <div className="buttons">
                 <button className="previous" onClick={() => handlePrevious()} disabled={currentIndex === 0}>Poprzednie</button>
                 <button className="submit" onClick={() => handleSubmit()} disabled={isSubmitDisabled}>Zatwierdź odpowiedź</button>
