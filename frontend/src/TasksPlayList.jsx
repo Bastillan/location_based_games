@@ -52,6 +52,13 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
         setAnswer(id);
     }
 
+    const handleLocation = () => {
+        navigator.geolocation.getCurrentPosition((position) => {
+            console.log(position.coords);
+            setAnswer(position.coords.latitude + ", " + position.coords.longitude);
+        })
+    }
+
     const fetchImageAnswers = async (TaskId) => {
         try {
             const response = await axios.get(`http://localhost:8000/api/answerimages/?task_id=${TaskId}`);
@@ -119,6 +126,13 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
                                 <img className="answer_image" src={answerImage.image} alt="obraz" />
                             </div>
                         ))
+                    )}
+                    {tasks[currentIndex].answer_type === "location" && (
+                        <div className='location_container'>
+                            <label>Szerokość geograficzna: {answer.split(',')[0]}</label><br></br>
+                            <label>Długość geograficzna: {answer.split(',')[1]}</label>
+                            <button className="check_location" onClick={() => handleLocation()} >Sprawdź lokalizacje</button>
+                        </div>
                     )}
                     </div>
                 </div>

@@ -9,8 +9,7 @@ from rest_framework.decorators import action
 from django.db.models import F
 from rest_framework import serializers
 from datetime import datetime
-from random import sample
-
+from geopy.distance import geodesic
 
 class ScenarioViewSet(viewsets.ModelViewSet):
     queryset = Scenario.objects.all()
@@ -165,6 +164,12 @@ class TaskViewSet(viewsets.ModelViewSet):
                 result = True
         elif answer_type == "image":
             result = AnswerImages.objects.filter(id=answer)[0].is_correct
+        elif answer_type == "location":
+            correct_location = self.queryset.filter(id=task_id)[0].correct_text_answer.split(',')
+            answer_location = answer.split(',')
+            distance = geodesic(correct_location, answer_location).meters
+            if distance < 500000:
+                result = True
         return Response({"is_correct": result})
 
 class GameViewSet(viewsets.ModelViewSet):

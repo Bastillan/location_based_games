@@ -62,6 +62,12 @@ div.image_container.highlighted {
     align-items: center;
 }
 
+div.location_container {
+    height: max-content;
+    display: flex;
+    justify-content: center;
+}
+
 img.answer_image {
     width: 100%;
     height: auto;

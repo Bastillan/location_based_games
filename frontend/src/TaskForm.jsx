@@ -125,6 +125,7 @@ const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit })
                 <option value="">Wybierz typ odpowiedzi</option>
                 <option value="text">Tekst</option>
                 <option value="image">Obraz</option>
+                <option value="location">Lokalizacja</option>
             </select>
             {answer_type === "text" &&
             <textarea
@@ -141,6 +142,17 @@ const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit })
                 <input className="form-input" multiple type="file" onChange={(e) => setCorrectImages(e.target.files)} />
                 Niepoprawne obrazy:
                 <input className="form-input" multiple type="file" onChange={(e) => setInorrectImages(e.target.files)} />
+            </label>
+            }
+            {answer_type === "location" &&
+                <label className="form-label">
+                <textarea
+                    placeholder="Szerokość i wysokość geograficzna"
+                    value={correct_text_answer}
+                    onChange={(e) => setCorrectAnswer(e.target.value)}
+                    required
+                    className="form-input"
+                ></textarea>
             </label>
             }
             <label className="form-label">
