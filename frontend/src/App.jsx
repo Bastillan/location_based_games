@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import {useState, useEffect} from 'react';
 import axios from 'axios';
@@ -9,11 +8,13 @@ import ScenarioList from './ScenarioList';
 import GameForm from './GameForm';
 import TasksPlayList from './TasksPlayList';
 import Register from './Register';
+import Login from './Login';
+import api from './api'; // if api key should be attached to the api request replace axios with api
 
 const App = () => {
     const [scenarios, setScenarios] = useState([]);
     const [selectedScenario, setSelectedScenario] = useState(null);
-    const [tasks, setTasks] = useState([]); // To store tasks for the selected scenario
+    const [tasks, setTasks] = useState([]);
     const [isTaskFormVisible, setIsTaskFormVisible] = useState(false);
     const [isScenarioFormVisible, setIsScenarioFormVisible] = useState(false);
     const [games, setGames] = useState([]);
@@ -23,21 +24,6 @@ const App = () => {
     const [selectedTask, setSelectedTask] = useState(null);
     const [scenarioToEdit, setScenarioToEdit] = useState(null);
     const [scenarioForGame, setScenarioForGame] = useState(null);
-    const [isRegisterFormVisible, setIsRegisterFormVisible] = useState(false);
-
-
-    const openRegisterForm = () => {
-        setIsRegisterFormVisible(true);
-    };
-
-    const closeRegisterForm = () => {
-        setIsRegisterFormVisible(false);
-    };
-
-    // const [updateTrigger, setUpdateTrigger] = useState(false);
-    // const refreshTasks = () => {
-    //     setUpdateTrigger(!updateTrigger);
-    // };
 
     // Fetch scenarios from API
     const fetchScenarios = async () => {
@@ -99,6 +85,15 @@ const App = () => {
             fetchTasks(selectedScenario.id);
         } catch (error) {
             console.error("Error deleting task:", error);
+        }
+    };
+
+    const handleDeleteGame = async (gameId) => {
+        try {
+            await axios.delete(`http://localhost:8000/api/games/${gameId}/`);
+            fetchGames();
+        } catch (error) {
+            console.error("Error deleting game:", error);
         }
     };
 
@@ -173,30 +168,23 @@ const App = () => {
         setSelectedGame(null);
     };
     return (
-        <div className="main">
-            <nav class="logNav">
-                <button className="mainBut register" onClick={openRegisterForm}>Zarejestruj się</button>
-            </nav>
+        <div>
             {selectedScenario ? (
                 <div className="scenarioView">
-                    <button className="mainBut powrot" onClick={handleBackToList}>Wróć do scenariuszy</button>
+                    <button className="mainBut powrot" onClick={handleBackToList}>Scenariusze</button>
                     <h3>{selectedScenario.title}</h3>
                     <p>{selectedScenario.description}</p>
                     {selectedScenario.image && (
-                        <img src={selectedScenario.image} alt={selectedScenario.title} style={{ width: '500px' }} />
+                        <img src={selectedScenario.image} alt={selectedScenario.title} style={{ width: '100%' }} />
                     )}
                     <h3>Zadania do scenariusza:</h3>
-                    <ul>
+                    <div className="tasksList">
                         {tasks.map((task) => (
-                            <li key={task.id}>
-                                <h4>zadanie {task.number}</h4>
+                            <div className="taskItem" key={task.id}>
+                                <h4>Zadanie {task.number}</h4>
                                 <p>{task.description}</p>
                                 {task.image && (
-                                    <img
-                                        src={task.image}
-                                        alt="Task"
-                                        style={{ width: '500px' }}
-                                    />
+                                    <img src={task.image} alt="Task" style={{ width: '100%' }} />
                                 )}
                                 {task.audio && (
                                     <audio controls>
@@ -204,11 +192,13 @@ const App = () => {
                                         Your browser does not support the audio element.
                                     </audio>
                                 )}
-                                <button className="mainBut" onClick={() => handleEditTask(task)}>Edytuj</button>
-                                <button className="mainBut" onClick={() => handleDeleteTask(task.id)}>Usuń</button>
-                            </li>
+                                <div className="taskButtons">
+                                    <button className="mainBut" onClick={() => handleEditTask(task)}>Edytuj</button>
+                                    <button className="mainBut" onClick={() => handleDeleteTask(task.id)}>Usuń</button>
+                                </div>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                     {isTaskFormVisible ? (
                         <>
                             <div className="overlay"></div>
@@ -232,9 +222,9 @@ const App = () => {
                                 <TasksPlayList tasks={tasks} handleBackToGamesList={handleBackToGamesList} />
                             ) : (
                                 <div className="gamesView">
-                                    <button className="mainBut powrot" onClick={handleBackToList}>Wróć do scenariuszy</button>
+                                    <button className="mainBut powrot" onClick={handleBackToList}>Scenariusze</button>
                                     <h1>Aktywne gry</h1>
-                                    <ul>
+                                    <div className="gamesList">
                                         {games.map((game) => {
                                             const TempBeginningDate = new Date(game.beginning_date);
                                             const TempEndDate = new Date(game.end_date);
@@ -253,26 +243,28 @@ const App = () => {
                                                 minute: '2-digit',
                                             });
                                             return(
-                                                <li key={game.id}>
+                                                <div className="gameItem" key={game.id}>
                                                     <h3>{game.title}</h3>
-                                                    <p>Start: {formattedBeginningDate}</p>
-                                                    <p>Koniec: {formattedEndDate}</p>
-                                                    <p>Opis: {game.scenario.description}</p>
+                                                    <p><b>Start:</b> {formattedBeginningDate}</p>
+                                                    <p><b>Koniec:</b> {formattedEndDate}</p>
+                                                    <p><b>Opis:</b> {game.scenario.description}</p>
                                                     {game.scenario.image && (
-                                                        <img src={game.scenario.image} alt={game.scenario.title} style={{ width: '500px' }} />
+                                                        <img src={game.scenario.image} alt={game.scenario.title} style={{ width: '100%' }} />
                                                     )}
                                                     <div className="butons">
                                                         <button className="mainBut select" onClick={() => onGameSelect(game)}>Zagraj</button>
                                                     </div>
-                                                </li>
+                                                    <button className="mainBut" onClick={() => handleDeleteGame(game.id)}>Usuń</button>
+                                                </div>
                                             )
                                         })}
-                                    </ul>
+                                    </div>
                                 </div>
                             )}
                         </div>
                     ) : (
                         <div>
+                            <button className="mainBut showGames" onClick={openGamesList}>Gry</button>
                             {isScenarioFormVisible && (
                                 <>
                                     <div className="overlay"></div>
@@ -294,22 +286,13 @@ const App = () => {
                             {/* <ScenarioForm refreshScenarios={refreshScenariosAndTasks} /> */}
                             <ScenarioList scenarios={scenarios} onScenarioSelect={handleScenarioSelect} onDeleteScenario={handleDeleteScenario} onEditScenario={handleEditScenario} onActivateGame={handleActivateGame}/>
                             <button className="mainBut addScenario" onClick={openScenarioForm}>+</button>
-                            <button className="mainBut showGames" onClick={openGamesList}>Gry</button>
                         </div>
                     )}
                 </div>
-            )}
-            {isRegisterFormVisible && (
-                <>
-                    <div className="overlay"></div>
-                    <div className="modal">
-                        <Register />
-                        <button className="mainBut" onClick={closeRegisterForm}>Zamknij</button>
-                    </div>
-                </>
             )}
         </div>
     );
 };
 
 export default App;
+

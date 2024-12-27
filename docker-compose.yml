@@ -5,27 +5,11 @@ services:
     ports:
       - '5432:5432'
 
-    environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=postgres
-
     volumes:
       - ./data/db:/var/lib/postgresql/data/
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    
-    ports:
-      - '3000:3000'
-
-    volumes:
-      - ./frontend:/app/frontend
-
-    depends_on:
-      - backend
+    env_file:
+      - ./.env.db.dev
 
   backend:
     build:
@@ -44,5 +28,23 @@ services:
       - ./backend:/app/backend
       - ./media:/app/media
 
+    env_file:
+      - ./.env.dev
+
     depends_on:
       - db
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    
+    ports:
+      - '5173:5173'
+
+    volumes:
+      - ./frontend:/app/frontend
+      - /app/frontend/node_modules
+
+    depends_on:
+      - backend

@@ -1,14 +1,53 @@
-.scenariosList {
+.main {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+}
+
+.header {
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.nav {
+    margin-bottom: 20px;
+}
+
+.gamesView {
+    text-align: left;
+}
+
+.gamesView ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.gamesView li {
+    margin-bottom: 20px;
+}
+
+.loginForm label{
+    display: block;
+    margin-top: 2px;
+}
+
+.error {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 1px;
+}
+
+
+.gamesList {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
     justify-content: center;
     padding: 0;
     margin: 0;
-    margin-bottom: 10px;
 }
 
-.scenarioItem {
+.gameItem {
     display: inline-block;
     max-width: 400px;
     min-width: 290;
@@ -23,41 +62,24 @@
     background-repeat: repeat;
 }
 
-.scenarioItem img {
+.gameItem img {
     width: 100%;
     border-radius: 5px;
 }
 
-.scenarioItem h3 {
+.gameItem h3 {
     margin: 10px 0;
     font-size: 18px;
 }
 
-.scenarioItem p {
+.gameItem p {
     font-size: 14px;
     color:#323232;
 }
 
-.buttons {
-    margin-top: 10px;
+.logNav {
+    float:right;
+    width:230px;
+    display:block;
+    clear: both;
 }
-
-.buttons button {
-    margin: 5px;
-}
-
-
-button.select, button.delete, button.edit, button.activate {
-    margin-left:5px;
-    margin-right:5px;
-    padding: 10px 15px;
-    background-color: #323232;
-    border: none;
-    color: #DDD0C8;
-    cursor: pointer;
-    border-radius: 10px;
-}
-
-button:hover.select, button:hover.delete, button:hover.edit, button:hover.activate {
-    background-color: #1a1919;
-}  

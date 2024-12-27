@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import Task, Scenario, Game, AnswerImages
-from .serializers import TaskSerializer, ScenarioSerializer, GameSerializer, AnswerImagesSerializer
+from .models import Task, Scenario, Game, User, AnswerImages
+from .serializers import TaskSerializer, ScenarioSerializer, GameSerializer, UserSerializer, AnswerImagesSerializer
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
@@ -170,3 +171,9 @@ class GameViewSet(viewsets.ModelViewSet):
         games = Game.objects.all()
         serializer = GameSerializer(games, many=True)
         return Response(serializer.data)
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
