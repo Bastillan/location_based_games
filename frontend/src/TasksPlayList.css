@@ -34,6 +34,40 @@ div.task {
     padding-left: 10px;
   }
 
+div.answer_images {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+div.image_container {
+    border: 5px solid #dddddd;
+    border-radius: 5px;
+    width: 100%;
+    height: max-content;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+div.image_container.highlighted {
+    border: 5px solid #22ff00;
+    border-radius: 5px;
+    width: 100%;
+    height: max-content;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+img.answer_image {
+    width: 100%;
+    height: auto;
+    object-fit:cover;
+}
+
 p.message {
     color:#9a0a0a;
 }

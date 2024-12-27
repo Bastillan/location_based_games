@@ -62,6 +62,7 @@ class AnswerImagesSet(viewsets.ModelViewSet):
         correct_images = self.queryset.filter(is_correct=True).order_by('?')[:1]
         incorrect_images = self.queryset.filter(is_correct=False).order_by('?')[:3]
         self.queryset = correct_images | incorrect_images
+        self.queryset = self.queryset.order_by('?')
         return super().list(request, *args, **kwargs)
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -140,6 +141,20 @@ class TaskViewSet(viewsets.ModelViewSet):
         if scenario_id:
             self.queryset = self.queryset.filter(scenario_id=scenario_id)
         return super().list(request, *args, **kwargs)
+
+    @action(detail=False, methods=["get"])
+    def check_answer(self, request):
+        answer_type = request.query_params.get("answer_type")
+        answer = request.query_params.get("answer")
+        task_id = request.query_params.get("task_id")
+        result = False
+        if answer_type == "text":
+            correct_answer = self.queryset.filter(id=task_id)[0].correct_text_answer
+            if answer == correct_answer:
+                result = True
+        elif answer_type == "image":
+            result = AnswerImages.objects.filter(id=answer)[0].is_correct
+        return Response({"is_correct": result})
 
 class GameViewSet(viewsets.ModelViewSet):
     queryset = Game.objects.all()

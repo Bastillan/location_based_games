@@ -11,6 +11,17 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
     const [answer, setAnswer] = useState("");
     const [message, setMessage] = useState(null);
     const [AnswerImages, setAnswerImages] = useState([]);
+    const [answer_correct, setAnswerCorrect] = useState([null, 0]);
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    const checkAnswer = async (TaskId, AnswerType, Answer) => {
+        try {
+            const response = await axios.get(`http://localhost:8000/api/tasks/check_answer/?answer_type=${AnswerType}&answer=${Answer}&task_id=${TaskId}`);
+            setAnswerCorrect([response.data.is_correct, answer_correct[1]+1]);
+        } catch (error) {
+            console.error("Error checking answer: ", error)
+        }
+    };
 
     const handleNext = () => {
         if (currentIndex < tasks.length - 1) {
@@ -33,15 +44,12 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
     };
 
     const handleSubmit = () => {
-        if (tasks[currentIndex].correct_text_answer
-             === answer) {
-            setIsNextDisabled(currentIndex === tasks.length -1);
-            setGlobalIndex(globalIndex + 1);
-            setIsSubmitDisabled(true);
-            setMessage(null);
-        } else {
-            setMessage("Niepoprawna odpowiedź");
-        }
+        checkAnswer(tasks[currentIndex].id, tasks[currentIndex].answer_type, answer);
+    }
+
+    const handleChooseImage = (id) => {
+        setSelectedImage(id);
+        setAnswer(id);
     }
 
     const fetchImageAnswers = async (TaskId) => {
@@ -59,6 +67,21 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
             fetchImageAnswers(currentTaskId);
         }
     }, [currentIndex, tasks]);
+
+    useEffect(() => {
+        if (answer_correct[0] != null){
+            if (answer_correct[0] === true) {
+                setIsNextDisabled(currentIndex === tasks.length -1);
+                setGlobalIndex(globalIndex + 1);
+                setIsSubmitDisabled(true);
+                setMessage(null);
+            } else {
+                const currentTaskId = tasks[currentIndex]?.id;
+                setMessage("Niepoprawna odpowiedź");
+                fetchImageAnswers(currentTaskId);
+            }
+        }
+    }, [answer_correct])
 
     return (
         <div className='task'>
@@ -82,14 +105,22 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
                     {tasks[currentIndex].answer_type === "text" && (
                         <textarea placeholder='Wprowadź odpowiedź' value={answer} onChange={(e) => setAnswer(e.target.value)}></textarea>
                     )}
+                    <div className='answer_images'>
                     {
                         tasks[currentIndex].answer_type === "image" && (
-                        AnswerImages.map((answerImage) => (
-                            <li key={answerImage.id}>
-                                <img src={answerImage.image} alt="obraz" />
-                            </li>
+                            AnswerImages.map((answerImage) => (
+                            <div
+                                key={answerImage.id}
+                                className={`image_container ${
+                                    selectedImage === answerImage.id ? "highlighted" : ""
+                                }`}
+                                onClick={() => handleChooseImage(answerImage.id)}
+                            >
+                                <img className="answer_image" src={answerImage.image} alt="obraz" />
+                            </div>
                         ))
                     )}
+                    </div>
                 </div>
             )}
             <div className="buttons">
