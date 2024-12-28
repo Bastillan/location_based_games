@@ -19,7 +19,7 @@ const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit })
             if (selectedScenario) {
                 try {
                     const response = await axios.get(
-                        `http://localhost:8000/api/tasks/?scenario=${selectedScenario.id}`
+                        `/api/tasks/?scenario=${selectedScenario.id}`
                     );
                     setTasksCount(response.data.length);
                 } catch (error) {
@@ -70,12 +70,12 @@ const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit })
         try {
             if (taskToEdit) {
                 // Edit task API call
-                await axios.put(`http://localhost:8000/api/tasks/${taskToEdit.id}/`, formData, {
+                await axios.put(`/api/tasks/${taskToEdit.id}/`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
             } else {
                 // Add new task API call
-                await axios.post('http://localhost:8000/api/tasks/', formData, {
+                await axios.post('/api/tasks/', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
             }

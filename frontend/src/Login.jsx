@@ -12,7 +12,7 @@ const Login = ({ setToken }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("http://localhost:8000/auth/jwt/create", credentials);
+            const response = await axios.post("/auth/jwt/create", credentials);
             const token = response.data.access;
             setToken(token);
             localStorage.setItem("authToken", token);

@@ -42,7 +42,7 @@ const MainView = () => {
 
     const fetchGames = async () => {
         try {
-            const response = await axios.get("http://localhost:8000/api/games/");
+            const response = await axios.get("/api/games/");
             setGames(response.data);
         } catch (error) {
             console.error("Error fetching games:", error);
@@ -51,7 +51,7 @@ const MainView = () => {
 
     const fetchTasks = async (scenarioId) => {
         try {
-            const response = await axios.get(`http://localhost:8000/api/tasks/?scenario=${scenarioId}`);
+            const response = await axios.get(`/api/tasks/?scenario=${scenarioId}`);
             setTasks(response.data);
         } catch (error) {
             console.error("Error fetching tasks:", error);
@@ -135,7 +135,7 @@ const MainView = () => {
                                     })}
                                 </div>
                             </div>
-                            
+
                             {isRegisterFormVisible && (
                                 <>
                                     <div className="overlay"></div>

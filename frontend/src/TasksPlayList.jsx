@@ -16,7 +16,7 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
 
     const checkAnswer = async (TaskId, AnswerType, Answer) => {
         try {
-            const response = await axios.get(`http://localhost:8000/api/tasks/check_answer/?answer_type=${AnswerType}&answer=${Answer}&task_id=${TaskId}`);
+            const response = await axios.get(`/api/tasks/check_answer/?answer_type=${AnswerType}&answer=${Answer}&task_id=${TaskId}`);
             setAnswerCorrect([response.data.is_correct, answer_correct[1]+1]);
         } catch (error) {
             console.error("Error checking answer: ", error)
@@ -61,7 +61,7 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
 
     const fetchImageAnswers = async (TaskId) => {
         try {
-            const response = await axios.get(`http://localhost:8000/api/answerimages/?task_id=${TaskId}`);
+            const response = await axios.get(`/api/answerimages/?task_id=${TaskId}`);
             setAnswerImages(response.data);
         } catch (error) {
             console.error("Error fetching tasks:", error);

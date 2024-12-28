@@ -18,7 +18,7 @@ const GameForm = ({ selectedScenario, refreshGames, closeForm  }) => {
         formData.append('end_date', end_date);
 
         try {
-            await axios.post('http://localhost:8000/api/games/', formData, {
+            await axios.post('/api/games/', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             refreshGames();

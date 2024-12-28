@@ -20,12 +20,12 @@ const Register = () => {
         setMessage(null);
         setErrors({});
         try {
-            const response = await axios.post("http://localhost:8000/auth/users/", formData);
+            const response = await axios.post("/auth/users/", formData);
             setMessage("Pomyślnie zarejestrowano");
         } catch (error) {
             if (error.response && error.response.data) {
                 setErrors(error.response.data);
-            } 
+            }
             else {
                 setMessage("Wystąpił błąd. Spróbuj ponownie.");
             }

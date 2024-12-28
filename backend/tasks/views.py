@@ -168,7 +168,7 @@ class TaskViewSet(viewsets.ModelViewSet):
             correct_location = self.queryset.filter(id=task_id)[0].correct_text_answer.split(',')
             answer_location = answer.split(',')
             distance = geodesic(correct_location, answer_location).meters
-            if distance < 500000:
+            if distance < 400:
                 result = True
         return Response({"is_correct": result})
 

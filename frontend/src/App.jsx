@@ -28,7 +28,7 @@ const App = () => {
     // Fetch scenarios from API
     const fetchScenarios = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/scenarios/');
+            const response = await axios.get('/api/scenarios/');
             setScenarios(response.data);
         } catch (error) {
             console.error("Error fetching scenarios:", error);
@@ -38,7 +38,7 @@ const App = () => {
     // Fetch tasks for a specific scenario
     const fetchTasks = async (scenarioId) => {
         try {
-            const response = await axios.get(`http://localhost:8000/api/tasks/?scenario=${scenarioId}`);
+            const response = await axios.get(`/api/tasks/?scenario=${scenarioId}`);
             setTasks(response.data);
         } catch (error) {
             console.error("Error fetching tasks:", error);
@@ -47,7 +47,7 @@ const App = () => {
 
     const fetchGames = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/games/');
+            const response = await axios.get('/api/games/');
             setGames(response.data);
         } catch (error) {
             console.error("Error fetching games:", error);
@@ -67,7 +67,7 @@ const App = () => {
 
     const handleDeleteScenario = async (scenarioId) => {
         try {
-            await axios.delete(`http://localhost:8000/api/scenarios/${scenarioId}/`);
+            await axios.delete(`/api/scenarios/${scenarioId}/`);
             fetchScenarios();
             if (selectedScenario?.id === scenarioId) {
                 setSelectedScenario(null);
@@ -81,7 +81,7 @@ const App = () => {
 
     const handleDeleteTask = async (taskId) => {
         try {
-            await axios.delete(`http://localhost:8000/api/tasks/${taskId}/`);
+            await axios.delete(`/api/tasks/${taskId}/`);
             fetchTasks(selectedScenario.id);
         } catch (error) {
             console.error("Error deleting task:", error);
@@ -90,7 +90,7 @@ const App = () => {
 
     const handleDeleteGame = async (gameId) => {
         try {
-            await axios.delete(`http://localhost:8000/api/games/${gameId}/`);
+            await axios.delete(`/api/games/${gameId}/`);
             fetchGames();
         } catch (error) {
             console.error("Error deleting game:", error);

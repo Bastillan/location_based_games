@@ -27,12 +27,12 @@ const ScenarioForm = ({ refreshScenarios, closeForm, scenarioToEdit  }) => {
         try {
             if (scenarioToEdit) {
                 // Edytujemy istniejący scenariusz
-                await axios.put(`http://localhost:8000/api/scenarios/${scenarioToEdit.id}/`, formData, {
+                await axios.put(`/api/scenarios/${scenarioToEdit.id}/`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
             } else {
                 // Tworzymy nowy scenariusz
-                await axios.post('http://localhost:8000/api/scenarios/', formData, {
+                await axios.post('/api/scenarios/', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
             }
