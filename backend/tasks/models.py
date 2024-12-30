@@ -38,3 +38,14 @@ class Game(models.Model):
 
 class User(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+class Team(models.Model):
+    user = models.ForeignKey(User, related_name="teams", on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, related_name="teams", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Team of user: {self.user} in game: {self.game.title}"
+
+class CompletedTask(models.Model):
+    team = models.ForeignKey(Team, related_name="completedTasks", on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, related_name="tasks", on_delete=models.CASCADE)

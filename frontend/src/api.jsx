@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: '/api',
+    baseURL: '/auth',
 });
 
 api.interceptors.request.use(
@@ -9,7 +9,7 @@ api.interceptors.request.use(
         const token = localStorage.getItem('authToken');
 
         if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
+            config.headers['Authorization'] = `JWT ${token}`;
         }
 
         return config;

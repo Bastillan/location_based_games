@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Task, Scenario, Game, User, AnswerImages
+from .models import Task, Scenario, Game, User, AnswerImages, Team
 from django.contrib.auth import get_user_model
 
 
@@ -41,3 +41,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email']
+
+class TeamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Team
+        fields = '__all__'

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import Task, Scenario, Game, User, AnswerImages
-from .serializers import TaskSerializer, ScenarioSerializer, GameSerializer, UserSerializer, AnswerImagesSerializer
+from .models import Task, Scenario, Game, User, AnswerImages, Team
+from .serializers import TaskSerializer, ScenarioSerializer, GameSerializer, UserSerializer, AnswerImagesSerializer, TeamSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -203,8 +203,33 @@ class GameViewSet(viewsets.ModelViewSet):
         serializer = GameSerializer(games, many=True)
         return Response(serializer.data)
 
-
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
+
+class TeamViewSet(viewsets.ModelViewSet):
+    queryset = Team.objects.all()
+    serializer_class = TeamSerializer
+
+    def get(self, request):
+        teams = Team.objects.all()
+        serializer = TeamSerializer(teams, many=True)
+        return Response(serializer.data)
+
+    def create(self, request):
+        pass
+        # serializer.save()
+        user_id = int(request.data.get('user'))
+        user = User.objects.filter(id=user_id)
+        return Response({'username': user})
+
+        # data = {
+        #     'game': game,
+        #     'user': user.id
+        # }
+        # serializer = TeamSerializer(data=data)
+        # if serializer.is_valid():
+        #     serializer.save()
+        #     return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

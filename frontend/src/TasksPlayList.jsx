@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import axios from 'axios';
+import api from './api'
 import './TasksPlayList.css';
 
 
-const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
+const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [globalIndex, setGlobalIndex] = useState(0);
     const [isNextDisabled, setIsNextDisabled] = useState(true);
@@ -13,6 +14,9 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
     const [AnswerImages, setAnswerImages] = useState([]);
     const [answer_correct, setAnswerCorrect] = useState([null, 0]);
     const [selectedImage, setSelectedImage] = useState(null);
+    const [userRegistered, setUserRegistered] = useState(false);
+    const [members, setMembers] = useState(null);
+    const [user, setUser] = useState(null);
 
     const checkAnswer = async (TaskId, AnswerType, Answer) => {
         try {
@@ -22,6 +26,45 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
             console.error("Error checking answer: ", error)
         }
     };
+
+    const handleRegisterToGame = async (e) => {
+        e.preventDefault();
+
+        try {
+            const formData = new FormData();
+
+            // Pobierz dane użytkownika
+            const response = await api.get('/users/me/');
+            const user_data = response.data; // Odczytaj dane z odpowiedzi
+
+            setUser(user_data); // Zapisz dane w stanie
+
+            formData.append('user', user.id);
+            formData.append('game', game.id);
+            formData.append('members', members)
+            await axios.post('/api/teams/', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+
+            console.log('User:', user_data); // Wypisz dane użytkownika po pobraniu
+
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    };
+
+
+    const fetchUserData = async (data) => {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(data);
+            }, 2000);
+        });
+    };
+
+    useEffect(() => {
+        setUser
+    }, [user])
 
     const handleNext = () => {
         if (currentIndex < tasks.length - 1) {
@@ -91,58 +134,76 @@ const TasksPlayList = ({ tasks, handleBackToGamesList }) => {
     }, [answer_correct])
 
     return (
-        <div className='task'>
-            <button className='mainBut powrot' onClick={handleBackToGamesList}>Wróć do listy gier</button>
-            {tasks.length > 0 && tasks[currentIndex] && (
-                <div>
-                    <h3>Zadanie {currentIndex + 1}</h3>
-                    <p>Opis zadania: {tasks[currentIndex].description}</p>
-                    {tasks[currentIndex].image && (
-                        <img src={tasks[currentIndex].image} alt="obraz" />
-                    )}
-                    {tasks[currentIndex].audio && (
-                        <audio controls>
-                            <source src={tasks[currentIndex].audio} type="audio/mpeg" />
-                            Your browser does not support the audio element.
-                        </audio>
-                    )}
-                    {message && (
-                        <p className='message'>{message}</p>
-                    )}
-                    {tasks[currentIndex].answer_type === "text" && (
-                        <textarea placeholder='Wprowadź odpowiedź' value={answer} onChange={(e) => setAnswer(e.target.value)}></textarea>
-                    )}
-                    <div className='answer_images'>
-                    {
-                        tasks[currentIndex].answer_type === "image" && (
-                            AnswerImages.map((answerImage) => (
-                            <div
-                                key={answerImage.id}
-                                className={`image_container ${
-                                    selectedImage === answerImage.id ? "highlighted" : ""
-                                }`}
-                                onClick={() => handleChooseImage(answerImage.id)}
-                            >
-                                <img className="answer_image" src={answerImage.image} alt="obraz" />
+        userRegistered ? (
+            <div className='task'>
+                <button className='mainBut powrot' onClick={handleBackToGamesList}>Wróć do listy gier</button>
+                {tasks.length > 0 && tasks[currentIndex] && (
+                    <div>
+                        <h3>Zadanie {currentIndex + 1}</h3>
+                        <p>Opis zadania: {tasks[currentIndex].description}</p>
+                        {tasks[currentIndex].image && (
+                            <img src={tasks[currentIndex].image} alt="obraz" />
+                        )}
+                        {tasks[currentIndex].audio && (
+                            <audio controls>
+                                <source src={tasks[currentIndex].audio} type="audio/mpeg" />
+                                Your browser does not support the audio element.
+                            </audio>
+                        )}
+                        {message && (
+                            <p className='message'>{message}</p>
+                        )}
+                        {tasks[currentIndex].answer_type === "text" && (
+                            <textarea placeholder='Wprowadź odpowiedź' value={answer} onChange={(e) => setAnswer(e.target.value)}></textarea>
+                        )}
+                        <div className='answer_images'>
+                        {
+                            tasks[currentIndex].answer_type === "image" && (
+                                AnswerImages.map((answerImage) => (
+                                <div
+                                    key={answerImage.id}
+                                    className={`image_container ${
+                                        selectedImage === answerImage.id ? "highlighted" : ""
+                                    }`}
+                                    onClick={() => handleChooseImage(answerImage.id)}
+                                >
+                                    <img className="answer_image" src={answerImage.image} alt="obraz" />
+                                </div>
+                            ))
+                        )}
+                        {tasks[currentIndex].answer_type === "location" && (
+                            <div className='location_container'>
+                                <label>Szerokość geograficzna: {answer.split(',')[0]}</label><br></br>
+                                <label>Długość geograficzna: {answer.split(',')[1]}</label>
+                                <button className="check_location" onClick={() => handleLocation()} >Sprawdź lokalizacje</button>
                             </div>
-                        ))
-                    )}
-                    {tasks[currentIndex].answer_type === "location" && (
-                        <div className='location_container'>
-                            <label>Szerokość geograficzna: {answer.split(',')[0]}</label><br></br>
-                            <label>Długość geograficzna: {answer.split(',')[1]}</label>
-                            <button className="check_location" onClick={() => handleLocation()} >Sprawdź lokalizacje</button>
+                        )}
                         </div>
-                    )}
                     </div>
+                )}
+                <div className="buttons">
+                    <button className="previous" onClick={() => handlePrevious()} disabled={currentIndex === 0}>Poprzednie</button>
+                    <button className="submit" onClick={() => handleSubmit()} disabled={isSubmitDisabled}>Zatwierdź odpowiedź</button>
+                    <button className="next" onClick={() => handleNext()} disabled={isNextDisabled}>Następne</button>
                 </div>
-            )}
-            <div className="buttons">
-                <button className="previous" onClick={() => handlePrevious()} disabled={currentIndex === 0}>Poprzednie</button>
-                <button className="submit" onClick={() => handleSubmit()} disabled={isSubmitDisabled}>Zatwierdź odpowiedź</button>
-                <button className="next" onClick={() => handleNext()} disabled={isNextDisabled}>Następne</button>
             </div>
-        </div>
+        ) : (
+            <div>
+                <button className='mainBut powrot' onClick={handleBackToGamesList}>Wróć do listy gier</button>
+                <form className="form-container" onSubmit={handleRegisterToGame}>
+                    <input
+                    type="members"
+                    placeholder={`Ilość członków zespołu`}
+                    value={members}
+                    onChange={(e) => setMembers(e.target.value)}
+                    min="1"
+                    max="20"
+                    className="form-input"
+                    />
+                    <button type="submit">Dołącz do gry</button>
+                </form>
+            </div>
+        )
     );
 };
 

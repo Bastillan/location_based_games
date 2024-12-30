@@ -77,7 +77,7 @@ const MainView = () => {
             {!isAdmin ? (
                 <div>
                     {selectedGame ? (
-                        <TasksPlayList tasks={tasks} handleBackToGamesList={handleBackToGamesList} />
+                        <TasksPlayList  game={selectedGame} tasks={tasks} handleBackToGamesList={handleBackToGamesList} />
                     ) : (
                     <div>
                         <nav className="logNav">

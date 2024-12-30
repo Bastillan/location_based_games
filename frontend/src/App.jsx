@@ -219,7 +219,7 @@ const App = () => {
                     {isGamesListVisible ? (
                         <div>
                             {selectedGame ? (
-                                <TasksPlayList tasks={tasks} handleBackToGamesList={handleBackToGamesList} />
+                                <TasksPlayList game={selectedGame} tasks={tasks} handleBackToGamesList={handleBackToGamesList} />
                             ) : (
                                 <div className="gamesView">
                                     <button className="mainBut powrot" onClick={handleBackToList}>Scenariusze</button>
