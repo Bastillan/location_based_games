@@ -21,7 +21,25 @@ const Register = () => {
         setErrors({});
         try {
             const response = await axios.post("/auth/users/", formData);
-            setMessage("Pomyślnie zarejestrowano");
+
+            const loginResponse = await axios.post("/auth/jwt/create/", {
+                username: formData.username,
+                password: formData.password,
+            });
+
+            const token = loginResponse.data.access;
+
+            await axios.post(
+                "/api/user-profile/",
+                {},
+                {
+                    headers: {
+                        Authorization: `JWT ${token}`,
+                    },
+                }
+            );
+
+            setMessage("Pomyślnie zarejestrowano i utworzono profil użytkownika.");
         } catch (error) {
             if (error.response && error.response.data) {
                 setErrors(error.response.data);
