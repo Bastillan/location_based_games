@@ -1,15 +1,16 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from .models import Task, Scenario, Game, User, AnswerImages, Team
-from .serializers import TaskSerializer, ScenarioSerializer, GameSerializer, UserSerializer, AnswerImagesSerializer, TeamSerializer
+from .serializers import TaskSerializer, ScenarioSerializer, GameSerializer, UserSerializer, AnswerImagesSerializer, TeamSerializer, UserProfileSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from django.db.models import F
 from rest_framework import serializers
 from datetime import datetime
 from geopy.distance import geodesic
+
 
 class ScenarioViewSet(viewsets.ModelViewSet):
     queryset = Scenario.objects.all()
@@ -31,7 +32,8 @@ class ScenarioViewSet(viewsets.ModelViewSet):
         if tasks:
             for task_data in tasks:
                 # Tworzymy zadanie powiązane z tym scenariuszem
-                task_data['scenario'] = scenario.id  # Dodajemy scenariusz do zadania
+                # Dodajemy scenariusz do zadania
+                task_data['scenario'] = scenario.id
                 Task.objects.create(**task_data)
 
         # Zwracamy odpowiedź
@@ -50,6 +52,7 @@ class ScenarioViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class AnswerImagesSet(viewsets.ModelViewSet):
     queryset = AnswerImages.objects.all()
     serializer_class = AnswerImagesSerializer
@@ -58,11 +61,14 @@ class AnswerImagesSet(viewsets.ModelViewSet):
         task_id = request.query_params.get('task_id', None)
         if task_id:
             self.queryset = self.queryset.filter(task=task_id)
-        correct_images = self.queryset.filter(is_correct=True).order_by('?')[:1]
-        incorrect_images = self.queryset.filter(is_correct=False).order_by('?')[:3]
+        correct_images = self.queryset.filter(
+            is_correct=True).order_by('?')[:1]
+        incorrect_images = self.queryset.filter(
+            is_correct=False).order_by('?')[:3]
         self.queryset = correct_images | incorrect_images
         self.queryset = self.queryset.order_by('?')
         return super().list(request, *args, **kwargs)
+
 
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all().order_by('number')
@@ -78,7 +84,8 @@ class TaskViewSet(viewsets.ModelViewSet):
         correct_images = self.request.FILES.getlist('correctImages')
         incorrect_images = self.request.FILES.getlist('incorrectImages')
         if not scenario_id:
-            raise serializers.ValidationError({"scenario": "Scenario ID is required."})
+            raise serializers.ValidationError(
+                {"scenario": "Scenario ID is required."})
 
         number = self.request.data.get('number')
         if number:
@@ -86,19 +93,22 @@ class TaskViewSet(viewsets.ModelViewSet):
                 number = int(number)
                 # Update numbers within the specific scenario
                 if Task.objects.filter(number=number, scenario_id=scenario_id).exists():
-                    Task.objects.filter(number__gte=number, scenario_id=scenario_id).update(number=F('number') + 1)
+                    Task.objects.filter(number__gte=number, scenario_id=scenario_id).update(
+                        number=F('number') + 1)
             except ValueError:
-                raise serializers.ValidationError({"number": "Number must be an integer."})
+                raise serializers.ValidationError(
+                    {"number": "Number must be an integer."})
         else:
             # Default to the next available number within the scenario
             number = Task.objects.filter(scenario_id=scenario_id).count() + 1
 
         task = serializer.save(number=number, scenario_id=scenario_id)
         for correct_image in correct_images:
-            AnswerImages.objects.create(task=task, is_correct=True, image=correct_image)
+            AnswerImages.objects.create(
+                task=task, is_correct=True, image=correct_image)
         for incorrect_image in incorrect_images:
-            AnswerImages.objects.create(task=task, is_correct=False, image=incorrect_image)
-
+            AnswerImages.objects.create(
+                task=task, is_correct=False, image=incorrect_image)
 
     def perform_update(self, serializer):
         instance = self.get_object()
@@ -124,18 +134,20 @@ class TaskViewSet(viewsets.ModelViewSet):
         if len(correct_images) > 0:
             AnswerImages.objects.filter(task=task, is_correct=True).delete()
             for correct_image in correct_images:
-                AnswerImages.objects.create(task=task, is_correct=True, image=correct_image)
+                AnswerImages.objects.create(
+                    task=task, is_correct=True, image=correct_image)
 
         if len(incorrect_images) > 0:
             AnswerImages.objects.filter(task=task, is_correct=False).delete()
             for incorrect_image in incorrect_images:
-                AnswerImages.objects.create(task=task, is_correct=False, image=incorrect_image)
-
+                AnswerImages.objects.create(
+                    task=task, is_correct=False, image=incorrect_image)
 
     @action(detail=True, methods=['get'])
     def shift_task_numbers(self, request, pk=None):
         task = self.get_object()
-        Task.objects.filter(number__gt=task.number).update(number=F('number') + 1)
+        Task.objects.filter(number__gt=task.number).update(
+            number=F('number') + 1)
         task.number = task.number
         task.save()
         return Response({"status": "updated"})
@@ -159,18 +171,21 @@ class TaskViewSet(viewsets.ModelViewSet):
         task_id = request.query_params.get("task_id")
         result = False
         if answer_type == "text":
-            correct_answer = self.queryset.filter(id=task_id)[0].correct_text_answer
+            correct_answer = self.queryset.filter(
+                id=task_id)[0].correct_text_answer
             if answer == correct_answer:
                 result = True
         elif answer_type == "image":
             result = AnswerImages.objects.filter(id=answer)[0].is_correct
         elif answer_type == "location":
-            correct_location = self.queryset.filter(id=task_id)[0].correct_text_answer.split(',')
+            correct_location = self.queryset.filter(
+                id=task_id)[0].correct_text_answer.split(',')
             answer_location = answer.split(',')
             distance = geodesic(correct_location, answer_location).meters
             if distance < 400:
                 result = True
         return Response({"is_correct": result})
+
 
 class GameViewSet(viewsets.ModelViewSet):
     queryset = Game.objects.all()
@@ -180,16 +195,17 @@ class GameViewSet(viewsets.ModelViewSet):
         title = request.data.get('title')
         beginning_date = request.data.get('beginning_date').split(" (")[0]
         end_date = request.data.get('end_date').split(" (")[0]
-        beginning_date = datetime.strptime(beginning_date,  "%a %b %d %Y %H:%M:%S GMT%z")
+        beginning_date = datetime.strptime(
+            beginning_date,  "%a %b %d %Y %H:%M:%S GMT%z")
         end_date = datetime.strptime(end_date,  "%a %b %d %Y %H:%M:%S GMT%z")
         beginning_date = beginning_date.isoformat()
         end_date = end_date.isoformat()
         scenario_id = request.data.get('scenario_id')
         data = {
-        'title': title,
-        'beginning_date': beginning_date,
-        'end_date': end_date,
-        'scenario_id': scenario_id
+            'title': title,
+            'beginning_date': beginning_date,
+            'end_date': end_date,
+            'scenario_id': scenario_id
         }
 
         serializer = GameSerializer(data=data)
@@ -203,10 +219,12 @@ class GameViewSet(viewsets.ModelViewSet):
         serializer = GameSerializer(games, many=True)
         return Response(serializer.data)
 
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
+
 
 class TeamViewSet(viewsets.ModelViewSet):
     queryset = Team.objects.all()
@@ -233,3 +251,19 @@ class TeamViewSet(viewsets.ModelViewSet):
         #     serializer.save()
         #     return Response(serializer.data, status=status.HTTP_201_CREATED)
         # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserProfileViewSet(viewsets.ViewSet):
+
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request):
+        auth_user = request.user
+
+        if User.objects.filter(user=auth_user).exists():
+            return Response({'error': 'User profile already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user_profile = User.objects.create(user=auth_user)
+
+        serializer = UserProfileSerializer(user_profile)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
