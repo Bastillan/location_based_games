@@ -9,7 +9,7 @@ import './mainView.css';
 const MainView = () => {
     const [isRegisterFormVisible, setIsRegisterFormVisible] = useState(false);
     const [isLoginFormVisible, setIsLoginFormVisible] = useState(false);
-    const [token, setToken] = useState(localStorage.getItem('authToken') || null);
+    const [token, setToken] = useState(localStorage.getItem('access') || null);
     const [isAdmin, setIsAdmin] = useState(false);
     const [games, setGames] = useState([]);
     const [selectedGame, setSelectedGame] = useState(null);
@@ -28,7 +28,8 @@ const MainView = () => {
 
     const handleLogout = () => {
         setToken(null);
-        localStorage.removeItem('authToken');
+        localStorage.removeItem('access');
+        localStorage.removeItem('refresh');
     };
 
     const handleAdminClick = () => {

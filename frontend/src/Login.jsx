@@ -13,9 +13,10 @@ const Login = ({ setToken }) => {
         e.preventDefault();
         try {
             const response = await axios.post("/auth/jwt/create", credentials);
-            const token = response.data.access;
-            setToken(token);
-            localStorage.setItem("authToken", token);
+            const {access, refresh} = response.data;
+            setToken(access);
+            localStorage.setItem("access", access);
+            localStorage.setItem("refresh", refresh);
             setMessage("Pomyślnie zalogowano");
         } catch (error) {
             setMessage("Nieprawidłowa nazwa uzytkownika lub hasło. Spróbuj ponownie.");
