@@ -39,7 +39,7 @@ const Register = () => {
                 }
             );
 
-            setMessage("Pomyślnie zarejestrowano i utworzono profil użytkownika.");
+            setMessage("Pomyślnie zarejestrowano.");
         } catch (error) {
             if (error.response && error.response.data) {
                 setErrors(error.response.data);
