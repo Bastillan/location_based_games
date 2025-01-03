@@ -236,21 +236,24 @@ class TeamViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def create(self, request):
-        pass
-        # serializer.save()
-        user_id = int(request.data.get('user'))
-        user = User.objects.filter(id=user_id)
-        return Response({'username': user})
+        user = request.user
+        user_profile = User.objects.get(user=user)
 
-        # data = {
-        #     'game': game,
-        #     'user': user.id
-        # }
-        # serializer = TeamSerializer(data=data)
-        # if serializer.is_valid():
-        #     serializer.save()
-        #     return Response(serializer.data, status=status.HTTP_201_CREATED)
-        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        game_id = request.data.get("game")
+        game = Game.objects.get(id=game_id)
+
+        existing_team = Team.objects.filter(
+            user=user_profile, game=game).first()
+        if existing_team:
+            return Response(
+                {"error": "You already have a team registered for this game."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        team = Team.objects.create(user=user_profile, game=game)
+        serializer = self.get_serializer(team)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class UserProfileViewSet(viewsets.ViewSet):

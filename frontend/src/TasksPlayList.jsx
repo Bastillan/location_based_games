@@ -17,6 +17,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     const [userRegistered, setUserRegistered] = useState(false);
     const [members, setMembers] = useState(null);
     const [user, setUser] = useState(null);
+    const [registerMessage, setRegisterMessage] = useState(null);
 
     const checkAnswer = async (TaskId, AnswerType, Answer) => {
         try {
@@ -29,30 +30,26 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
 
     const handleRegisterToGame = async (e) => {
         e.preventDefault();
+        setRegisterMessage(null);
 
         try {
-            const formData = new FormData();
+            const payload = {
+                game: game.id
+            };
 
-            // Pobierz dane użytkownika
-            const response = await api.get('/users/me/');
-            const user_data = response.data; // Odczytaj dane z odpowiedzi
-
-            setUser(user_data); // Zapisz dane w stanie
-
-            formData.append('user', user.id);
-            formData.append('game', game.id);
-            formData.append('members', members)
-            await axios.post('/api/teams/', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
+            await axios.post('/api/teams/', payload, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `JWT ${localStorage.getItem('access')}`,
+                },
             });
 
-            console.log('User:', user_data); // Wypisz dane użytkownika po pobraniu
-
+            setRegisterMessage('Pomyślnie zarejestrowano do gry');
+            setUserRegistered(true);
         } catch (error) {
-            console.error('Error fetching user data:', error);
+            setRegisterMessage('Wystąpił błąd');
         }
     };
-
 
     const fetchUserData = async (data) => {
         return new Promise((resolve) => {
@@ -202,6 +199,9 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                     />
                     <button type="submit">Dołącz do gry</button>
                 </form>
+                {/* {registerMessage && (
+                    <p className='message'>{registerMessage}</p>
+                )} */}
             </div>
         )
     );
