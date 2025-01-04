@@ -42,7 +42,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
             setRegisterMessage('Pomyślnie zarejestrowano do gry');
             setUserRegistered(true);
         } catch (error) {
-            setRegisterMessage('Wystąpił błąd');
+            setRegisterMessage('Wystąpił błąd: ' + error.message);
         }
     };
 
