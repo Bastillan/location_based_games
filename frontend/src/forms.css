@@ -47,6 +47,11 @@ input[type="file"] {
     display: block;
 }
 
+.emailStatus {
+    font-size: 16px;
+    font-weight: bold;
+}
+
 .form-container button {
     margin-left:5px;
     margin-right:5px;

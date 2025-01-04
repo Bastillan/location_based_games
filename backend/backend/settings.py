@@ -59,12 +59,12 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",            # React running on localhost
-    "http://192.168.68.119:5173",      # React app on your local network IP
+    os.environ.get('VITE_API_URL')[:-5],      # React app on your local network IP
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",            # React running on localhost
-    "http://192.168.68.119:5173",      # React app on your local network IP
+    os.environ.get('VITE_API_URL')[:-5],      # React app on your local network IP
 ]
 
 ROOT_URLCONF = 'backend.urls'

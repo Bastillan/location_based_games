@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 
-const MailForm = ({ gameId, onClose, onSend }) => {
+const MailForm = ({ gameId, emailStatus, onClose, onSend }) => {
     const [subject, setSubject] = useState("Game Update");
     const [message, setMessage] = useState("Hello, there is a new update in the game. Please check it out.");
+    const status = useState(emailStatus);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -34,6 +35,7 @@ const MailForm = ({ gameId, onClose, onSend }) => {
                         />
                     </div>
                     <button className="mainBut" type="submit">Wyślij</button>
+                    {status && <div className="emailStatus">{emailStatus}</div>}
                     <button
                         className="mainBut"
                         type="button"

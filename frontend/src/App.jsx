@@ -26,6 +26,7 @@ const App = () => {
     const [scenarioToEdit, setScenarioToEdit] = useState(null);
     const [scenarioForGame, setScenarioForGame] = useState(null);
     const [selectedGameIdForEmail, setSelectedGameIdForEmail] = useState(null);
+    const [emailStatus, setEmailStatus] = useState('');
 
 
     // Fetch scenarios from API
@@ -186,11 +187,15 @@ const App = () => {
             const response = await axios.post('/api/send-email/', emailData);
             if (response.status === 200) {
                 setEmailStatus('Emails sent successfully!');
-                setSelectedGameIdForEmail(null); // Resetuje ID gry
             }
         } catch (error) {
             setEmailStatus('Failed to send emails: ' + error.message);
         }
+    };
+
+    const closeEmailForm = async () => {
+        setSelectedGameIdForEmail(null);
+        setEmailStatus('');
     };
     
 
@@ -322,7 +327,8 @@ const App = () => {
             {selectedGameIdForEmail && (
                 <MailForm
                     gameId={selectedGameIdForEmail}
-                    onClose={() => setSelectedGameIdForEmail(null)}
+                    emailStatus={emailStatus}
+                    onClose={closeEmailForm}
                     onSend={handleSendEmail}
                 />
             )}
