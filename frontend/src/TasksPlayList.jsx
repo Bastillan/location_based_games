@@ -125,10 +125,30 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
         }
     }, [answer_correct])
 
+    const completionPercentage = Math.round(((currentIndex) / tasks.length) * 100);
+
     return (
         userRegistered ? (
             <div className='task'>
                 <button className='mainBut powrot' onClick={handleBackToGamesList}>Wróć do listy gier</button>
+                <div className="circular-progress-container">
+                    <svg className="circular-progress" viewBox="0 0 36 36">
+                        <path
+                            className="circle-bg"
+                            d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                        <path
+                            className="circle"
+                            strokeDasharray={`${completionPercentage}, 100`}
+                            d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                        <text x="18" y="20.35" className="percentage">{completionPercentage}%</text>
+                    </svg>
+                </div>
                 {tasks.length > 0 && tasks[currentIndex] && (
                     <div>
                         <h3>Zadanie {currentIndex + 1}</h3>

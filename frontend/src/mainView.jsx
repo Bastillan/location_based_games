@@ -102,7 +102,12 @@ const MainView = () => {
                             <div className="gamesView">
                                 <h2>Lista Gier</h2>
                                 <div className="gamesList">
-                                    {games.map((game) => {
+                                    {games.filter((game) => {
+                                        const currentDate = new Date();
+                                        const gameStartDate = new Date(game.beginning_date);
+                                        const gameEndDate = new Date(game.end_date);
+                                        return currentDate >= gameStartDate && currentDate <= gameEndDate;
+                                    }).map((game) => {
                                         const TempBeginningDate = new Date(game.beginning_date);
                                         const TempEndDate = new Date(game.end_date);
                                         const formattedBeginningDate = TempBeginningDate.toLocaleDateString('pl-PL', {
