@@ -37,12 +37,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                 game: game.id
             };
 
-            await axios.post('/api/teams/', payload, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `JWT ${localStorage.getItem('access')}`,
-                },
-            });
+            await api.post('/api/teams/', payload);
 
             setRegisterMessage('Pomyślnie zarejestrowano do gry');
             setUserRegistered(true);
@@ -199,9 +194,9 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                     />
                     <button type="submit">Dołącz do gry</button>
                 </form>
-                {/* {registerMessage && (
+                {registerMessage && (
                     <p className='message'>{registerMessage}</p>
-                )} */}
+                )}
             </div>
         )
     );
