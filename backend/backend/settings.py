@@ -55,6 +55,17 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",            # React running on localhost
+    "http://192.168.68.119:5173",      # React app on your local network IP
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",            # React running on localhost
+    "http://192.168.68.119:5173",      # React app on your local network IP
+]
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -162,3 +173,17 @@ LOGGING = {
     },
 }
 """
+
+
+
+# Email
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'tasks.backend.email_backend.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'pzsp9502@gmail.com'
+EMAIL_HOST_PASSWORD = 'ljze bibu qrzn fnmc'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+SSL_CERTIFICATE_VERIFY = False

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from .models import Task, Scenario, Game, User, AnswerImages, Team
-from .serializers import TaskSerializer, ScenarioSerializer, GameSerializer, UserSerializer, AnswerImagesSerializer, TeamSerializer, UserProfileSerializer
+from .serializers import TaskSerializer, ScenarioSerializer, GameSerializer, UserSerializer, AnswerImagesSerializer, TeamSerializer, UserProfileSerializer, EmailSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -10,7 +10,13 @@ from django.db.models import F
 from rest_framework import serializers
 from datetime import datetime
 from geopy.distance import geodesic
-
+from django.core.mail import send_mail
+from django.conf import settings
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 
 class ScenarioViewSet(viewsets.ModelViewSet):
     queryset = Scenario.objects.all()
@@ -214,10 +220,11 @@ class GameViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request):
-        games = Game.objects.all()
-        serializer = GameSerializer(games, many=True)
-        return Response(serializer.data)
+    # def get(self, request):
+    #     games = Game.objects.all()
+    #     serializer = GameSerializer(games, many=True)
+    #     return Response(serializer.data)
+    
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -270,3 +277,33 @@ class UserProfileViewSet(viewsets.ViewSet):
 
         serializer = UserProfileSerializer(user_profile)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@csrf_exempt
+@api_view(['POST'])
+def send_email(request):
+    if request.method == 'POST':
+        serializer = EmailSerializer(data=request.data)
+        if serializer.is_valid():
+            subject = serializer.validated_data['subject']
+            message = serializer.validated_data['message']
+            game_id = serializer.validated_data['game_id']
+
+            try:
+                # Get the game and its users
+                game = Game.objects.get(id=game_id)
+                teams = game.teams.all()
+                recipients = [team.user.user.email for team in teams]
+
+                # Log debug information
+                print(f"Sending email to: {recipients}")
+                print(f"Subject: {subject}")
+                print(f"Message: {message}")
+
+                send_mail(subject, message, settings.EMAIL_HOST_USER, recipients)
+                return Response({"message": "Emails sent successfully!"}, status=status.HTTP_200_OK)
+            except Exception as e:
+                print(f"Error: {str(e)}")  # Log the error
+                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

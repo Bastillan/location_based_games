@@ -7,6 +7,7 @@ import ScenarioForm from './ScenarioForm';
 import ScenarioList from './ScenarioList';
 import GameForm from './GameForm';
 import TasksPlayList from './TasksPlayList';
+import MailForm from './MailForm';
 import Register from './Register';
 import Login from './Login';
 import api from './api'; // if api key should be attached to the api request replace axios with api
@@ -24,6 +25,8 @@ const App = () => {
     const [selectedTask, setSelectedTask] = useState(null);
     const [scenarioToEdit, setScenarioToEdit] = useState(null);
     const [scenarioForGame, setScenarioForGame] = useState(null);
+    const [selectedGameIdForEmail, setSelectedGameIdForEmail] = useState(null);
+
 
     // Fetch scenarios from API
     const fetchScenarios = async () => {
@@ -167,6 +170,30 @@ const App = () => {
     const handleBackToGamesList = () => {
         setSelectedGame(null);
     };
+
+    const openMailForm = (gameId) => {
+        setSelectedGameIdForEmail(gameId);
+    };
+    
+    const handleSendEmail = async (gameId, subject, message) => {
+        const emailData = {
+            subject,
+            message,
+            game_id: gameId,
+        };
+    
+        try {
+            const response = await axios.post('/api/send-email/', emailData);
+            if (response.status === 200) {
+                setEmailStatus('Emails sent successfully!');
+                setSelectedGameIdForEmail(null); // Resetuje ID gry
+            }
+        } catch (error) {
+            setEmailStatus('Failed to send emails: ' + error.message);
+        }
+    };
+    
+
     return (
         <div>
             {selectedScenario ? (
@@ -206,7 +233,6 @@ const App = () => {
                                 <TaskForm selectedScenario={selectedScenario} refreshScenarios={refreshScenariosAndTasks} closeForm={closeTaskForm}  taskToEdit={selectedTask}/>
                                 <button className="mainBut" onClick={closeTaskForm}>Zamknij</button>
                             </div>
-
                         </>
                     ) : (
                         <div>
@@ -253,6 +279,9 @@ const App = () => {
                                                     )}
                                                     <div className="butons">
                                                         <button className="mainBut select" onClick={() => onGameSelect(game)}>Zagraj</button>
+                                                        <button className="mainBut" onClick={() => openMailForm(game.id)}>
+                                                            Wyślij e-maile
+                                                        </button>
                                                     </div>
                                                     <button className="mainBut" onClick={() => handleDeleteGame(game.id)}>Usuń</button>
                                                 </div>
@@ -289,6 +318,13 @@ const App = () => {
                         </div>
                     )}
                 </div>
+            )}
+            {selectedGameIdForEmail && (
+                <MailForm
+                    gameId={selectedGameIdForEmail}
+                    onClose={() => setSelectedGameIdForEmail(null)}
+                    onSend={handleSendEmail}
+                />
             )}
         </div>
     );

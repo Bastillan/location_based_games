@@ -59,3 +59,10 @@ class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
         fields = '__all__'
+
+
+
+class EmailSerializer(serializers.Serializer):
+    subject = serializers.CharField(max_length=100)
+    message = serializers.CharField()
+    game_id = serializers.IntegerField()
