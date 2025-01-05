@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import Task, Scenario, Game, User, AnswerImages, Team
-from .serializers import TaskSerializer, ScenarioSerializer, GameSerializer, UserSerializer, AnswerImagesSerializer, TeamSerializer, UserProfileSerializer, EmailSerializer
+from .models import Task, Scenario, Game, User, AnswerImages, Team, CompletedTask
+from .serializers import (TaskSerializer, ScenarioSerializer, GameSerializer, UserSerializer, AnswerImagesSerializer, 
+                          TeamSerializer, UserProfileSerializer, EmailSerializer, CompletedTaskSerializer)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -12,11 +13,7 @@ from datetime import datetime
 from geopy.distance import geodesic
 from django.core.mail import send_mail
 from django.conf import settings
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
 
 class ScenarioViewSet(viewsets.ModelViewSet):
     queryset = Scenario.objects.all()
@@ -289,12 +286,10 @@ def send_email(request):
             game_id = serializer.validated_data['game_id']
 
             try:
-                # Get the game and its users
                 game = Game.objects.get(id=game_id)
                 teams = game.teams.all()
                 recipients = [team.user.user.email for team in teams]
 
-                # Log debug information
                 print(f"Sending email to: {recipients}")
                 print(f"Subject: {subject}")
                 print(f"Message: {message}")
@@ -302,7 +297,31 @@ def send_email(request):
                 send_mail(subject, message, settings.EMAIL_HOST_USER, recipients)
                 return Response({"message": "Emails sent successfully!"}, status=status.HTTP_200_OK)
             except Exception as e:
-                print(f"Error: {str(e)}")  # Log the error
+                print(f"Error: {str(e)}")
                 return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class TaskCompletionView(viewsets.ModelViewSet):
+    queryset = CompletedTask.objects.all()
+    serializer_class = CompletedTaskSerializer
+
+    def create(self, request):
+        team_id = request.data.get("team")
+        team = Team.objects.get(id=team_id)
+
+        task_id = request.data.get("task")
+        task = Task.objects.get(id=task_id)
+
+        cTask = CompletedTask.objects.create(team=team, task=task)
+        serializer = self.get_serializer(cTask)
+        print("1")
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    def get_queryset(self):
+        task_id = self.request.query_params.get('task', None)
+        if task_id is not None:
+            return CompletedTask.objects.filter(task_id=task_id)
+        return CompletedTask.objects.all()

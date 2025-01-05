@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Task, Scenario, Game, User, AnswerImages, Team
+from .models import Task, Scenario, Game, User, AnswerImages, Team, CompletedTask
 from django.contrib.auth import get_user_model
 
 
@@ -66,3 +66,8 @@ class EmailSerializer(serializers.Serializer):
     subject = serializers.CharField(max_length=100)
     message = serializers.CharField()
     game_id = serializers.IntegerField()
+
+class CompletedTaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CompletedTask
+        fields = '__all__'

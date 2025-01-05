@@ -48,4 +48,4 @@ class Team(models.Model):
 
 class CompletedTask(models.Model):
     team = models.ForeignKey(Team, related_name="completedTasks", on_delete=models.CASCADE)
-    task = models.ForeignKey(Task, related_name="tasks", on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, related_name="completedTasks", on_delete=models.CASCADE)
