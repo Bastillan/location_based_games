@@ -18,6 +18,8 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     const [members, setMembers] = useState(null);
     const [user, setUser] = useState(null);
     const [registerMessage, setRegisterMessage] = useState(null);
+    const [completionCounts, setCompletionCounts] = useState({});
+    const [teamId, setTeamId] = useState(null);
 
     const checkAnswer = async (TaskId, AnswerType, Answer) => {
         try {
@@ -37,12 +39,17 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                 game: game.id
             };
 
-            await api.post('/api/teams/', payload);
+            const response = await api.post('/api/teams/', payload);
 
+            setTeamId(response.data.id);
             setRegisterMessage('Pomyślnie zarejestrowano do gry');
             setUserRegistered(true);
         } catch (error) {
-            setRegisterMessage('Wystąpił błąd: ' + error.message);
+            if (error.response && error.response.status === 400) {
+                setRegisterMessage('Użytkownik już dołączył do tej gry');
+            } else {
+                setRegisterMessage('Wystąpił błąd: ' + error.message);
+            }
         }
     };
 
@@ -103,10 +110,34 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
         }
     };
 
+    const fetchCompletionCount = async (taskId) => {
+        try {
+            const response = await axios.get(`/api/task-completion/?task=${taskId}`);
+            const data = response.data;
+            setCompletionCounts((prev) => ({
+                ...prev,
+                [taskId]: data.length,
+            }));
+        } catch (error) {
+            console.error("Error fetching completion count: ", error);
+        }
+    };
+
+    const createTaskCompletion = async (taskId) => {
+        try {
+            const payload = {task: taskId, team: teamId};
+            await axios.post('/api/task-completion/', payload);
+            fetchCompletionCount(taskId);
+        } catch (error) {
+            console.error("Error creating task completion: ", error);
+        }
+    };
+
     useEffect(() => {
         const currentTaskId = tasks[currentIndex]?.id;
         if (currentTaskId) {
             fetchImageAnswers(currentTaskId);
+            fetchCompletionCount(currentTaskId); 
         }
     }, [currentIndex, tasks]);
 
@@ -116,7 +147,9 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                 setIsNextDisabled(currentIndex >= tasks.length);
                 setGlobalIndex(globalIndex + 1);
                 setIsSubmitDisabled(true);
-                setMessage(null);
+                // setMessage(null);
+                createTaskCompletion(tasks[currentIndex].id);
+                setMessage('');
             } else {
                 const currentTaskId = tasks[currentIndex]?.id;
                 setMessage("Niepoprawna odpowiedź");
@@ -169,6 +202,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                                 Your browser does not support the audio element.
                             </audio>
                         )}
+                        <p>Liczba zespołów, które ukończyły to zadanie: {completionCounts[tasks[currentIndex]?.id] || 0}</p>
                         {message && (
                             <p className='message'>{message}</p>
                         )}
