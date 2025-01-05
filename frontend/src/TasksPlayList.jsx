@@ -59,7 +59,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     }, [user])
 
     const handleNext = () => {
-        if (currentIndex < tasks.length - 1) {
+        if (currentIndex < tasks.length) {
             setIsNextDisabled(currentIndex === globalIndex - 1);
             setIsSubmitDisabled(currentIndex !== globalIndex - 1);
             setCurrentIndex(currentIndex + 1);
@@ -113,7 +113,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     useEffect(() => {
         if (answer_correct[0] != null){
             if (answer_correct[0] === true) {
-                setIsNextDisabled(currentIndex === tasks.length -1);
+                setIsNextDisabled(currentIndex >= tasks.length);
                 setGlobalIndex(globalIndex + 1);
                 setIsSubmitDisabled(true);
                 setMessage(null);
@@ -125,7 +125,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
         }
     }, [answer_correct])
 
-    const completionPercentage = Math.round(((currentIndex) / tasks.length) * 100);
+    const completionPercentage = Math.round(((globalIndex) / tasks.length) * 100);
 
     return (
         userRegistered ? (
@@ -149,6 +149,13 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                         <text x="18" y="20.35" className="percentage">{completionPercentage}%</text>
                     </svg>
                 </div>
+                {currentIndex >= tasks.length ? (
+                    <div className="congratulations">
+                        <h2>Gratulacje!</h2>
+                        <p>Udało Ci się przejść całą grę. Świetna robota!</p>
+                    </div>
+                ) : (
+                <div>
                 {tasks.length > 0 && tasks[currentIndex] && (
                     <div>
                         <h3>Zadanie {currentIndex + 1}</h3>
@@ -193,10 +200,15 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                         </div>
                     </div>
                 )}
+                </div>)}
                 <div className="buttons">
                     <button className="previous" onClick={() => handlePrevious()} disabled={currentIndex === 0}>Poprzednie</button>
-                    <button className="submit" onClick={() => handleSubmit()} disabled={isSubmitDisabled}>Zatwierdź odpowiedź</button>
-                    <button className="next" onClick={() => handleNext()} disabled={isNextDisabled}>Następne</button>
+                    {(currentIndex < tasks.length) && (
+                        <>
+                            <button className="submit" onClick={() => handleSubmit()} disabled={isSubmitDisabled}>Zatwierdź odpowiedź</button>
+                            <button className="next" onClick={() => handleNext()} disabled={isNextDisabled}>Następne</button>
+                        </>
+                    )}
                 </div>
             </div>
         ) : (

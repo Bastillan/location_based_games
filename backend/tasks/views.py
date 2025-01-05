@@ -279,7 +279,6 @@ class UserProfileViewSet(viewsets.ViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@csrf_exempt
 @api_view(['POST'])
 def send_email(request):
     if request.method == 'POST':
