@@ -2,7 +2,7 @@ import React, { use, useEffect, useState } from 'react';
 import axios from 'axios';
 import api from './api'
 import './TasksPlayList.css';
-
+import userIcon from './assets/user-icon.svg';
 
 const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -46,8 +46,10 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
             setUserRegistered(true);
         } catch (error) {
             if (error.response && error.response.status === 400) {
-                setRegisterMessage('Użytkownik już dołączył do tej gry');
-            } else {
+                setRegisterMessage('Użytkownik już dołączył do tej gry.');
+            } else if (error.response && error.response.status === 500) {
+                setRegisterMessage('Żeby dołączyć do gry trzeba się zalogować.');
+            }else {
                 setRegisterMessage('Wystąpił błąd: ' + error.message);
             }
         }
@@ -192,7 +194,15 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                 {tasks.length > 0 && tasks[currentIndex] && (
                     <div>
                         <h3>Zadanie {currentIndex + 1}</h3>
-                        <p>Opis zadania: {tasks[currentIndex].description}</p>
+                        <div className="teamsNum">
+                        {completionCounts[tasks[currentIndex]?.id] || 0}
+                        <img
+                            src={userIcon}
+                            alt="Ikona ludzika"
+                            style={{ width: '30px', height: '30px', marginLeft: '2px', marginBottom: "-5px"}}
+                        />
+                        </div>
+                        <p style={{marginTop: "3px"}}>Opis zadania: {tasks[currentIndex].description}</p>
                         {tasks[currentIndex].image && (
                             <img src={tasks[currentIndex].image} alt="obraz" />
                         )}
@@ -202,7 +212,6 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                                 Your browser does not support the audio element.
                             </audio>
                         )}
-                        <p>Liczba zespołów, które ukończyły to zadanie: {completionCounts[tasks[currentIndex]?.id] || 0}</p>
                         {message && (
                             <p className='message'>{message}</p>
                         )}

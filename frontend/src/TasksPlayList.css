@@ -139,3 +139,10 @@ p.message {
     fill: #1a1919;
     text-anchor: middle;
 }
+
+
+.teamsNum {
+    position: absolute;
+    right:3px;
+    top: 68px;
+}
