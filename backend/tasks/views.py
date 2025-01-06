@@ -14,6 +14,7 @@ from geopy.distance import geodesic
 from django.core.mail import send_mail
 from django.conf import settings
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 
 class ScenarioViewSet(viewsets.ModelViewSet):
     queryset = Scenario.objects.all()
@@ -244,7 +245,7 @@ class TeamViewSet(viewsets.ModelViewSet):
         user_profile = User.objects.get(user=user)
 
         game_id = request.data.get("game")
-        game = Game.objects.get(id=game_id)
+        game = get_object_or_404(Game, id=game_id)
 
         existing_team = Team.objects.filter(
             user=user_profile, game=game).first()
@@ -284,9 +285,8 @@ def send_email(request):
             subject = serializer.validated_data['subject']
             message = serializer.validated_data['message']
             game_id = serializer.validated_data['game_id']
-
+            game = get_object_or_404(Game, id=game_id)
             try:
-                game = Game.objects.get(id=game_id)
                 teams = game.teams.all()
                 recipients = [team.user.user.email for team in teams]
 
@@ -309,10 +309,10 @@ class TaskCompletionView(viewsets.ModelViewSet):
 
     def create(self, request):
         team_id = request.data.get("team")
-        team = Team.objects.get(id=team_id)
+        team = get_object_or_404(Team, id=team_id)
 
         task_id = request.data.get("task")
-        task = Task.objects.get(id=task_id)
+        task = get_object_or_404(Task, id=task_id)
 
         cTask = CompletedTask.objects.create(team=team, task=task)
         serializer = self.get_serializer(cTask)
