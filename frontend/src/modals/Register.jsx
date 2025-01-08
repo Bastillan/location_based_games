@@ -90,7 +90,7 @@ const Register = () => {
                         {errors.password && <p className="error">{errors.password}</p>}
                     </div>
                 </div>
-                <button type="submit" class="mainBut">Zarejestruj się</button>
+                <button type="submit" className="mainBut">Zarejestruj się</button>
             </form>
             {message && <p>{message}</p>}
         </div>
