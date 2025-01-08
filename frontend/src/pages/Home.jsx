@@ -5,6 +5,12 @@ const Home = () => {
     return (
         <div>
             <h1>Welcome {user?.username}</h1>
+            <p>{user?.is_staff}</p>
+            {user?.is_staff ? (
+                <p>Jesteś adminem</p>
+            ) : (
+                <p>Jesteś graczem</p>
+            )}
         </div>
     )
 }
