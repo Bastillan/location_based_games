@@ -215,9 +215,11 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                         {message && (
                             <p className='message'>{message}</p>
                         )}
+                        <div>
                         {tasks[currentIndex].answer_type === "text" && (
                             <textarea placeholder='Wprowadź odpowiedź' value={answer} onChange={(e) => setAnswer(e.target.value)}></textarea>
                         )}
+                        </div>
                         <div className='answer_images'>
                         {
                             tasks[currentIndex].answer_type === "image" && (
@@ -233,6 +235,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                                 </div>
                             ))
                         )}
+                        <div>
                         {tasks[currentIndex].answer_type === "location" && (
                             <div className='location_container'>
                                 <label>Szerokość geograficzna: {answer.split(',')[0]}</label><br></br>
@@ -240,6 +243,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                                 <button className="check_location" onClick={() => handleLocation()} >Sprawdź lokalizacje</button>
                             </div>
                         )}
+                        </div>
                         </div>
                     </div>
                 )}
