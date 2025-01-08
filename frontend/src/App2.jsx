@@ -4,7 +4,9 @@ import Home from './pages/Home';
 import NoPage from './pages/NoPage';
 import { AuthProvider } from './services/AuthProvider';
 
-const App = () => {
+import './App.css';
+
+const App2 = () => {
     return (
         <AuthProvider>
             <BrowserRouter>
@@ -24,5 +26,8 @@ const App = () => {
                 </Routes>
             </BrowserRouter>
         </AuthProvider>
-    )
-}
+    );
+};
+
+
+export default App2;

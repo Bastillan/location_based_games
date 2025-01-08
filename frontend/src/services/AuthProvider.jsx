@@ -8,8 +8,8 @@ export const AuthProvider = ({ children }) => {
 
     const getUserData = async () => {
         try {
-            const response = await api.get('/user-profile');
-            setUser(response.data);
+            const response = await api.get('/api/users');
+            setUser(response.data[0]);
         } catch (error) {
             console.error("Failed to fetch user data:", error);
             setUser(null);
