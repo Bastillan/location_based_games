@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Task, Scenario, Game, User, AnswerImages, Team, CompletedTask
 from django.contrib.auth import get_user_model
+from djoser.serializers import UserCreateSerializer as BaseUserSerializer
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -40,19 +41,15 @@ class GameSerializer(serializers.ModelSerializer):
                   'end_date', 'scenario', 'scenario_id']
 
 
-class UserSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username', read_only=True)
-    email = serializers.EmailField(source='user.email', read_only=True)
-
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'email']
+class UserSerializer(BaseUserSerializer):
+    class Meta(BaseUserSerializer.Meta):
+        fields = ['id', 'username', 'email', 'is_staff']
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'user']  
+        fields = ['id', 'user']
 
 
 class TeamSerializer(serializers.ModelSerializer):
@@ -61,11 +58,11 @@ class TeamSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
 class EmailSerializer(serializers.Serializer):
     subject = serializers.CharField(max_length=100)
     message = serializers.CharField()
     game_id = serializers.IntegerField()
+
 
 class CompletedTaskSerializer(serializers.ModelSerializer):
     class Meta:
