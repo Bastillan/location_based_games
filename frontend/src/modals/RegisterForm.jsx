@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import api from '../services/api'
 
 
-const Register = ( {closeForm} ) => {
+const RegisterForm = ( {closeForm} ) => {
     const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState({
         username: "",
@@ -100,4 +100,4 @@ const Register = ( {closeForm} ) => {
     );
 };
 
-export default Register;
+export default RegisterForm;

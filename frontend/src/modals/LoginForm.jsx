@@ -4,7 +4,7 @@ import api from '../services/api'
 import { useAuth } from '../services/AuthProvider';
 import { useNavigate } from 'react-router-dom';
 
-const Login = ({ closeForm }) => {
+const LoginForm = ({ closeForm }) => {
     const { login } = useAuth();
     const [credentials, setCredentials] = useState({ username: "", password: "" });
     const [message, setMessage] = useState("");
@@ -63,4 +63,4 @@ const Login = ({ closeForm }) => {
     );
 };
 
-export default Login;
+export default LoginForm;

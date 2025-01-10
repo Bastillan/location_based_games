@@ -3,8 +3,8 @@ import { useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../services/AuthProvider';
 import { useState } from 'react';
 
-import Login from '../modals/Login';
-import Register from '../modals/Register';
+import LoginForm from '../modals/LoginForm';
+import RegisterForm from '../modals/RegisterForm';
 
 import '../styles/Layout.css';
 
@@ -37,10 +37,10 @@ const Layout = () => {
                 <main>
                     <Outlet />
                     {isRegisterFormVisible && (
-                        <Register closeForm={() => setIsRegisterFormVisible(false)} />
+                        <RegisterForm closeForm={() => setIsRegisterFormVisible(false)} />
                     )}
                     {isLoginFormVisible && (
-                        <Login closeForm={() => setIsLoginFormVisible(false)}/>
+                        <LoginForm closeForm={() => setIsLoginFormVisible(false)}/>
                     )}
                 </main>
             </div>
