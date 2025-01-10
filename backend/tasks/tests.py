@@ -13,6 +13,8 @@ from .serializers import (
     GameSerializer, UserSerializer, UserProfileSerializer,
     TeamSerializer, EmailSerializer, CompletedTaskSerializer
 )
+from django.core.files.uploadedfile import SimpleUploadedFile
+import io
 
 
 class ScenarioViewSetTestCase(TestCase):
@@ -316,9 +318,9 @@ class TaskViewSetTests(APITestCase):
         self.scenario = Scenario.objects.create(title="Test Scenario", description="Test Description")
         self.task = Task.objects.create(scenario=self.scenario, number=1, description="Test Task")
         self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
 
     def test_create_task_authenticated(self):
-        self.client.force_authenticate(user=self.user)
         url = reverse('task-list')
         task_data = {
             "name": "Another Task",
@@ -342,7 +344,6 @@ class TaskViewSetTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_delete_task_authenticated(self):
-        self.client.force_authenticate(user=self.user)
         url = reverse('task-detail', kwargs={'pk': self.task.id})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -352,6 +353,167 @@ class TaskViewSetTests(APITestCase):
         url = reverse('task-detail', kwargs={'pk': self.task.id})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_check_answer_correct_text(self):
+        task = Task.objects.create(scenario=self.scenario, number=2, description="Another Test Task", correct_text_answer="Test Answer")
+        url = reverse('task-check-answer')
+        response = self.client.get(url, {'answer_type': 'text', 'answer': 'Test Answer', 'task_id': task.id})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['is_correct'], True)
+
+    def test_check_answer_incorrect_text(self):
+        task = Task.objects.create(scenario=self.scenario, number=2, description="Another Test Task", correct_text_answer="Test Answer")
+        url = reverse('task-check-answer')
+        response = self.client.get(url, {'answer_type': 'text', 'answer': 'Incorrect Answer', 'task_id': task.id})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['is_correct'], False)
+
+    def test_check_answer_correct_image(self):
+        correct_image = AnswerImages.objects.create(task=self.task, is_correct=True, image="correct_image.jpg")
+        url = reverse('task-check-answer')
+        response = self.client.get(url, {'answer_type': 'image', 'answer': correct_image.id, 'task_id': self.task.id})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['is_correct'], True)
+
+    def test_check_answer_incorrect_image(self):
+        incorrect_image = AnswerImages.objects.create(task=self.task, is_correct=False, image="incorrect_image.jpg")
+        url = reverse('task-check-answer')
+        response = self.client.get(url, {'answer_type': 'image', 'answer': incorrect_image.id, 'task_id': self.task.id})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['is_correct'], False)
+
+    def test_check_answer_correct_location(self):
+        task = Task.objects.create(scenario=self.scenario, number=2, description="Location Task", correct_text_answer="50.0755,14.4378")
+        url = reverse('task-check-answer')
+        response = self.client.get(url, {'answer_type': 'location', 'answer': '50.0755,14.4378', 'task_id': task.id})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['is_correct'], True)
+
+    def test_check_answer_incorrect_location(self):
+        task = Task.objects.create(scenario=self.scenario, number=2, description="Location Task", correct_text_answer="50.0755,14.4378")
+        url = reverse('task-check-answer')
+        response = self.client.get(url, {'answer_type': 'location', 'answer': '50.0755,14.4000', 'task_id': task.id})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['is_correct'], False)
+
+    def test_get_queryset_with_scenario_id(self):
+        task1 = Task.objects.create(scenario=self.scenario, number=2, description="Test Task 1")
+        task2 = Task.objects.create(scenario=self.scenario, number=3, description="Test Task 2")
+        url = reverse('task-list')
+        response = self.client.get(url, {'scenario': self.scenario.id})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3) #<- trzeci jest robiony w setUp
+
+    def test_get_queryset_without_scenario_id(self):
+        task1 = Task.objects.create(scenario=self.scenario, number=2, description="Test Task 1")
+        task2 = Task.objects.create(scenario=self.scenario, number=3, description="Test Task 2")
+        url = reverse('task-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3) #<- trzeci jest robiony w setUp
+
+    def test_shift_task_numbers(self):
+        task1 = Task.objects.create(scenario=self.scenario, number=2, description="Test Task 1")
+        task2 = Task.objects.create(scenario=self.scenario, number=3, description="Test Task 2")
+        url = reverse('task-shift-task-numbers', kwargs={'pk': task1.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        task1.refresh_from_db()
+        task2.refresh_from_db()
+        self.assertEqual(task1.number, 2)
+        self.assertEqual(task2.number, 4)
+
+    def test_perform_create_without_scenario(self):
+        url = reverse('task-list')
+        response = self.client.post(url, {"number": 2, 'description': 'Test Task without Scenario'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('scenario', response.data)
+
+    def test_perform_create_with_invalid_number(self):
+        url = reverse('task-list')
+        response = self.client.post(url, {'scenario': self.scenario.id, 'number': 'invalid', 'description': 'Invalid number task'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('number', response.data)
+
+    def test_perform_update_with_number_shift(self):
+        task = Task.objects.create(scenario=self.scenario, number=2, description="Test Task 1")
+        url = reverse('task-detail', kwargs={'pk': task.id})
+        response = self.client.patch(url, {'number': 2})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        task.refresh_from_db()
+        self.assertEqual(task.number, 2)
+
+    def test_len_method(self):
+        task1 = Task.objects.create(scenario=self.scenario, number=2, description="Test Task 1")
+        task2 = Task.objects.create(scenario=self.scenario, number=3, description="Test Task 2")
+        self.assertEqual(len(Task.objects.all()), 3) #<- trzeci jest robiony w setUp
+
+
+class TaskViewSetTests2(APITestCase):
+
+    def setUp(self):
+        self.scenario = Scenario.objects.create(title="Test Scenario", description="Test Description")
+        self.task1 = Task.objects.create(scenario=self.scenario, number=1, description="Task 1")
+        self.task2 = Task.objects.create(scenario=self.scenario, number=2, description="Task 2")
+        self.task3 = Task.objects.create(scenario=self.scenario, number=3, description="Task 3")
+        self.user_model = get_user_model()
+        self.user = self.user_model.objects.create_user(username="testuser", password="password")
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_perform_update_new_number_greater(self):
+        url = reverse('task-detail', kwargs={'pk': self.task2.id})
+        data = {'number': 4}
+        response = self.client.patch(url, data, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        self.task2.refresh_from_db()
+        self.task3.refresh_from_db()
+        self.assertEqual(self.task2.number, 4)
+        self.assertEqual(self.task3.number, 2)
+        self.assertEqual(self.task1.number, 1)
+
+    def test_perform_update_new_number_smaller(self):
+        url = reverse('task-detail', kwargs={'pk': self.task2.id})
+        data = {'number': 1}
+        response = self.client.patch(url, data, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        self.task1.refresh_from_db()
+        self.task2.refresh_from_db()
+        self.task3.refresh_from_db()
+        self.assertEqual(self.task2.number, 1)
+        self.assertEqual(self.task3.number, 3)
+        self.assertEqual(self.task1.number, 2)
+
+    def test_perform_update_number_same(self):
+        url = reverse('task-detail', kwargs={'pk': self.task2.id})
+        data = {'number': 2}
+        response = self.client.patch(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        task2 = Task.objects.get(id=self.task2.id)
+        self.assertEqual(task2.number, 2)
+        self.assertEqual(self.task1.number, 1)
+        self.assertEqual(self.task3.number, 3)
+
+    def test_perform_update_check_order(self):
+        url = reverse('task-detail', kwargs={'pk': self.task2.id})
+        data = {'number': 1}
+        response = self.client.patch(url, data, format='json')
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        self.task1.refresh_from_db()
+        self.task2.refresh_from_db()
+        self.task3.refresh_from_db()
+        self.assertEqual(self.task1.number, 2)
+        self.assertEqual(self.task2.number, 1)
+        self.assertEqual(self.task3.number, 3)
+
 
 class GameViewSetTests(APITestCase):
 
@@ -413,6 +575,105 @@ class UserViewSetTests(APITestCase):
         response = self.client.post(url, {}, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+class TeamViewSetTests(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.scenario = Scenario.objects.create(title="Test Scenario", description="Test Description")
+        self.game = Game.objects.create(
+            title="Test Game", 
+            scenario=self.scenario, 
+            beginning_date=now(), 
+            end_date=(now() + timedelta(days=1))
+        )
+        self.user_model = get_user_model()
+        self.user1 = self.user_model.objects.create_user(username="testuser1", password="testpassword")
+        self.profile1 = User.objects.create(user=self.user1)
+        self.user2 = self.user_model.objects.create_user(username="testuser2", password="testpassword")
+        self.profile2 = User.objects.create(user=self.user2)
+        self.team1 = Team.objects.create(user=self.profile1, game=self.game)
+        self.team2 = Team.objects.create(user=self.profile1, game=self.game)
+        
+        self.url = reverse('team-list')
+
+    def test_get_teams_authenticated(self):
+        self.client.login(username='testuser', password='password')
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data[0]['id'], self.team1.id)
+        self.assertEqual(response.data[1]['id'], self.team2.id)
+
+    def test_get_teams_anonymous(self):
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data[0]['id'], self.team1.id)
+        self.assertEqual(response.data[1]['id'], self.team2.id)
+
+    def test_get_teams_permissions_authenticated(self):
+        response = self.client.get(reverse('team-detail', kwargs={'pk': self.team1.id}))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['id'], self.team1.id)
+        self.assertEqual(response.data['user'], self.profile1.id)
+
+    def test_get_teams_permissions_anonymous(self):
+        response = self.client.get(reverse('team-detail', kwargs={'pk': self.team2.id}))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['id'], self.team2.id)
+        self.assertEqual(response.data['user'], self.profile1.id)
+
+class TaskCompletionViewSetTests(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.scenario = Scenario.objects.create(title="Test Scenario", description="Test Description")
+        self.game = Game.objects.create(
+            title="Test Game", 
+            scenario=self.scenario, 
+            beginning_date=now(), 
+            end_date=(now() + timedelta(days=1))
+        )
+        self.user_model = get_user_model()
+        self.user = self.user_model.objects.create_user(username="testuser", password="testpassword")
+        self.profile = User.objects.create(user=self.user)
+        self.team = Team.objects.create(user=self.profile, game=self.game)
+        self.task = Task.objects.create(scenario=self.scenario, number=1, description="Test Task")
+        self.completed_task = CompletedTask.objects.create(team=self.team, task=self.task)
+        self.client.force_authenticate(user=self.user)
+
+    def test_get_queryset_no_task_param(self):
+        """
+        Test, czy `get_queryset` zwróci wszystkie ukończone zadania, jeśli nie podano parametru `task`.
+        """
+        url = reverse('task-completion-list')
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    def test_get_queryset_with_task_param(self):
+        """
+        Test, czy `get_queryset` zwróci tylko ukończone zadania dla konkretnego zadania, jeśli podano parametr `task`.
+        """
+        url = reverse('task-completion-list') + '?task=' + str(self.task.id)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    def test_get_queryset_with_non_existing_task(self):
+        """
+        Test, czy `get_queryset` zwróci pustą listę, jeśli podano nieistniejące task_id.
+        """
+        non_existing_task_id = 9999
+        url = reverse('task-completion-list') + f'?task={non_existing_task_id}'
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
 
 
 class ScenarioModelTest(TestCase):
@@ -467,6 +728,22 @@ class AnswerImagesModelTest(TestCase):
             description="Solve this task with images.",
             answer_type="image",
         )
+        self.client = APIClient()
+        self.user_model = get_user_model()
+        self.user = self.user_model.objects.create_user(username="testuser", password="password")
+        self.client.force_authenticate(user=self.user)
+
+        self.correct_image_file = SimpleUploadedFile(name="correct_image.jpg", content=io.BytesIO(b"dummy image content").getvalue(), content_type="image/jpeg")
+
+        self.incorrect_image_file1 = SimpleUploadedFile(name="incorrect_image1.jpg",content=io.BytesIO(b"dummy image content").getvalue(), content_type="image/jpeg")
+
+        self.incorrect_image_file2 = SimpleUploadedFile(name="incorrect_image2.jpg", content=io.BytesIO(b"dummy image content").getvalue(), content_type="image/jpeg")
+
+        self.correct_image = AnswerImages.objects.create( task=self.task, image=self.correct_image_file,is_correct=True)
+        self.incorrect_image1 = AnswerImages.objects.create(task=self.task, image=self.incorrect_image_file1, is_correct=False)
+        self.incorrect_image2 = AnswerImages.objects.create(task=self.task, image=self.incorrect_image_file2, is_correct=False)
+        
+        self.url = reverse('answerimages-list')
 
     def test_answer_images_creation(self):
         image = AnswerImages.objects.create(
@@ -475,6 +752,48 @@ class AnswerImagesModelTest(TestCase):
         )
         self.assertEqual(image.task, self.task)
         self.assertTrue(image.is_correct)
+
+    def test_list_answer_images_authenticated(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
+
+    def test_list_answer_images_filtered_by_task_id(self):
+        response = self.client.get(self.url, {'task_id': self.task.id})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
+
+    def test_list_answer_images_with_correct_and_incorrect_images(self):
+        response = self.client.get(self.url, {'task_id': self.task.id})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        correct_images = [image for image in response.data if image['is_correct']]
+        incorrect_images = [image for image in response.data if not image['is_correct']]
+
+        self.assertEqual(len(correct_images), 1)
+        self.assertEqual(len(incorrect_images), 2)
+
+    def test_list_answer_images_unauthenticated(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_list_answer_images_no_task_id(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
+
+    def test_list_answer_images_empty_result(self):
+        response = self.client.get(self.url, {'task_id': 9999})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)
+
+    def test_list_answer_images_random_order(self):
+        response = self.client.get(self.url, {'task_id': self.task.id})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        images = response.data
+        self.assertNotEqual(images[0]['image'], images[1]['image'])
 
 class GameModelTest(TestCase):
     def setUp(self):

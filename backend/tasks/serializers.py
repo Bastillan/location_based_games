@@ -9,11 +9,6 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = '__all__'
 
-    def validate_number(self, value):
-        if value <= 0:
-            raise serializers.ValidationError("Ensure this value is greater than or equal to 0.")
-        return value
-
 
 class AnswerImagesSerializer(serializers.ModelSerializer):
     class Meta:

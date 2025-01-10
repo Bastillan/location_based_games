@@ -19,13 +19,7 @@ from django.shortcuts import get_object_or_404
 class ScenarioViewSet(viewsets.ModelViewSet):
     queryset = Scenario.objects.all()
     serializer_class = ScenarioSerializer
-    
-    def get_permissions(self):
-        if self.action == 'create':
-            return [IsAuthenticated()]
-        elif self.action == 'retrieve':
-            return [AllowAny()]
-        return super().get_permissions()
+    permission_classes = [IsAuthenticated]
 
     @action(detail=True, methods=['get'])
     def get_tasks(self, request, pk=None):
@@ -35,27 +29,22 @@ class ScenarioViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        # Tworzymy scenariusz i zapisujemy go
         scenario = serializer.save()
 
-        # Jeżeli chcemy przypisać zadania, możemy je dodać tutaj
         tasks = self.request.data.get('tasks', [])
         if tasks:
             for task_data in tasks:
-                # Tworzymy zadanie powiązane z tym scenariuszem
-                # Dodajemy scenariusz do zadania
                 task_data['scenario'] = scenario.id
                 Task.objects.create(**task_data)
 
-        # Zwracamy odpowiedź
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['post'])
     def add_task(self, request, pk=None):
         """Add a task to the selected scenario."""
-        scenario = self.get_object()  # Get the current scenario by ID
+        scenario = self.get_object()
         data = request.data.copy()
-        data['scenario'] = scenario.id  # Attach scenario ID to the task
+        data['scenario'] = scenario.id
 
         serializer = TaskSerializer(data=data)
         if serializer.is_valid():
@@ -67,13 +56,7 @@ class ScenarioViewSet(viewsets.ModelViewSet):
 class AnswerImagesSet(viewsets.ModelViewSet):
     queryset = AnswerImages.objects.all()
     serializer_class = AnswerImagesSerializer
-    
-    def get_permissions(self):
-        if self.action == 'create':
-            return [IsAuthenticated()]
-        elif self.action == 'retrieve':
-            return [AllowAny()]
-        return super().get_permissions()
+    permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
         task_id = request.query_params.get('task_id', None)
@@ -91,13 +74,7 @@ class AnswerImagesSet(viewsets.ModelViewSet):
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all().order_by('number')
     serializer_class = TaskSerializer
-    
-    def get_permissions(self):
-        if self.action == 'create':
-            return [IsAuthenticated()]
-        elif self.action == 'retrieve':
-            return [AllowAny()]
-        return super().get_permissions()
+    permission_classes = [IsAuthenticated]
 
     def destroy(self, request, *args, **kwargs):
         task = self.get_object()
@@ -189,7 +166,7 @@ class TaskViewSet(viewsets.ModelViewSet):
             self.queryset = self.queryset.filter(scenario_id=scenario_id)
         return super().list(request, *args, **kwargs)
 
-    @action(detail=False, methods=["get"])
+    @action(detail=False, methods=["get"], url_path='check-answer', url_name='check-answer')
     def check_answer(self, request):
         answer_type = request.query_params.get("answer_type")
         answer = request.query_params.get("answer")
@@ -215,7 +192,6 @@ class TaskViewSet(viewsets.ModelViewSet):
 class GameViewSet(viewsets.ModelViewSet):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
-    # permission_classes = [IsAuthenticated]
 
 
     def get_permissions(self):
@@ -247,12 +223,6 @@ class GameViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    # def get(self, request):
-    #     games = Game.objects.all()
-    #     serializer = GameSerializer(games, many=True)
-    #     return Response(serializer.data)
-    
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -344,13 +314,7 @@ def send_email(request):
 class TaskCompletionView(viewsets.ModelViewSet):
     queryset = CompletedTask.objects.all()
     serializer_class = CompletedTaskSerializer
-
-    def get_permissions(self):
-        if self.action == 'create':
-            return [IsAuthenticated()]
-        elif self.action == 'retrieve':
-            return [AllowAny()]
-        return super().get_permissions()
+    permission_classes = [IsAuthenticated]
 
     def create(self, request):
         team_id = request.data.get("team")
