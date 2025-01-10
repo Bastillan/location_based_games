@@ -194,7 +194,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         correct_text = "".join(correct_text.lower().split(" "))
         text_to_compare = text_to_compare.lower().split(" ")
         if len(text_to_compare) > 6:
-            return false
+            return False
         results = []
         for perm_length in range(1, len(text_to_compare)+1):
             perms = permutations(text_to_compare, perm_length)

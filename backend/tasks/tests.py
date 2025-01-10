@@ -361,6 +361,13 @@ class TaskViewSetTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['is_correct'], True)
 
+    def test_check_answer_too_long(self):
+        task = Task.objects.create(scenario=self.scenario, number=2, description="Another Test Task", correct_text_answer="Test Answer")
+        url = reverse('task-check-answer')
+        response = self.client.get(url, {'answer_type': 'text', 'answer': 'Test Answer with too many many words', 'task_id': task.id})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['is_correct'], False)
+
     def test_check_answer_incorrect_text(self):
         task = Task.objects.create(scenario=self.scenario, number=2, description="Another Test Task", correct_text_answer="Test Answer")
         url = reverse('task-check-answer')
