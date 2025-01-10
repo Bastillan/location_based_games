@@ -271,8 +271,12 @@ class TeamViewSet(viewsets.ModelViewSet):
         existing_team = Team.objects.filter(
             user=user_profile, game=game).first()
         if existing_team:
+            serializer = self.get_serializer(existing_team)
             return Response(
-                {"error": "You already have a team registered for this game."},
+                {
+                    "team": serializer.data,
+                    "error": "You already have a team registered for this game.",
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 

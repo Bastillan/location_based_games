@@ -21,7 +21,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
 
     const checkAnswer = async (TaskId, AnswerType, Answer) => {
         try {
-            const response = await api.get(`/api/tasks/check_answer/?answer_type=${AnswerType}&answer=${Answer}&task_id=${TaskId}`);
+            const response = await api.get(`/api/tasks/check-answer/?answer_type=${AnswerType}&answer=${Answer}&task_id=${TaskId}`);
             setAnswerCorrect([response.data.is_correct, answer_correct[1]+1]);
         } catch (error) {
             console.error("Error checking answer: ", error)
@@ -31,20 +31,19 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     const handleRegisterToGame = async (e) => {
         e.preventDefault();
         setRegisterMessage(null);
-
         try {
             const payload = {
                 game: game.id
             };
-
             const response = await api.post('/api/teams/', payload);
-
             setTeamId(response.data.id);
             setRegisterMessage('Pomyślnie zarejestrowano do gry');
             setUserRegistered(true);
         } catch (error) {
             if (error.response && error.response.status === 400) {
                 setRegisterMessage('Użytkownik już dołączył do tej gry.');
+                setTeamId(error.response.data.team.id);
+                setUserRegistered(true);
             } else if (error.response && error.response.status === 500) {
                 setRegisterMessage('Żeby dołączyć do gry trzeba się zalogować.');
             }else {
@@ -120,6 +119,32 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
             console.error("Error creating task completion: ", error);
         }
     };
+
+    const handleEnterGame = async (error) => {
+        setTeamId(error.response.data.team.id);
+        setUserRegistered(true);
+    }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const payload = {
+                    game: game.id
+                };
+                const response = await api.post('/api/teams/', payload);
+            } catch (error) {
+                if (error.response && error.response.status === 400) {
+                    await handleEnterGame(error);
+                } else if (error.response && error.response.status === 500) {
+                    setRegisterMessage('Żeby dołączyć do gry trzeba się zalogować.');
+                }else {
+                    setRegisterMessage('Wystąpił błąd: ' + error.message);
+                }
+            }
+        };
+        fetchData();
+
+    }, []);
 
     useEffect(() => {
         const currentTaskId = tasks[currentIndex]?.id;
