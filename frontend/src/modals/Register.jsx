@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import api from '../services/api'
 
 
-const Register = () => {
+const Register = ( {closeForm} ) => {
     const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState({
         username: "",
@@ -52,47 +52,50 @@ const Register = () => {
     };
 
     return (
-        <div>
-            <h2>Rejestracja</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="loginForm">
-                    <div>
-                        <label>Nazwa użytkownika:</label>
-                        <input
-                            type="text"
-                            name="username"
-                            value={formData.username}
-                            onChange={handleChange}
-                            required
-                        />
-                        {errors.username && <p className="error">{errors.username}</p>}
+        <div className='overlay'>
+            <div className='modal'>
+                <h2>Rejestracja</h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="loginForm">
+                        <div>
+                            <label>Nazwa użytkownika:</label>
+                            <input
+                                type="text"
+                                name="username"
+                                value={formData.username}
+                                onChange={handleChange}
+                                required
+                            />
+                            {errors.username && <p className="error">{errors.username}</p>}
+                        </div>
+                        <div>
+                            <label>Email:</label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                required
+                            />
+                            {errors.email && <p className="error">{errors.email}</p>}
+                        </div>
+                        <div>
+                            <label>Hasło:</label>
+                            <input
+                                type="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                required
+                            />
+                            {errors.password && <p className="error">{errors.password}</p>}
+                        </div>
                     </div>
-                    <div>
-                        <label>Email:</label>
-                        <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
-                        {errors.email && <p className="error">{errors.email}</p>}
-                    </div>
-                    <div>
-                        <label>Hasło:</label>
-                        <input
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                        />
-                        {errors.password && <p className="error">{errors.password}</p>}
-                    </div>
-                </div>
-                <button type="submit" className="mainBut">Zarejestruj się</button>
-            </form>
-            {message && <p>{message}</p>}
+                    <button type="submit" className="mainBut">Zarejestruj się</button>
+                </form>
+                {message && <p>{message}</p>}
+                <button className='mainBut' onClick={closeForm}>Zamknij</button>
+            </div>
         </div>
     );
 };

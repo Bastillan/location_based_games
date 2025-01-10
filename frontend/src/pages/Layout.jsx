@@ -37,13 +37,7 @@ const Layout = () => {
                 <main>
                     <Outlet />
                     {isRegisterFormVisible && (
-                        <>
-                            <div className='overlay'></div>
-                            <div className='modal'>
-                                <Register />
-                                <button className='mainBut' onClick={() => setIsRegisterFormVisible(false)}>Zamknij</button>
-                            </div>
-                        </>
+                        <Register closeForm={() => setIsRegisterFormVisible(false)} />
                     )}
                     {isLoginFormVisible && (
                         <Login closeForm={() => setIsLoginFormVisible(false)}/>
