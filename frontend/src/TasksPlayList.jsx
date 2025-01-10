@@ -1,6 +1,6 @@
 import React, { use, useEffect, useState } from 'react';
 import axios from 'axios';
-import api from './api'
+import api from './services/api'
 import './TasksPlayList.css';
 import userIcon from './assets/user-icon.svg';
 
