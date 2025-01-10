@@ -8,7 +8,7 @@ body, html {
   align-items: flex-start;
   /* background: linear-gradient(135deg, #DDD0C8, #7c5b47); */
   overflow: auto;
-  background: linear-gradient(135deg,  #DDD0C8, #4E3822);
+  background: linear-gradient(0deg,  #DDD0C8, #4E3822);
   font-family: 'Georgia', serif;
   color: #3C2A1F;
 }
@@ -23,13 +23,16 @@ body, html {
 }
 
 body {
-  background-image: url('https://www.transparenttextures.com/patterns/light-paper-fibers.png');
-  background-attachment: fixed;
-  background-repeat: repeat;
+  background-image: url('../assets/old_map.svg'), url('https://www.transparenttextures.com/patterns/light-paper-fibers.png');
+  background-attachment: fixed, fixed;
+  background-repeat: no-repeat, repeat;
+  background-size: cover, auto;
+  background-position: center center, center center;
 }
 
+
 h1, h2, h3, h4 {
-  text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.1);
+  text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
 }
 
 .modal {
@@ -121,11 +124,11 @@ button.addTask {
   min-width: 290;
   padding: 10px;
   border-radius: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
   text-align: center;
-  background: linear-gradient(135deg,  #cfc3bb, #443e37);
+  background: linear-gradient(135deg, rgba(207, 195, 187, 0.9), rgba(112, 96, 77, 0.9));
   border: 2px solid #323232;
-  background-image: url('https://www.transparenttextures.com/patterns/light-paper-fibers.png');
+  /* background-image: url('https://www.transparenttextures.com/patterns/light-paper-fibers.png'); */
   background-attachment: fixed;
   background-repeat: repeat;
 }
