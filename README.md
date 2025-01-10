@@ -15,7 +15,12 @@ Celem projektu jest stworzenie aplikacji webowej, która umożliwi Fundacji Bo W
 - PostgreSQL
 
 ## Uruchomienie aplikacji
-Do uruchomienia aplikacji niezbędne jest oprogramowanie Docker. Po sklonowaniu repozytorium należy skopiować pliki `.env.db.sample` i nadać mu nazwę `.env.db.dev` oraz `.env.sample` i nadać mu nazwę `.env.dev`. W pliku `.env.dev` należy podmienić `<API_IP>` na adres ip urządzenia, na którym uruchamiamy aplikację. Po skonfigurowaniu aplikacji należy uruchomić terminal w głównym folderze. W terminalu uruchamiany komendę budującą kontenery:
+Do uruchomienia aplikacji niezbędne jest oprogramowanie Docker. Po sklonowaniu repozytorium należy skopiować pliki:
+
+- `.env.db.sample` i nadać mu nazwę `.env.db.dev`
+- `.env.sample` i nadać mu nazwę `.env.dev`
+
+W pliku `.env.dev` należy podmienić w dwóch miejscach `<API_IP>` na adres ip urządzenia, na którym uruchamiamy aplikację oraz ustawić swoje dane dla aplikacji, takie jak nazwa użytkownika i hasło dla bazy danych, czy klucz prywatny django. Po skonfigurowaniu aplikacji należy uruchomić terminal w głównym folderze. W terminalu uruchamiany komendę budującą kontenery:
 
 `docker compose build`
 
