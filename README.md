@@ -13,3 +13,20 @@ Celem projektu jest stworzenie aplikacji webowej, która umożliwi Fundacji Bo W
 - Django
 - React
 - PostgreSQL
+
+## Uruchomienie aplikacji
+Do uruchomienia aplikacji niezbędne jest oprogramowanie Docker. Po sklonowaniu repozytorium należy skopiować pliki `.env.db.sample` i nadać mu nazwę `.env.db.dev` oraz `.env.sample` i nadać mu nazwę `.env.dev`. W pliku `.env.dev` należy podmienić `<API_IP>` na adres ip urządzenia, na którym uruchamiamy aplikację. Po skonfigurowaniu aplikacji należy uruchomić terminal w głównym folderze. W terminalu uruchamiany komendę budującą kontenery:
+
+`docker compose build`
+
+Po zbudowaniu kontenerów uruchamiamy je:
+
+`docker compose up`
+
+Następnie należy uruchomić drugi terminal, również w głównym folderze. W terminalu wpisujemy komendę wykonującą migrację:
+
+`docker-compose exec backend python manage.py migrate`
+
+Po wykonaniu migracji aplikacja będzie dostępna pod adresem
+
+`http://<machine_ip_address>:5173`
