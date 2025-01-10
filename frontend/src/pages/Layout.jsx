@@ -3,8 +3,8 @@ import { useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../services/AuthProvider';
 import { useState } from 'react';
 
-import Login from '../modals/Login';
-import Register from '../modals/Register';
+import LoginForm from '../modals/LoginForm';
+import RegisterForm from '../modals/RegisterForm';
 
 import '../styles/Layout.css';
 
@@ -37,22 +37,10 @@ const Layout = () => {
                 <main>
                     <Outlet />
                     {isRegisterFormVisible && (
-                        <>
-                            <div className='overlay'></div>
-                            <div className='modal'>
-                                <Register />
-                                <button className='mainBut' onClick={() => setIsRegisterFormVisible(false)}>Zamknij</button>
-                            </div>
-                        </>
+                        <RegisterForm closeForm={() => setIsRegisterFormVisible(false)} />
                     )}
                     {isLoginFormVisible && (
-                        <>
-                            <div className='overlay'></div>
-                            <div className='modal'>
-                                <Login />
-                                <button className='mainBut' onClick={() => setIsLoginFormVisible(false)}>Zamknij</button>
-                            </div>
-                        </>
+                        <LoginForm closeForm={() => setIsLoginFormVisible(false)}/>
                     )}
                 </main>
             </div>
