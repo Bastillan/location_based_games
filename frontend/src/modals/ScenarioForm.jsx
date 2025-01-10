@@ -45,27 +45,32 @@ const ScenarioForm = ({ refreshScenarios, closeForm, scenarioToEdit  }) => {
     };
 
     return (
-        <form className="form-container" onSubmit={handleSubmit}>
-            <input
-                type="text"
-                placeholder="Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="form-input"
-                required
-            />
-            <textarea
-                placeholder="Description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="form-input"
-            ></textarea>
-            <label className="form-label">
-                Obrazek:
-                <input className="form-input" type="file" onChange={(e) => setImage(e.target.files[0])} />
-            </label>
-            <button type="submit">{scenarioToEdit ? 'Edytuj Scenariusz' : 'Dodaj Scenariusz'}</button>
-        </form>
+        <div className='overlay'>
+            <div className='modal'>
+                <form className="form-container" onSubmit={handleSubmit}>
+                    <input
+                        type="text"
+                        placeholder="Title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        className="form-input"
+                        required
+                    />
+                    <textarea
+                        placeholder="Description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        className="form-input"
+                    ></textarea>
+                    <label className="form-label">
+                        Obrazek:
+                        <input className="form-input" type="file" onChange={(e) => setImage(e.target.files[0])} />
+                    </label>
+                    <button type="submit">{scenarioToEdit ? 'Edytuj Scenariusz' : 'Dodaj Scenariusz'}</button>
+                </form>
+                <button className="mainBut" onClick={closeForm}>Zamknij</button>
+            </div>
+        </div>
     );
 };
 
