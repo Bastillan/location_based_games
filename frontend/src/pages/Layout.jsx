@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { useNavigate, Outlet } from 'react-router-dom';
 
 import { useAuth } from '../services/AuthProvider';
 import { useState } from 'react';
@@ -10,21 +10,29 @@ import '../mainView.css';
 
 const Layout = () => {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
     const [isRegisterFormVisible, setIsRegisterFormVisible] = useState(false);
     const [isLoginFormVisible, setIsLoginFormVisible] = useState(false);
 
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    }
+
     return (
         <div className="main">
-            <nav className='logNav'>
-                {user ? (
-                    <button className='mainBut logout' onClick={logout}>Wyloguj się</button>
-                ) : (
-                    <>
-                        <button className='mainBut register' onClick={() => setIsRegisterFormVisible(true)}>Zarejestruj się</button>
-                        <button className='mainBut login' onClick={() => setIsLoginFormVisible(true)}>Zaloguj się</button>
-                    </>
-                )}
-            </nav>
+            <header>
+                <nav className='logNav'>
+                    {user ? (
+                        <button className='mainBut logout' onClick={handleLogout}>Wyloguj się</button>
+                    ) : (
+                        <>
+                            <button className='mainBut register' onClick={() => setIsRegisterFormVisible(true)}>Zarejestruj się</button>
+                            <button className='mainBut login' onClick={() => setIsLoginFormVisible(true)}>Zaloguj się</button>
+                        </>
+                    )}
+                </nav>
+            </header>
             <main>
                 <Outlet />
                 {isRegisterFormVisible && (
