@@ -46,13 +46,7 @@ const Layout = () => {
                         </>
                     )}
                     {isLoginFormVisible && (
-                        <>
-                            <div className='overlay'></div>
-                            <div className='modal'>
-                                <Login />
-                                <button className='mainBut' onClick={() => setIsLoginFormVisible(false)}>Zamknij</button>
-                            </div>
-                        </>
+                        <Login closeForm={() => setIsLoginFormVisible(false)}/>
                     )}
                 </main>
             </div>
