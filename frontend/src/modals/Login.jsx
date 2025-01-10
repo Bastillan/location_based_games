@@ -1,9 +1,14 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from '../services/api'
+
+import { useAuth } from '../services/AuthProvider';
+import { useNavigate } from 'react-router-dom';
 
 const Login = ({ setToken }) => {
+    const { login } = useAuth();
     const [credentials, setCredentials] = useState({ username: "", password: "" });
     const [message, setMessage] = useState("");
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -12,12 +17,11 @@ const Login = ({ setToken }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("/auth/jwt/create", credentials);
+            const response = await api.post("/auth/jwt/create", credentials);
             const {access, refresh} = response.data;
-            setToken(access);
-            localStorage.setItem("access", access);
-            localStorage.setItem("refresh", refresh);
+            login(access, refresh)
             setMessage("Pomyślnie zalogowano");
+            navigate('/');
         } catch (error) {
             setMessage("Nieprawidłowa nazwa uzytkownika lub hasło. Spróbuj ponownie.");
         }
