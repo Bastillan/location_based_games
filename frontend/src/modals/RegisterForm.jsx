@@ -23,7 +23,7 @@ const RegisterForm = ( {closeForm} ) => {
         try {
             const response = await api.post("/auth/users/", formData);
 
-            const loginResponse = await axios.post("/auth/jwt/create/", {
+            const loginResponse = await api.post("/auth/jwt/create/", {
                 username: formData.username,
                 password: formData.password,
             });
