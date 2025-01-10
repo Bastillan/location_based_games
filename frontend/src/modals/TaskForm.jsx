@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './forms.css';
+import api from '../services/api'
+import '../styles/forms.css';
 
 const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit }) => {
     const [description, setDescription] = useState(taskToEdit ? taskToEdit.description : '');
@@ -18,7 +18,7 @@ const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit })
         const fetchTasksCount = async () => {
             if (selectedScenario) {
                 try {
-                    const response = await axios.get(
+                    const response = await api.get(
                         `/api/tasks/?scenario=${selectedScenario.id}`
                     );
                     setTasksCount(response.data.length);
@@ -70,12 +70,12 @@ const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit })
         try {
             if (taskToEdit) {
                 // Edit task API call
-                await axios.put(`/api/tasks/${taskToEdit.id}/`, formData, {
+                await api.put(`/api/tasks/${taskToEdit.id}/`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
             } else {
                 // Add new task API call
-                await axios.post('/api/tasks/', formData, {
+                await api.post('/api/tasks/', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
             }

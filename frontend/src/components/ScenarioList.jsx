@@ -1,7 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import './ScenarioList.css';
-
+import '../styles/ScenarioList.css';
 
 const ScenarioList = ({ scenarios, onScenarioSelect, onDeleteScenario, onEditScenario, onActivateGame }) => {
     return (

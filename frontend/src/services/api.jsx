@@ -4,12 +4,13 @@ const api = axios.create({
   baseURL: "",
 });
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("access");
-  if (token) {
-    config.headers.Authorization = `JWT ${token}`;
-  }
-  return config;
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("access");
+    if (token) {
+      config.headers.Authorization = `JWT ${token}`;
+    }
+    return config;
 });
 
 api.interceptors.response.use(
