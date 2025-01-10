@@ -3,6 +3,7 @@ import Layout from './pages/Layout';
 import Home from './pages/Home';
 import NoPage from './pages/NoPage';
 import { AuthProvider } from './services/AuthProvider';
+import ProtectedRoute from './services/ProtectedRoute';
 
 import './styles/App.css';
 import AdminPage from './pages/AdminPage';
@@ -15,8 +16,8 @@ const App = () => {
                 <Routes>
                     <Route path="/" element={<Layout />}>
                         <Route index element={<Home />} />
-                        <Route path="admin" element={<AdminPage />} />
-                        <Route path="user" element={<UserPage />} />
+                        <Route path="admin" element={<ProtectedRoute is_staff={true}><AdminPage /></ProtectedRoute>} />
+                        <Route path="user" element={<ProtectedRoute is_staff={false}><UserPage /></ProtectedRoute>} />
                         <Route path="*" element={<NoPage/>} />
                     </Route>
                 </Routes>
