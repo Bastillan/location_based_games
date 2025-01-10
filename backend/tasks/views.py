@@ -15,6 +15,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from rapidfuzz import fuzz
+from itertools import permutations
 
 class ScenarioViewSet(viewsets.ModelViewSet):
     queryset = Scenario.objects.all()
@@ -177,7 +179,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         if answer_type == "text":
             correct_answer = self.queryset.filter(
                 id=task_id)[0].correct_text_answer
-            if answer == correct_answer:
+            if self.compare_text(correct_answer, answer):
                 result = True
         elif answer_type == "image":
             result = AnswerImages.objects.filter(id=answer)[0].is_correct
@@ -189,6 +191,18 @@ class TaskViewSet(viewsets.ModelViewSet):
             if distance < 400:
                 result = True
         return Response({"is_correct": result})
+
+    def compare_text(self, correct_text: str, text_to_compare: str, min_accuracy: int = 85):
+        correct_text = "".join(correct_text.lower().split(" "))
+        text_to_compare = text_to_compare.lower().split(" ")
+        if len(text_to_compare) > 6:
+            return false
+        results = []
+        for perm_length in range(1, len(text_to_compare)+1):
+            perms = permutations(text_to_compare, perm_length)
+            for elem in list(perms):
+                results.append(fuzz.ratio(correct_text, "".join(elem)))
+        return(max(results) >= min_accuracy)
 
 
 class GameViewSet(viewsets.ModelViewSet):
