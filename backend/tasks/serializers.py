@@ -11,8 +11,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
     def validate_number(self, value):
         if value <= 0:
-            raise serializers.ValidationError(
-                "Number must be a positive integer.")
+            raise serializers.ValidationError("Ensure this value is greater than or equal to 0.")
         return value
 
 
