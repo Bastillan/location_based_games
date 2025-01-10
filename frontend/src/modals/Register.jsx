@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from '../services/api'
+
 
 const Register = () => {
     const [errors, setErrors] = useState({});
@@ -20,7 +21,7 @@ const Register = () => {
         setMessage(null);
         setErrors({});
         try {
-            const response = await axios.post("/auth/users/", formData);
+            const response = await api.post("/auth/users/", formData);
 
             const loginResponse = await axios.post("/auth/jwt/create/", {
                 username: formData.username,
@@ -29,7 +30,7 @@ const Register = () => {
 
             const token = loginResponse.data.access;
 
-            await axios.post(
+            await api.post(
                 "/api/user-profile/",
                 {},
                 {
@@ -89,7 +90,7 @@ const Register = () => {
                         {errors.password && <p className="error">{errors.password}</p>}
                     </div>
                 </div>
-                <button type="submit" class="mainBut">Zarejestruj się</button>
+                <button type="submit" className="mainBut">Zarejestruj się</button>
             </form>
             {message && <p>{message}</p>}
         </div>
