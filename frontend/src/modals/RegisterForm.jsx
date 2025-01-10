@@ -43,7 +43,11 @@ const RegisterForm = ( {closeForm} ) => {
             setMessage("Pomyślnie zarejestrowano.");
         } catch (error) {
             if (error.response && error.response.data) {
-                setErrors(error.response.data);
+                // setErrors(error.response.data);
+                if(error.response.data.username[0] === "A user with that username already exists.")
+                {
+                    setMessage("Ta nazwa użytkownika jest już zajęta");
+                }
             }
             else {
                 setMessage("Wystąpił błąd. Spróbuj ponownie.");

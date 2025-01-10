@@ -101,6 +101,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
         try {
             const response = await api.get(`/api/task-completion/?task=${taskId}`);
             const data = response.data;
+            console.log(data)
             setCompletionCounts((prev) => ({
                 ...prev,
                 [taskId]: data.length,
