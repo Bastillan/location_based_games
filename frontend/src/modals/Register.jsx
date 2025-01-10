@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from '../services/api'
 
 
 const Register = () => {
@@ -21,7 +21,7 @@ const Register = () => {
         setMessage(null);
         setErrors({});
         try {
-            const response = await axios.post("/auth/users/", formData);
+            const response = await api.post("/auth/users/", formData);
 
             const loginResponse = await axios.post("/auth/jwt/create/", {
                 username: formData.username,
@@ -30,7 +30,7 @@ const Register = () => {
 
             const token = loginResponse.data.access;
 
-            await axios.post(
+            await api.post(
                 "/api/user-profile/",
                 {},
                 {

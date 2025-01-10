@@ -1,5 +1,4 @@
 import React, { use, useEffect, useState } from 'react';
-import axios from 'axios';
 import api from '../services/api'
 import '../styles/TasksPlayList.css';
 import userIcon from '../assets/user-icon.svg';
@@ -16,14 +15,13 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [userRegistered, setUserRegistered] = useState(false);
     const [members, setMembers] = useState(null);
-    const [user, setUser] = useState(null);
     const [registerMessage, setRegisterMessage] = useState(null);
     const [completionCounts, setCompletionCounts] = useState({});
     const [teamId, setTeamId] = useState(null);
 
     const checkAnswer = async (TaskId, AnswerType, Answer) => {
         try {
-            const response = await axios.get(`/api/tasks/check_answer/?answer_type=${AnswerType}&answer=${Answer}&task_id=${TaskId}`);
+            const response = await api.get(`/api/tasks/check_answer/?answer_type=${AnswerType}&answer=${Answer}&task_id=${TaskId}`);
             setAnswerCorrect([response.data.is_correct, answer_correct[1]+1]);
         } catch (error) {
             console.error("Error checking answer: ", error)
@@ -54,18 +52,6 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
             }
         }
     };
-
-    const fetchUserData = async (data) => {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(data);
-            }, 2000);
-        });
-    };
-
-    useEffect(() => {
-        setUser
-    }, [user])
 
     const handleNext = () => {
         if (currentIndex < tasks.length) {
@@ -105,7 +91,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
 
     const fetchImageAnswers = async (TaskId) => {
         try {
-            const response = await axios.get(`/api/answerimages/?task_id=${TaskId}`);
+            const response = await api.get(`/api/answerimages/?task_id=${TaskId}`);
             setAnswerImages(response.data);
         } catch (error) {
             console.error("Error fetching tasks:", error);
@@ -114,7 +100,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
 
     const fetchCompletionCount = async (taskId) => {
         try {
-            const response = await axios.get(`/api/task-completion/?task=${taskId}`);
+            const response = await api.get(`/api/task-completion/?task=${taskId}`);
             const data = response.data;
             setCompletionCounts((prev) => ({
                 ...prev,
@@ -128,7 +114,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     const createTaskCompletion = async (taskId) => {
         try {
             const payload = {task: taskId, team: teamId};
-            await axios.post('/api/task-completion/', payload);
+            await api.post('/api/task-completion/', payload);
             fetchCompletionCount(taskId);
         } catch (error) {
             console.error("Error creating task completion: ", error);

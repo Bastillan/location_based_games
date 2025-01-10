@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import DateTimePicker from 'react-datetime-picker';
-import axios from 'axios';
+import api from '../services/api'
 import '../styles/forms.css';
 import 'react-datetime-picker/dist/DateTimePicker.css'
 
@@ -18,7 +18,7 @@ const GameForm = ({ selectedScenario, refreshGames, closeForm  }) => {
         formData.append('end_date', end_date);
 
         try {
-            await axios.post('/api/games/', formData, {
+            await api.post('/api/games/', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             refreshGames();

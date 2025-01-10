@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from '../services/api'
 
 import { useAuth } from '../services/AuthProvider';
 
@@ -15,7 +15,7 @@ const Login = ({ setToken }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("/auth/jwt/create", credentials);
+            const response = await api.post("/auth/jwt/create", credentials);
             const {access, refresh} = response.data;
             login(access, refresh)
             setMessage("Pomyślnie zalogowano");

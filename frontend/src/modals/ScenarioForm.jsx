@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api'
 import '../styles/forms.css';
 
 const ScenarioForm = ({ refreshScenarios, closeForm, scenarioToEdit  }) => {
@@ -27,12 +27,12 @@ const ScenarioForm = ({ refreshScenarios, closeForm, scenarioToEdit  }) => {
         try {
             if (scenarioToEdit) {
                 // Edytujemy istniejący scenariusz
-                await axios.put(`/api/scenarios/${scenarioToEdit.id}/`, formData, {
+                await api.put(`/api/scenarios/${scenarioToEdit.id}/`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
             } else {
                 // Tworzymy nowy scenariusz
-                await axios.post('/api/scenarios/', formData, {
+                await api.post('/api/scenarios/', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
             }
