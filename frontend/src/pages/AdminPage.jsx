@@ -215,13 +215,7 @@ const AdminPage = () => {
                         ))}
                     </div>
                     {isTaskFormVisible ? (
-                        <>
-                            <div className="overlay"></div>
-                            <div className="modal">
-                                <TaskForm selectedScenario={selectedScenario} refreshScenarios={refreshScenariosAndTasks} closeForm={closeTaskForm}  taskToEdit={selectedTask}/>
-                                <button className="mainBut" onClick={closeTaskForm}>Zamknij</button>
-                            </div>
-                        </>
+                        <TaskForm selectedScenario={selectedScenario} refreshScenarios={refreshScenariosAndTasks} closeForm={closeTaskForm}  taskToEdit={selectedTask}/>
                     ) : (
                         <div>
                             <button className="mainBut addTask" onClick={openTaskForm}>+</button>

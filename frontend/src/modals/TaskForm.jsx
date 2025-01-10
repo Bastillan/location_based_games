@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api'
-import '../styles/forms.css';
 
 const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit }) => {
     const [description, setDescription] = useState(taskToEdit ? taskToEdit.description : '');
@@ -96,77 +95,82 @@ const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit })
     };
 
     return (
-        <form className="form-container" onSubmit={handleSubmit}>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+        <div className='overlay'>
+            <div className='modal'>
+                <form className="form-container" onSubmit={handleSubmit}>
+                    {error && <p style={{ color: 'red' }}>{error}</p>}
 
-            <input
-                type="number"
-                placeholder={`Numer zadania (od 1 do ${taskToEdit ? tasksCount : tasksCount + 1})`}
-                value={number}
-                onChange={(e) => setNumber(e.target.value)}
-                min="1"
-                max={taskToEdit ? tasksCount : tasksCount + 1}
-                className="form-input"
-            />
-            <textarea
-                placeholder="Opis zadania"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-                className="form-input"
-            ></textarea>
-            <select
-                id="answer_type"
-                value={answer_type}
-                onChange={(e) => setAnswerType(e.target.value)}
-                required
-                className="form-input"
-            >
-                <option value="">Wybierz typ odpowiedzi</option>
-                <option value="text">Tekst</option>
-                <option value="image">Obraz</option>
-                <option value="location">Lokalizacja</option>
-            </select>
-            {answer_type === "text" &&
-            <textarea
-                placeholder="Poprawna odpowiedź"
-                value={correct_text_answer}
-                onChange={(e) => setCorrectAnswer(e.target.value)}
-                required
-                className="form-input"
-            ></textarea>
-            }
-            {answer_type === "image" &&
-                <label className="form-label">
-                Poprawne obrazy:
-                <input className="form-input" multiple type="file" onChange={(e) => setCorrectImages(e.target.files)} />
-                Niepoprawne obrazy:
-                <input className="form-input" multiple type="file" onChange={(e) => setInorrectImages(e.target.files)} />
-            </label>
-            }
-            {answer_type === "location" &&
-                <label className="form-label">
-                <textarea
-                    placeholder="Szerokość i wysokość geograficzna"
-                    value={correct_text_answer}
-                    onChange={(e) => setCorrectAnswer(e.target.value)}
-                    required
-                    className="form-input"
-                ></textarea>
-            </label>
-            }
-            <label className="form-label">
-                Obrazek:
-                <input className="form-input" type="file" onChange={(e) => setImage(e.target.files[0])} />
-            </label>
+                    <input
+                        type="number"
+                        placeholder={`Numer zadania (od 1 do ${taskToEdit ? tasksCount : tasksCount + 1})`}
+                        value={number}
+                        onChange={(e) => setNumber(e.target.value)}
+                        min="1"
+                        max={taskToEdit ? tasksCount : tasksCount + 1}
+                        className="form-input"
+                    />
+                    <textarea
+                        placeholder="Opis zadania"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        required
+                        className="form-input"
+                    ></textarea>
+                    <select
+                        id="answer_type"
+                        value={answer_type}
+                        onChange={(e) => setAnswerType(e.target.value)}
+                        required
+                        className="form-input"
+                    >
+                        <option value="">Wybierz typ odpowiedzi</option>
+                        <option value="text">Tekst</option>
+                        <option value="image">Obraz</option>
+                        <option value="location">Lokalizacja</option>
+                    </select>
+                    {answer_type === "text" &&
+                    <textarea
+                        placeholder="Poprawna odpowiedź"
+                        value={correct_text_answer}
+                        onChange={(e) => setCorrectAnswer(e.target.value)}
+                        required
+                        className="form-input"
+                    ></textarea>
+                    }
+                    {answer_type === "image" &&
+                        <label className="form-label">
+                        Poprawne obrazy:
+                        <input className="form-input" multiple type="file" onChange={(e) => setCorrectImages(e.target.files)} />
+                        Niepoprawne obrazy:
+                        <input className="form-input" multiple type="file" onChange={(e) => setInorrectImages(e.target.files)} />
+                    </label>
+                    }
+                    {answer_type === "location" &&
+                        <label className="form-label">
+                        <textarea
+                            placeholder="Szerokość i wysokość geograficzna"
+                            value={correct_text_answer}
+                            onChange={(e) => setCorrectAnswer(e.target.value)}
+                            required
+                            className="form-input"
+                        ></textarea>
+                    </label>
+                    }
+                    <label className="form-label">
+                        Obrazek:
+                        <input className="form-input" type="file" onChange={(e) => setImage(e.target.files[0])} />
+                    </label>
 
-            <label className="form-label">
-                Dźwięk:
-                <input className="form-input" type="file" onChange={(e) => setAudio(e.target.files[0])} />
-            </label>
+                    <label className="form-label">
+                        Dźwięk:
+                        <input className="form-input" type="file" onChange={(e) => setAudio(e.target.files[0])} />
+                    </label>
 
-            <button type="submit">{taskToEdit ? 'Edytuj zadanie' : 'Dodaj zadanie'}</button>
-        </form>
+                    <button type="submit">{taskToEdit ? 'Edytuj zadanie' : 'Dodaj zadanie'}</button>
+                </form>
+                <button className="mainBut" onClick={closeForm}>Zamknij</button>
+            </div>
+        </div>
     );
 };
 
