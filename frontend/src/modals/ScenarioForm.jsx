@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './forms.css';
+import '../styles/forms.css';
 
 const ScenarioForm = ({ refreshScenarios, closeForm, scenarioToEdit  }) => {
     const [title, setTitle] = useState('');

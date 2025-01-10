@@ -1,8 +1,8 @@
 import React, { use, useEffect, useState } from 'react';
 import axios from 'axios';
-import api from './services/api'
-import './TasksPlayList.css';
-import userIcon from './assets/user-icon.svg';
+import api from '../services/api'
+import '../styles/TasksPlayList.css';
+import userIcon from '../assets/user-icon.svg';
 
 const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     const [currentIndex, setCurrentIndex] = useState(0);

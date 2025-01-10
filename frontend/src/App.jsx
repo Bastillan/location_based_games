@@ -4,7 +4,7 @@ import Home from './pages/Home';
 import NoPage from './pages/NoPage';
 import { AuthProvider } from './services/AuthProvider';
 
-import './App.css';
+import './styles/App.css';
 import AdminPage from './pages/AdminPage';
 import UserPage from './pages/UserPage';
 

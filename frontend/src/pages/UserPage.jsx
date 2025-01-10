@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import TasksPlayList from '../TasksPlayList';
-import '../mainView.css';
+import TasksPlayList from '../components/TasksPlayList';
 
 import api from '../services/api';
 

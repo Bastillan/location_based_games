@@ -1,11 +1,9 @@
 import {useState, useEffect} from 'react';
-import TaskForm from '../TaskForm';
-import TaskList from '../TaskList';
-import ScenarioForm from '../ScenarioForm';
-import ScenarioList from '../ScenarioList';
-import GameForm from '../GameForm';
-import TasksPlayList from '../TasksPlayList';
-import MailForm from '../MailForm';
+import TaskForm from '../modals/TaskForm';
+import ScenarioForm from '../modals/ScenarioForm';
+import ScenarioList from '../components/ScenarioList';
+import GameForm from '../modals/GameForm';
+import MailForm from '../modals/MailForm';
 import api from '../services/api'; // if api key should be attached to the api request replace axios with api
 
 const AdminPage = () => {
@@ -16,7 +14,6 @@ const AdminPage = () => {
     const [isScenarioFormVisible, setIsScenarioFormVisible] = useState(false);
     const [games, setGames] = useState([]);
     const [isGamesListVisible, setIsGamesListVisible] = useState(true);
-    const [selectedGame, setSelectedGame] = useState(null);
     const [isGameFormVisible, setIsGameFormVisible] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [scenarioToEdit, setScenarioToEdit] = useState(null);
@@ -145,12 +142,6 @@ const AdminPage = () => {
         fetchGames();
     }
 
-    const onGameSelect = (game) => {
-        setSelectedGame(game);
-
-        fetchTasks(game.scenario.id); // Fetch tasks for the selected game
-    };
-
     const refreshGames = () => {
         fetchGames();
     }
@@ -162,10 +153,6 @@ const AdminPage = () => {
     const handleActivateGame = (scenario) => {
         setScenarioForGame(scenario)
         setIsGameFormVisible(true);
-    };
-
-    const handleBackToGamesList = () => {
-        setSelectedGame(null);
     };
 
     const openMailForm = (gameId) => {
@@ -244,52 +231,46 @@ const AdminPage = () => {
             ) : (
                 <div>
                     {isGamesListVisible ? (
-                        <div>
-                            {selectedGame ? (
-                                <TasksPlayList game={selectedGame} tasks={tasks} handleBackToGamesList={handleBackToGamesList} />
-                            ) : (
-                                <div className="gamesView">
-                                    <button className="mainBut powrot" onClick={handleBackToList}>Scenariusze</button>
-                                    <h1>Aktywne gry</h1>
-                                    <div className="gamesList">
-                                        {games.map((game) => {
-                                            const TempBeginningDate = new Date(game.beginning_date);
-                                            const TempEndDate = new Date(game.end_date);
-                                            const formattedBeginningDate = TempBeginningDate.toLocaleDateString('pl-PL', {
-                                                year: 'numeric',
-                                                month: 'long',
-                                                day: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                            });
-                                            const formattedEndDate = TempEndDate.toLocaleDateString('pl-PL', {
-                                                year: 'numeric',
-                                                month: 'long',
-                                                day: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                            });
-                                            return(
-                                                <div className="gameItem" key={game.id}>
-                                                    <h3>{game.title}</h3>
-                                                    <p><b>Start:</b> {formattedBeginningDate}</p>
-                                                    <p><b>Koniec:</b> {formattedEndDate}</p>
-                                                    <p><b>Opis:</b> {game.scenario.description}</p>
-                                                    {game.scenario.image && (
-                                                        <img src={game.scenario.image} alt={game.scenario.title} style={{ width: '100%' }} />
-                                                    )}
-                                                    <div className="butons">
-                                                        <button className="mainBut" onClick={() => openMailForm(game.id)}>
-                                                            Wyślij e-maile
-                                                        </button>
-                                                    </div>
-                                                    <button className="mainBut" onClick={() => handleDeleteGame(game.id)}>Usuń</button>
-                                                </div>
-                                            )
-                                        })}
-                                    </div>
-                                </div>
-                            )}
+                        <div className="gamesView">
+                            <button className="mainBut powrot" onClick={handleBackToList}>Scenariusze</button>
+                            <h1>Aktywne gry</h1>
+                            <div className="gamesList">
+                                {games.map((game) => {
+                                    const TempBeginningDate = new Date(game.beginning_date);
+                                    const TempEndDate = new Date(game.end_date);
+                                    const formattedBeginningDate = TempBeginningDate.toLocaleDateString('pl-PL', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                    });
+                                    const formattedEndDate = TempEndDate.toLocaleDateString('pl-PL', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                    });
+                                    return(
+                                        <div className="gameItem" key={game.id}>
+                                            <h3>{game.title}</h3>
+                                            <p><b>Start:</b> {formattedBeginningDate}</p>
+                                            <p><b>Koniec:</b> {formattedEndDate}</p>
+                                            <p><b>Opis:</b> {game.scenario.description}</p>
+                                            {game.scenario.image && (
+                                                <img src={game.scenario.image} alt={game.scenario.title} style={{ width: '100%' }} />
+                                            )}
+                                            <div className="butons">
+                                                <button className="mainBut" onClick={() => openMailForm(game.id)}>
+                                                    Wyślij e-maile
+                                                </button>
+                                            </div>
+                                            <button className="mainBut" onClick={() => handleDeleteGame(game.id)}>Usuń</button>
+                                        </div>
+                                    )
+                                })}
+                            </div>
                         </div>
                     ) : (
                         <div>

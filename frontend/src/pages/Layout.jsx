@@ -6,7 +6,7 @@ import { useState } from 'react';
 import Login from '../modals/Login';
 import Register from '../modals/Register';
 
-import '../mainView.css';
+import '../styles/Layout.css';
 
 const Layout = () => {
     const { user, logout } = useAuth();
@@ -20,40 +20,42 @@ const Layout = () => {
     }
 
     return (
-        <div className="main">
+        <div>
             <header>
-                <nav className='logNav'>
-                    {user ? (
-                        <button className='mainBut logout' onClick={handleLogout}>Wyloguj się</button>
-                    ) : (
+                    <nav className='logNav'>
+                        {user ? (
+                            <button className='mainBut logout' onClick={handleLogout}>Wyloguj się</button>
+                        ) : (
+                            <>
+                                <button className='mainBut register' onClick={() => setIsRegisterFormVisible(true)}>Zarejestruj się</button>
+                                <button className='mainBut login' onClick={() => setIsLoginFormVisible(true)}>Zaloguj się</button>
+                            </>
+                        )}
+                    </nav>
+                </header>
+            <div className="main">
+                <main>
+                    <Outlet />
+                    {isRegisterFormVisible && (
                         <>
-                            <button className='mainBut register' onClick={() => setIsRegisterFormVisible(true)}>Zarejestruj się</button>
-                            <button className='mainBut login' onClick={() => setIsLoginFormVisible(true)}>Zaloguj się</button>
+                            <div className='overlay'></div>
+                            <div className='modal'>
+                                <Register />
+                                <button className='mainBut' onClick={() => setIsRegisterFormVisible(false)}>Zamknij</button>
+                            </div>
                         </>
                     )}
-                </nav>
-            </header>
-            <main>
-                <Outlet />
-                {isRegisterFormVisible && (
-                    <>
-                        <div className='overlay'></div>
-                        <div className='modal'>
-                            <Register />
-                            <button className='mainBut' onClick={() => setIsRegisterFormVisible(false)}>Zamknij</button>
-                        </div>
-                    </>
-                )}
-                {isLoginFormVisible && (
-                    <>
-                        <div className='overlay'></div>
-                        <div className='modal'>
-                            <Login />
-                            <button className='mainBut' onClick={() => setIsLoginFormVisible(false)}>Zamknij</button>
-                        </div>
-                    </>
-                )}
-            </main>
+                    {isLoginFormVisible && (
+                        <>
+                            <div className='overlay'></div>
+                            <div className='modal'>
+                                <Login />
+                                <button className='mainBut' onClick={() => setIsLoginFormVisible(false)}>Zamknij</button>
+                            </div>
+                        </>
+                    )}
+                </main>
+            </div>
         </div>
     )
 }

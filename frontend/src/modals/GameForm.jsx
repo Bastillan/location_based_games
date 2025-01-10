@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import DateTimePicker from 'react-datetime-picker';
 import axios from 'axios';
-import './forms.css';
+import '../styles/forms.css';
 import 'react-datetime-picker/dist/DateTimePicker.css'
 
 const GameForm = ({ selectedScenario, refreshGames, closeForm  }) => {
