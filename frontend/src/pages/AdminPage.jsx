@@ -279,13 +279,7 @@ const AdminPage = () => {
                                 </>
                             )}
                             {isGameFormVisible && (
-                                <>
-                                    <div className="overlay"></div>
-                                    <div className="modal">
-                                        <GameForm selectedScenario={scenarioForGame} refreshGames={refreshGames} closeForm={closeGameForm} />
-                                        <button className="mainBut" onClick={closeGameForm}>Zamknij</button>
-                                    </div>
-                                </>
+                                <GameForm selectedScenario={scenarioForGame} refreshGames={refreshGames} closeForm={closeGameForm} />
                             )}
                             {/* <ScenarioForm refreshScenarios={refreshScenariosAndTasks} /> */}
                             <ScenarioList scenarios={scenarios} onScenarioSelect={handleScenarioSelect} onDeleteScenario={handleDeleteScenario} onEditScenario={handleEditScenario} onActivateGame={handleActivateGame}/>

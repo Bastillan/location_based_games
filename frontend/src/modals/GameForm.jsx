@@ -29,27 +29,32 @@ const GameForm = ({ selectedScenario, refreshGames, closeForm  }) => {
     };
 
     return (
-        <form className="form-container" onSubmit={handleSubmit}>
-            <input
-                type="text"
-                placeholder="Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="form-input"
-                required
-            />
-            <div className='razem'>
-                <div className='date'>
-                    <label htmlFor="beginning-date">Czas rozpoczęcia</label>
-                    <DateTimePicker id="beginning-date" onChange={(date) => setBeginningDate(date)} value={beginning_date} />
-                </div>
-                <div className='date'>
-                    <label htmlFor="end-date">Czas zakończenia</label>
-                    <DateTimePicker id="end-date" label="Czas zakończenia" onChange={(date) => setEndDate(date)} value={end_date} />
-                </div>
+        <div className='overlay'>
+            <div className='modal'>
+                <form className="form-container" onSubmit={handleSubmit}>
+                    <input
+                        type="text"
+                        placeholder="Title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        className="form-input"
+                        required
+                    />
+                    <div className='razem'>
+                        <div className='date'>
+                            <label htmlFor="beginning-date">Czas rozpoczęcia</label>
+                            <DateTimePicker id="beginning-date" onChange={(date) => setBeginningDate(date)} value={beginning_date} />
+                        </div>
+                        <div className='date'>
+                            <label htmlFor="end-date">Czas zakończenia</label>
+                            <DateTimePicker id="end-date" label="Czas zakończenia" onChange={(date) => setEndDate(date)} value={end_date} />
+                        </div>
+                    </div>
+                    <button type="submit">Zaplanuj grę</button>
+                </form>
+                <button className="mainBut" onClick={closeForm}>Zamknij</button>
             </div>
-            <button type="submit">Zaplanuj grę</button>
-        </form>
+        </div>
     );
 };
 
