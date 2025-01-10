@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 
 import api from '../services/api';
 
-const Home = (openLoginForm) => {
+const Home = () => {
     const { user } = useAuth();
     const [games, setGames] = useState([]);
 
@@ -62,9 +62,6 @@ const Home = (openLoginForm) => {
                                         {game.scenario.image && (
                                             <img src={game.scenario.image} alt={game.scenario.title} style={{ width: '100%' }} />
                                         )}
-                                        <div className="butons">
-                                            <button className="mainBut select" onClick={openLoginForm}>Zagraj</button>
-                                        </div>
                                     </div>
                                 )
                             })}
