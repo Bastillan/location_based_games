@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import api from '../services/api'
 
 import { useAuth } from '../services/AuthProvider';
+import { useNavigate } from 'react-router-dom';
 
 const Login = ({ setToken }) => {
     const { login } = useAuth();
     const [credentials, setCredentials] = useState({ username: "", password: "" });
     const [message, setMessage] = useState("");
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -19,6 +21,7 @@ const Login = ({ setToken }) => {
             const {access, refresh} = response.data;
             login(access, refresh)
             setMessage("Pomyślnie zalogowano");
+            navigate('/');
         } catch (error) {
             setMessage("Nieprawidłowa nazwa uzytkownika lub hasło. Spróbuj ponownie.");
         }
