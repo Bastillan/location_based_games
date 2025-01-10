@@ -7,7 +7,9 @@ body, html {
   justify-content: center;
   align-items: flex-start;
   /* background: linear-gradient(135deg, #DDD0C8, #7c5b47); */
-  overflow: auto;
+  /* overflow: auto; */
+  overflow-x: hidden;
+  overflow-y: auto; 
   background: linear-gradient(0deg,  #DDD0C8, #4E3822);
   font-family: 'Georgia', serif;
   color: #3C2A1F;
@@ -19,7 +21,9 @@ body, html {
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: auto;
+  /* overflow: auto; */
+  overflow-x: hidden;
+  overflow-y: auto; 
 }
 
 body {
@@ -106,6 +110,7 @@ button.addTask {
 
 .main {
   text-align: center;
+  width:fit-content;
 }
 
 .tasksList {

@@ -35,3 +35,6 @@ Następnie należy uruchomić drugi terminal, również w głównym folderze. W 
 Po wykonaniu migracji aplikacja będzie dostępna pod adresem
 
 `http://<machine_ip_address>:5173`
+
+## Dokumentacja projektu
+Pełna dokumentacja projektu znajduje sie w pliku `raport.pdf` w katalogu głównym repozytorium.
