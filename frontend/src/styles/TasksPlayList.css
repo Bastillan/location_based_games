@@ -66,6 +66,12 @@ div.answer_images {
     gap: 12px;
 }
 
+.task_image
+{
+    width: 70%;
+    margin: 15px;
+}
+
 div.image_container {
     border: 5px solid #dddddd;
     border-radius: 5px;

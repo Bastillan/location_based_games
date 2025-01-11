@@ -151,7 +151,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
         const currentTaskId = tasks[currentIndex]?.id;
         if (currentTaskId) {
             fetchImageAnswers(currentTaskId);
-            fetchCompletionCount(currentTaskId); 
+            fetchCompletionCount(currentTaskId);
         }
     }, [currentIndex, tasks]);
 
@@ -216,7 +216,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                         </div>
                         <p style={{marginTop: "3px"}}>Opis zadania: {tasks[currentIndex].description}</p>
                         {tasks[currentIndex].image && (
-                            <img src={tasks[currentIndex].image} alt="obraz" />
+                            <img src={tasks[currentIndex].image} className="task_image" alt="obraz" />
                         )}
                         {tasks[currentIndex].audio && (
                             <audio controls>
