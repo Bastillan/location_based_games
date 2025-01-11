@@ -1,0 +1,119 @@
+.form-container {
+    display: flex;
+    flex-direction: column; /* Układ pionowy */
+    gap: 10px; /* Odstępy między elementami */
+    width: fit-content;
+    max-height: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 98%;
+}
+
+.form-input {
+    padding: 10px;
+    margin: 5px 0;
+    font-size: 16px;
+    width: 100%;
+    max-width:100%;
+    box-sizing: border-box;
+    border-radius: 4px;
+}
+
+.form-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-align:left;
+}
+
+input[type="file"] {
+    padding: 5px;
+    font-size: 14px;
+}
+
+.razem {
+    margin-bottom:30px;
+}
+
+.date {
+    display:inline-block;
+    margin-left:5px;
+    margin-right:5px;
+}
+
+.date label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    display: block;
+}
+
+.emailStatus {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.form-container button {
+    margin-left:5px;
+    margin-right:5px;
+    padding: 10px 15px;
+    background-color: #323232;
+    border: none;
+    color: #DDD0C8;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.form-container button:hover {
+    background-color: #1a1919;
+}  
+
+
+.date button {
+    background-color: #cfc3bb;
+    border:1px solid #323232;
+    color: #323232;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 3px 3px;
+    margin:0px;
+    font-weight: bold; 
+}
+
+.date button:hover {
+    background-color: #BAAFA8;
+}  
+
+
+.date-picker-container {
+    position: relative;
+    z-index: 50;
+}
+
+.react-datetime-picker {
+    position: relative;
+    z-index: 100;
+}
+
+.react-datetime-picker__calendar .react-calendar {
+    background-color: #BAAFA8;
+    border: 2px solid #323232;
+    border-radius: 20px;
+    margin-top:5px;
+    padding:10px 10px;
+    width:100%;
+} 
+
+.react-calendar__month-view__weekdays {
+    text-align: center; 
+    font-weight: bold; 
+}
+
+.react-calendar__tile.react-calendar__tile--now {
+    background-color: #827a75;
+    color: #DDD0C8;
+}
+
+.react-calendar__tile.react-calendar__tile--active {
+    background-color: #323232;
+    color: #DDD0C8;
+}

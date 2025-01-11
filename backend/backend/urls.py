@@ -19,12 +19,11 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from . import views
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('test/', views.send_some_data),
     path('api/', include('tasks.urls')),
+    path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.jwt')),
 ]
 
 if settings.DEBUG:

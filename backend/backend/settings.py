@@ -21,13 +21,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-76d4ofmp7z2#@h2i5x%5@1%ch^r!@+viud!3($+oo8&*s1uml%'
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY', default='django-insecure-76d4ofmp7z2#@h2i5x%5@1%ch^r!@+viud!3($+oo8&*s1uml%')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = int(os.environ.get('DEBUG', default=1))
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = os.environ.get(
+    'DJANGO_ALLOWED_HOSTS', default='localhost 127.0.0.1').split(" ")
 
 # Application definition
 
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+    'djoser',
     'rest_framework',
     'tasks',
 ]
@@ -54,7 +56,20 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS=True
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",            # React running on localhost
+    # React app on your local network IP
+    os.environ.get('VITE_API_URL')[:-5],
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",            # React running on localhost
+    # React app on your local network IP
+    os.environ.get('VITE_API_URL')[:-5],
+]
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -82,15 +97,30 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'db',
-        'PORT': '5432',
+        'ENGINE': os.environ.get('SQL_ENGINE', 'django.db.backends.postgresql_psycopg2'),
+        'NAME': os.environ.get('SQL_DATABASE', 'postgres'),
+        'USER': os.environ.get('SQL_USER', 'postgres'),
+        'PASSWORD': os.environ.get('SQL_PASSWORD', 'postgres'),
+        'HOST': os.environ.get('SQL_HOST', 'db'),
+        'PORT': os.environ.get('SQL_PORT', '5432'),
     }
 }
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('JWT',),
+}
+
+DJOSER = {
+    'SERIALIZERS': {
+        'current_user': 'tasks.serializers.UserSerializer'
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -136,7 +166,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
+"""
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -152,3 +182,17 @@ LOGGING = {
         },
     },
 }
+"""
+
+
+# Email
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'tasks.backend.email_backend.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'pzsp9502@gmail.com'
+EMAIL_HOST_PASSWORD = 'ljze bibu qrzn fnmc'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+SSL_CERTIFICATE_VERIFY = False

@@ -1,0 +1,155 @@
+div.registerToGame {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+button.registerToGame {
+    margin-left:5px;
+    margin-right:5px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding: 10px 15px;
+    background-color: #323232;
+    border: none;
+    color: #DDD0C8;
+    cursor: pointer;
+    border-radius: 10px;
+  }
+
+  button:hover.registerToGame {
+    background-color: #1a1919;
+  }
+
+
+button.previous, button.submit, button.next {
+    margin-left:5px;
+    margin-right:5px;
+    padding: 10px 15px;
+    background-color: #323232;
+    border: none;
+    color: #DDD0C8;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+button:hover.previous, button:hover.submit, button:hover.next {
+    background-color: #1a1919;
+}
+
+button:disabled.previous, button:disabled.submit, button:disabled.next {
+    background-color: #747171;
+}
+
+div.buttons {
+    margin-top: 10px;
+}
+
+.task {
+    border: 2px solid #323232;
+    border-radius: 10px;
+    background-color: #cfc3bb;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 10px;
+    padding-right: 10px;
+    padding-left: 10px;
+    position: relative;
+    min-width: 200px;
+}
+
+div.answer_images {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.task_image
+{
+    width: 70%;
+    margin: 15px;
+}
+
+div.image_container {
+    border: 5px solid #dddddd;
+    border-radius: 5px;
+    width: 100%;
+    height: max-content;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+div.image_container.highlighted {
+    border: 5px solid #2C1B01;
+    border-radius: 5px;
+    width: 100%;
+    height: max-content;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+div.location_container {
+    height: max-content;
+    display: flex;
+    justify-content: center;
+}
+
+img.answer_image {
+    width: 100%;
+    height: auto;
+    object-fit:cover;
+}
+
+p.message {
+    color:#9a0a0a;
+}
+
+
+
+.circular-progress-container {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+.circular-progress {
+    width: 50px;
+    height: 50px;
+}
+
+.circle-bg {
+    fill: none;
+    stroke: #e0e0df;
+    stroke-width: 3.8;
+}
+
+.circle {
+    fill: none;
+    stroke: #2C1B01;
+    stroke-width: 3.8;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.3s ease;
+}
+
+.percentage {
+    font-size: 10px;
+    fill: #1a1919;
+    text-anchor: middle;
+}
+
+
+.teamsNum {
+    position: absolute;
+    right:3px;
+    top: 68px;
+}
