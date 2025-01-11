@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from .models import Task, Scenario, Game, User, AnswerImages, Team, CompletedTask
-from .serializers import (TaskSerializer, ScenarioSerializer, GameSerializer, UserSerializer, AnswerImagesSerializer, 
+from .serializers import (TaskSerializer, ScenarioSerializer, GameSerializer, UserSerializer, AnswerImagesSerializer,
                           TeamSerializer, UserProfileSerializer, EmailSerializer, CompletedTaskSerializer)
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
@@ -17,11 +17,13 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rapidfuzz import fuzz
 from itertools import permutations
+from .permissions import IsStaff
+
 
 class ScenarioViewSet(viewsets.ModelViewSet):
     queryset = Scenario.objects.all()
     serializer_class = ScenarioSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsStaff]
 
     @action(detail=True, methods=['get'])
     def get_tasks(self, request, pk=None):
@@ -200,21 +202,20 @@ class TaskViewSet(viewsets.ModelViewSet):
             perms = permutations(text_to_compare, perm_length)
             for elem in list(perms):
                 results.append(fuzz.ratio(correct_text, "".join(elem)))
-        return(max(results) >= min_accuracy)
+        return (max(results) >= min_accuracy)
 
 
 class GameViewSet(viewsets.ModelViewSet):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
 
-
     def get_permissions(self):
         if self.action == 'create':
-            return [IsAuthenticated()]
+            return [IsStaff()]
         elif self.action == 'retrieve':
             return [AllowAny()]
         return super().get_permissions()
-    
+
     def create(self, request):
         title = request.data.get('title')
         beginning_date = request.data.get('beginning_date').split(" (")[0]
@@ -248,7 +249,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class TeamViewSet(viewsets.ModelViewSet):
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
-    
+
     def get_permissions(self):
         if self.action == 'create':
             return [IsAuthenticated()]
@@ -320,14 +321,15 @@ def send_email(request):
                 print(f"Subject: {subject}")
                 print(f"Message: {message}")
 
-                send_mail(subject, message, settings.EMAIL_HOST_USER, recipients)
+                send_mail(subject, message,
+                          settings.EMAIL_HOST_USER, recipients)
                 return Response({"message": "Emails sent successfully!"}, status=status.HTTP_200_OK)
             except Exception as e:
                 print(f"Error: {str(e)}")
                 return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 class TaskCompletionView(viewsets.ModelViewSet):
     queryset = CompletedTask.objects.all()
@@ -346,7 +348,7 @@ class TaskCompletionView(viewsets.ModelViewSet):
         print("1")
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
+
     def get_queryset(self):
         task_id = self.request.query_params.get('task', None)
         if task_id is not None:
