@@ -21,18 +21,21 @@ from .permissions import IsStaff
 
 
 class ScenarioViewSet(viewsets.ModelViewSet):
+    """Used for managing scenarios"""
     queryset = Scenario.objects.all()
     serializer_class = ScenarioSerializer
     permission_classes = [IsStaff]
 
     @action(detail=True, methods=['get'])
     def get_tasks(self, request, pk=None):
+        """Returns list of scenario tasks"""
         scenario = self.get_object()
         tasks = scenario.tasks.all()
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
 
     def perform_create(self, serializer):
+        """Create new scenario"""
         scenario = serializer.save()
 
         tasks = self.request.data.get('tasks', [])
@@ -58,11 +61,13 @@ class ScenarioViewSet(viewsets.ModelViewSet):
 
 
 class AnswerImagesSet(viewsets.ModelViewSet):
+    """User for managing answer images"""
     queryset = AnswerImages.objects.all()
     serializer_class = AnswerImagesSerializer
     permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
+        """Returns list of task images using for answering""" 
         task_id = request.query_params.get('task_id', None)
         if task_id:
             self.queryset = self.queryset.filter(task=task_id)
@@ -76,16 +81,19 @@ class AnswerImagesSet(viewsets.ModelViewSet):
 
 
 class TaskViewSet(viewsets.ModelViewSet):
+    """Used for managing tasks"""
     queryset = Task.objects.all().order_by('number')
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
     def destroy(self, request, *args, **kwargs):
+        """Deleting tasks"""
         task = self.get_object()
         task.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def perform_create(self, serializer):
+        """Creating new task"""
         scenario_id = self.request.data.get('scenario')
         correct_images = self.request.FILES.getlist('correctImages')
         incorrect_images = self.request.FILES.getlist('incorrectImages')
@@ -93,6 +101,7 @@ class TaskViewSet(viewsets.ModelViewSet):
             raise serializers.ValidationError(
                 {"scenario": "Scenario ID is required."})
 
+        # Automatic setting number of task
         number = self.request.data.get('number')
         if number:
             try:
@@ -117,6 +126,7 @@ class TaskViewSet(viewsets.ModelViewSet):
                 task=task, is_correct=False, image=incorrect_image)
 
     def perform_update(self, serializer):
+        """updating task"""
         instance = self.get_object()
         scenario_id = instance.scenario_id
         new_number = serializer.validated_data.get('number')
@@ -151,6 +161,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def shift_task_numbers(self, request, pk=None):
+        """Change task number"""
         task = self.get_object()
         Task.objects.filter(number__gt=task.number).update(
             number=F('number') + 1)
@@ -159,12 +170,14 @@ class TaskViewSet(viewsets.ModelViewSet):
         return Response({"status": "updated"})
 
     def get_queryset(self):
+        """Returns list of scenario tasks"""
         scenario_id = self.request.query_params.get('scenario', None)
         if scenario_id is not None:
             return Task.objects.filter(scenario_id=scenario_id).order_by('number')
         return Task.objects.all()
 
     def list(self, request, *args, **kwargs):
+        """Returns list of scenario tasks"""
         scenario_id = request.query_params.get('scenario', None)
         if scenario_id:
             self.queryset = self.queryset.filter(scenario_id=scenario_id)
@@ -172,6 +185,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["get"], url_path='check-answer', url_name='check-answer')
     def check_answer(self, request):
+        """Checks answer is correct depending on the answer type"""
         answer_type = request.query_params.get("answer_type")
         answer = request.query_params.get("answer")
         task_id = request.query_params.get("task_id")
@@ -193,6 +207,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         return Response({"is_correct": result})
 
     def compare_text(self, correct_text: str, text_to_compare: str, min_accuracy: int = 85):
+        """Comparing text and returns True or False if text is simmilar, important!: do not replace correct_text with text_to_compare"""
         correct_text = "".join(correct_text.lower().split(" "))
         text_to_compare = text_to_compare.lower().split(" ")
         if len(text_to_compare) > 6:
@@ -206,10 +221,12 @@ class TaskViewSet(viewsets.ModelViewSet):
 
 
 class GameViewSet(viewsets.ModelViewSet):
+    """Used for managing scheduled games"""
     queryset = Game.objects.all()
     serializer_class = GameSerializer
 
     def get_permissions(self):
+        """Checks user has privilages to perform action"""
         if self.action == 'create':
             return [IsStaff()]
         elif self.action == 'retrieve':
@@ -217,6 +234,7 @@ class GameViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
 
     def create(self, request):
+        """Create new scheduled game"""
         title = request.data.get('title')
         beginning_date = request.data.get('beginning_date').split(" (")[0]
         end_date = request.data.get('end_date').split(" (")[0]
@@ -241,16 +259,19 @@ class GameViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    """Used for managing user data"""
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
 
 class TeamViewSet(viewsets.ModelViewSet):
+    """Used for managing teams"""
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
 
     def get_permissions(self):
+        """Checks user has privilages to perform action"""
         if self.action == 'create':
             return [IsAuthenticated()]
         elif self.action == 'retrieve':
@@ -258,11 +279,13 @@ class TeamViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
 
     def get(self, request):
+        """Return data of team"""
         teams = Team.objects.all()
         serializer = TeamSerializer(teams, many=True)
         return Response(serializer.data)
 
     def create(self, request):
+        """Create new team"""
         user = request.user
         user_profile = User.objects.get(user=user)
 
@@ -288,11 +311,13 @@ class TeamViewSet(viewsets.ModelViewSet):
 
 
 class UserProfileViewSet(viewsets.ViewSet):
+    """Used for managing user data"""
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
     def create(self, request):
+        """Create new user"""
         auth_user = request.user
 
         if User.objects.filter(user=auth_user).exists():
@@ -306,6 +331,7 @@ class UserProfileViewSet(viewsets.ViewSet):
 
 @api_view(['POST'])
 def send_email(request):
+    """Send emails to users"""
     if request.method == 'POST':
         serializer = EmailSerializer(data=request.data)
         if serializer.is_valid():
@@ -332,11 +358,13 @@ def send_email(request):
 
 
 class TaskCompletionView(viewsets.ModelViewSet):
+    """Used for managing completed tasks"""
     queryset = CompletedTask.objects.all()
     serializer_class = CompletedTaskSerializer
     permission_classes = [IsAuthenticated]
 
     def create(self, request):
+        """Adding completed task to database"""
         team_id = request.data.get("team")
         team = get_object_or_404(Team, id=team_id)
 
@@ -350,6 +378,7 @@ class TaskCompletionView(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
+        """Return completed tasks"""
         task_id = self.request.query_params.get('task', None)
         if task_id is not None:
             return CompletedTask.objects.filter(task_id=task_id)

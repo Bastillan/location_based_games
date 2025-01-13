@@ -3,6 +3,7 @@ from django.conf import settings
 
 
 class Scenario(models.Model):
+    """Scenario model using for storing scenarios"""
     title = models.CharField(max_length=200)
     description = models.TextField()
     image = models.ImageField(upload_to='scenarios/', blank=True, null=True)
@@ -11,6 +12,7 @@ class Scenario(models.Model):
         return self.title
 
 class Task(models.Model):
+    """Task model using for storing tasks of scenario with descriptions and answers"""
     scenario = models.ForeignKey(Scenario, related_name='tasks', on_delete=models.CASCADE, null=True)
     number = models.PositiveIntegerField()
     description = models.TextField()
@@ -23,11 +25,13 @@ class Task(models.Model):
         return f"Task {self.number}: {self.description[:20]}"
 
 class AnswerImages(models.Model):
-    task = models.ForeignKey(Task, related_name='IncorrectImages', on_delete=models.CASCADE, null=True)
+    """AnswerImages model using for storing images for task, Task should include minimum 1 correct and 3 incorrect images."""
+    task = models.ForeignKey(Task, related_name='AnswerImages', on_delete=models.CASCADE, null=True)
     is_correct = models.BooleanField(default=False)
     image  = models.ImageField(upload_to='images/', blank=True, null=True)
 
 class Game(models.Model):
+    """Game model using for storing game with her scenario, title, beginning and end date."""
     scenario = models.ForeignKey(Scenario, related_name="games", on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     beginning_date = models.DateTimeField()
@@ -37,9 +41,11 @@ class Game(models.Model):
         return f"Game {self.title}: from {self.beginning_date} to {self.end_date}"
 
 class User(models.Model):
+    """User model, allows storing users data such as username, passowrd, team"""
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
 class Team(models.Model):
+    """Team model using for storing completed tasks and number of participants without account"""
     user = models.ForeignKey(User, related_name="teams", on_delete=models.CASCADE)
     game = models.ForeignKey(Game, related_name="teams", on_delete=models.CASCADE)
 
@@ -47,5 +53,6 @@ class Team(models.Model):
         return f"Team of user: {self.user} in game: {self.game.title}"
 
 class CompletedTask(models.Model):
+    """CompletedTask model using for representing tasks done by team"""
     team = models.ForeignKey(Team, related_name="completedTasks", on_delete=models.CASCADE)
     task = models.ForeignKey(Task, related_name="completedTasks", on_delete=models.CASCADE)
