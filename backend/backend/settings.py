@@ -119,7 +119,8 @@ SIMPLE_JWT = {
 DJOSER = {
     'SERIALIZERS': {
         'current_user': 'tasks.serializers.UserSerializer'
-    }
+    },
+    'TOKEN_MODEL': None
 }
 
 # Password validation

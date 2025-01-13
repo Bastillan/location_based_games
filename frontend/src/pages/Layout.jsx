@@ -19,12 +19,20 @@ const Layout = () => {
         navigate('/');
     }
 
+    const handleAccountManagement = () => {
+        navigate('/account');
+    };
+
     return (
         <div>
             <header>
                     <nav className='logNav'>
                         {user ? (
-                            <button className='mainBut logout' onClick={handleLogout}>Wyloguj się</button>
+                            <>
+                                <button className='mainBut logout' onClick={handleLogout}>Wyloguj się</button>
+                                <button className='mainBut account' onClick={handleAccountManagement}>Zarządzaj kontem</button>
+                            </>
+
                         ) : (
                             <>
                                 <button className='mainBut register' onClick={() => setIsRegisterFormVisible(true)}>Zarejestruj się</button>

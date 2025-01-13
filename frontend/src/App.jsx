@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './pages/Layout';
 import Home from './pages/Home';
 import NoPage from './pages/NoPage';
+import AccountManagement from './pages/AccountManagement';
 import { AuthProvider } from './services/AuthProvider';
 import ProtectedRoute from './services/ProtectedRoute';
 
@@ -19,6 +20,7 @@ const App = () => {
                         <Route path="admin" element={<ProtectedRoute is_staff={true}><AdminPage /></ProtectedRoute>} />
                         <Route path="user" element={<ProtectedRoute is_staff={false}><UserPage /></ProtectedRoute>} />
                         <Route path="*" element={<NoPage/>} />
+                        <Route path="/account" element={<AccountManagement />} />
                     </Route>
                 </Routes>
             </BrowserRouter>
