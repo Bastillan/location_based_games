@@ -3,6 +3,7 @@ import api from './api';
 
 export const AuthContext = createContext(undefined);
 
+// Used for managing loggind, registers, tokens
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
 

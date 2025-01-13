@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../services/api'
 import '../styles/forms.css';
 
+//Used for creating new scenario
 const ScenarioForm = ({ refreshScenarios, closeForm, scenarioToEdit  }) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');

@@ -8,6 +8,7 @@ import RegisterForm from '../modals/RegisterForm';
 
 import '../styles/Layout.css';
 
+// Layout displaying on all pages
 const Layout = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();

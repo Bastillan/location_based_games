@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+// Used for sending emails to users
 const MailForm = ({ gameId, emailStatus, onClose, onSend }) => {
     const [subject, setSubject] = useState("Game Update");
     const [message, setMessage] = useState("Hello, there is a new update in the game. Please check it out.");

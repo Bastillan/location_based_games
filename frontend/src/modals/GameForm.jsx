@@ -4,6 +4,7 @@ import api from '../services/api'
 import '../styles/forms.css';
 import 'react-datetime-picker/dist/DateTimePicker.css'
 
+// Used for creating new scheduled game
 const GameForm = ({ selectedScenario, refreshGames, closeForm  }) => {
     const [title, setTitle] = useState('');
     const [beginning_date, setBeginningDate] = useState('');

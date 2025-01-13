@@ -4,6 +4,7 @@ import api from '../services/api'
 import { useAuth } from '../services/AuthProvider';
 import { useNavigate } from 'react-router-dom';
 
+// Used for login to application
 const LoginForm = ({ closeForm }) => {
     const { login } = useAuth();
     const [credentials, setCredentials] = useState({ username: "", password: "" });

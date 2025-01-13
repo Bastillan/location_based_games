@@ -1,5 +1,6 @@
 import '../styles/ScenarioList.css';
 
+// Used for displaying list of scenarios
 const ScenarioList = ({ scenarios, onScenarioSelect, onDeleteScenario, onEditScenario, onActivateGame }) => {
     return (
         <div>

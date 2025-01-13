@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// Used for user authentications in API requests
 const api = axios.create({
   baseURL: "",
 });
@@ -25,16 +26,19 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
+        // Session refresh
         const refreshToken = localStorage.getItem("refresh");
         if (!refreshToken) {
           throw new Error("Log in again");
         }
 
+        // Request to API to refresh session
         const response = await axios.post(
           "/auth/jwt/refresh/",
           { refresh: refreshToken }
         );
 
+        // Storaging access data in local storage
         localStorage.setItem("access", response.data.access);
 
         originalRequest.headers.Authorization = `JWT ${response.data.access}`;

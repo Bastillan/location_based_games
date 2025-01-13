@@ -3,6 +3,7 @@ import api from '../services/api'
 import '../styles/TasksPlayList.css';
 import userIcon from '../assets/user-icon.svg';
 
+// Used for displaying list of tasks in game
 const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [globalIndex, setGlobalIndex] = useState(0);
@@ -19,6 +20,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     const [completionCounts, setCompletionCounts] = useState({});
     const [teamId, setTeamId] = useState(null);
 
+    // Request to API to check answer is correct
     const checkAnswer = async (TaskId, AnswerType, Answer) => {
         try {
             const response = await api.get(`/api/tasks/check-answer/?answer_type=${AnswerType}&answer=${Answer}&task_id=${TaskId}`);
@@ -28,6 +30,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
         }
     };
 
+    // Request to API to register to game
     const handleRegisterToGame = async (e) => {
         e.preventDefault();
         setRegisterMessage(null);
@@ -88,6 +91,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
         })
     }
 
+    // Request to API to download all images for task
     const fetchImageAnswers = async (TaskId) => {
         try {
             const response = await api.get(`/api/answerimages/?task_id=${TaskId}`);
@@ -161,7 +165,6 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                 setIsNextDisabled(currentIndex >= tasks.length);
                 setGlobalIndex(globalIndex + 1);
                 setIsSubmitDisabled(true);
-                // setMessage(null);
                 createTaskCompletion(tasks[currentIndex].id);
                 setMessage('');
             } else {
@@ -175,6 +178,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     const completionPercentage = Math.round(((globalIndex) / tasks.length) * 100);
 
     return (
+        // Checking user registered to game
         userRegistered ? (
             <div className='task'>
                 <button className='mainBut powrot' onClick={handleBackToGamesList}>Wróć do listy gier</button>
@@ -202,6 +206,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                         <p>Udało Ci się przejść całą grę. Świetna robota!</p>
                     </div>
                 ) : (
+                // displaying tasks
                 <div>
                 {tasks.length > 0 && tasks[currentIndex] && (
                     <div>
@@ -228,6 +233,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                             <p className='message'>{message}</p>
                         )}
                         <div>
+                        {/* Checking type of answer */}
                         {tasks[currentIndex].answer_type === "text" && (
                             <textarea placeholder='Wprowadź odpowiedź' value={answer} onChange={(e) => setAnswer(e.target.value)}></textarea>
                         )}

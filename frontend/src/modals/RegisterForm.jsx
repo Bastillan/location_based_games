@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import api from '../services/api'
 
-
+// Used for registering to application
 const RegisterForm = ( {closeForm} ) => {
     const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState({

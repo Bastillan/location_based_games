@@ -3,12 +3,13 @@ import TasksPlayList from '../components/TasksPlayList';
 
 import api from '../services/api';
 
+// Used for displaying user view
 const UserPage = () => {
     const [games, setGames] = useState([]);
     const [selectedGame, setSelectedGame] = useState(null);
     const [tasks, setTasks] = useState([]);
 
-
+    // Fetching game active game list from API
     const fetchGames = async () => {
         try {
             const response = await api.get("/api/games/");
@@ -18,6 +19,7 @@ const UserPage = () => {
         }
     };
 
+    // Fetching scenario tasks list from API
     const fetchTasks = async (scenarioId) => {
         try {
             const response = await api.get(`/api/tasks/?scenario=${scenarioId}`);

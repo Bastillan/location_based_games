@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api'
 
+// Used for creating new task
 const TaskForm = ({ selectedScenario, refreshScenarios, closeForm, taskToEdit }) => {
     const [description, setDescription] = useState(taskToEdit ? taskToEdit.description : '');
     const [answer_type, setAnswerType] = useState(taskToEdit ? taskToEdit.answer_type : '');

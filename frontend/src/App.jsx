@@ -9,6 +9,7 @@ import './styles/App.css';
 import AdminPage from './pages/AdminPage';
 import UserPage from './pages/UserPage';
 
+// Generates main application view
 const App = () => {
     return (
         <AuthProvider>

@@ -6,6 +6,7 @@ import GameForm from '../modals/GameForm';
 import MailForm from '../modals/MailForm';
 import api from '../services/api'; // if api key should be attached to the api request replace axios with api
 
+// Used for displaying admin view
 const AdminPage = () => {
     const [scenarios, setScenarios] = useState([]);
     const [selectedScenario, setSelectedScenario] = useState(null);

@@ -4,11 +4,12 @@ import React, { useState, useEffect } from "react";
 
 import api from '../services/api';
 
+// Used for displaying home page
 const Home = () => {
     const { user } = useAuth();
     const [games, setGames] = useState([]);
 
-
+    // Fetch game list from API
     const fetchGames = async () => {
         try {
             const response = await api.get("/api/games/");
