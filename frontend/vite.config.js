@@ -19,6 +19,11 @@ export default ({ mode }) => {
           target: process.env.VITE_API_URL,
           changeOrigin: true,
           secure: false,
+        },
+        '/media': {
+          target: process.env.VITE_API_URL,
+          changeOrigin: true,
+          secure: false,
         }
       },
   }

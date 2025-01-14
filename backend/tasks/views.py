@@ -391,21 +391,29 @@ class TaskCompletionView(viewsets.ModelViewSet):
         scenario_id = request.query_params.get("scenario")
         completed_tasks = CompletedTask.objects.filter(team=team_id).order_by('-task__number')
         scenario_tasks = Task.objects.filter(scenario=scenario_id)
+        # if(scenario_tasks.filter(number=completed_tasks[0].task.number+1).exists())
         current_task = scenario_tasks.filter(number=completed_tasks[0].task.number+1)
         ended = False
-        if current_task.exists():
+        percentage = 0
+
+        # return(Response(current_task))
+
+        if len(current_task) == 1:
             serializer = TaskSerializer(current_task, many=True)
-            serialized_data = serializer.data
-            for task in serialized_data:
-                task.pop('correct_text_answer', None)
+            serialized_data = serializer.data[0]
+            percentage = (current_task[0].number-1)/len(scenario_tasks)
+            # for task in serialized_data:
+                # task.pop('correct_text_answer', None)
+            serialized_data.pop('correct_text_answer', None)
         else:
             ended = True
-            serialized_data = null
+            percentage = 1
+            serialized_data = {}
 
         response = {
             "ended": ended,
-            "percentage": (current_task[0].number-1)/len(scenario_tasks),
-            "current_task": serialized_data[0],
+            "percentage": percentage,
+            "current_task": serialized_data,
         }
         
         return(Response(response))

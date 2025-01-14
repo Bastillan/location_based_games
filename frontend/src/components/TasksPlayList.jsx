@@ -22,6 +22,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     const [taskData, setTaskData] = useState(null);
     const [completionPercentage, setCompletionPercentage] = useState(0);
     const [isGameEnded, setIsGameEnded] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     // Request to API to check answer is correct
     const checkAnswer = async (TaskId, AnswerType, Answer) => {
@@ -41,6 +42,8 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
             setIsGameEnded(response.data.ended);
         } catch (error) {
             console.error("Error getting task data: ", error)
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -63,7 +66,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                 setUserRegistered(true);
             } else if (error.response && error.response.status === 500) {
                 setRegisterMessage('Żeby dołączyć do gry trzeba się zalogować.');
-            }else {
+            } else {
                 setRegisterMessage('Wystąpił błąd: ' + error.message);
             }
         }
@@ -71,6 +74,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
 
     const handleNext = () => {
         if (currentIndex < tasks.length) {
+            getCurrentTask(teamId);
             setIsNextDisabled(currentIndex === globalIndex - 1);
             setIsSubmitDisabled(currentIndex !== globalIndex - 1);
             setCurrentIndex(currentIndex + 1);
@@ -90,7 +94,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     };
 
     const handleSubmit = () => {
-        checkAnswer(tasks[currentIndex].id, tasks[currentIndex].answer_type, answer);
+        checkAnswer(taskData.id, taskData.answer_type, answer);
     }
 
     const handleChooseImage = (id) => {
@@ -165,12 +169,16 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     }, []);
 
     useEffect(() => {
-        const currentTaskId = tasks[currentIndex]?.id;
-        if (currentTaskId) {
-            fetchImageAnswers(currentTaskId);
-            fetchCompletionCount(currentTaskId);
+        try {
+            const currentTaskId = taskData.id;
+            if (currentTaskId) {
+                fetchImageAnswers(currentTaskId);
+                fetchCompletionCount(currentTaskId);
+            }
+        } catch {
+
         }
-    }, [currentIndex, tasks]);
+    }, [taskData]);
 
     useEffect(() => {
         if (answer_correct[0] != null){
@@ -178,7 +186,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                 setIsNextDisabled(currentIndex >= tasks.length);
                 setGlobalIndex(globalIndex + 1);
                 setIsSubmitDisabled(true);
-                createTaskCompletion(tasks[currentIndex].id);
+                createTaskCompletion(taskData.id);
                 setMessage('');
             } else {
                 const currentTaskId = tasks[currentIndex]?.id;
@@ -192,6 +200,11 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     return (
         // Checking user registered to game
         userRegistered ? (
+            loading ? (
+                <div className="loading">
+                    <p>Ładowanie danych...</p>
+                </div>
+            ) : (
             <div className='task'>
                 <button className='mainBut powrot' onClick={handleBackToGamesList}>Wróć do listy gier</button>
                 <div className="circular-progress-container">
@@ -222,22 +235,22 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                 <div>
                 {tasks.length > 0 && tasks[currentIndex] && (
                     <div>
-                        <h3>Zadanie {currentIndex + 1}</h3>
+                        <h3>Zadanie {taskData.number}</h3>
                         <div className="teamsNum">
-                        {completionCounts[tasks[currentIndex]?.id] || 0}
+                        {completionCounts[taskData.number] || 0}
                         <img
                             src={userIcon}
                             alt="Ikona ludzika"
                             style={{ width: '30px', height: '30px', marginLeft: '2px', marginBottom: "-5px"}}
                         />
                         </div>
-                        <p style={{marginTop: "3px"}}>Opis zadania: {tasks[currentIndex].description}</p>
-                        {tasks[currentIndex].image && (
+                        <p style={{marginTop: "3px"}}>Opis zadania: {taskData.description}</p>
+                        {taskData.image && (
                             <img src={taskData.image} className="task_image" alt="obraz" />
                         )}
-                        {tasks[currentIndex].audio && (
+                        {taskData.audio && (
                             <audio controls>
-                                <source src={tasks[currentIndex].audio} type="audio/mpeg" />
+                                <source src={taskData.audio} type="audio/mpeg" />
                                 Your browser does not support the audio element.
                             </audio>
                         )}
@@ -246,13 +259,13 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                         )}
                         <div>
                         {/* Checking type of answer */}
-                        {tasks[currentIndex].answer_type === "text" && (
+                        {taskData.answer_type === "text" && (
                             <textarea placeholder='Wprowadź odpowiedź' value={answer} onChange={(e) => setAnswer(e.target.value)}></textarea>
                         )}
                         </div>
                         <div className='answer_images'>
                         {
-                            tasks[currentIndex].answer_type === "image" && (
+                            taskData.answer_type === "image" && (
                                 AnswerImages.map((answerImage) => (
                                 <div
                                     key={answerImage.id}
@@ -266,7 +279,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                             ))
                         )}
                         <div>
-                        {tasks[currentIndex].answer_type === "location" && (
+                        {taskData.answer_type === "location" && (
                             <div className='location_container'>
                                 <label>Szerokość geograficzna: {answer.split(',')[0]}</label><br></br>
                                 <label>Długość geograficzna: {answer.split(',')[1]}</label>
@@ -279,15 +292,22 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                 )}
                 </div>)}
                 <div className="buttons">
-                    <button className="previous" onClick={() => handlePrevious()} disabled={currentIndex === 0}>Poprzednie</button>
+                    {/* <button className="previous" onClick={() => handlePrevious()} disabled={currentIndex === 0}>Poprzednie</button> */}
                     {(currentIndex < tasks.length) && (
                         <>
+                        {
+                            !isGameEnded &&
                             <button className="submit" onClick={() => handleSubmit()} disabled={isSubmitDisabled}>Zatwierdź odpowiedź</button>
+                        }
+                        {
+                            !isGameEnded &&
                             <button className="next" onClick={() => handleNext()} disabled={isNextDisabled}>Następne</button>
+                        }
                         </>
                     )}
                 </div>
             </div>
+            )
         ) : (
             <div>
                 <button className='mainBut powrot' onClick={handleBackToGamesList}>Wróć do listy gier</button>
