@@ -83,15 +83,15 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
         }
     };
 
-    const handlePrevious = () => {
-        if (currentIndex > 0) {
-            setCurrentIndex(currentIndex - 1);
-            setIsNextDisabled(false);
-            setIsSubmitDisabled(true);
-            setAnswer("");
-            setMessage(null);
-        }
-    };
+    // const handlePrevious = () => {
+    //     if (currentIndex > 0) {
+    //         setCurrentIndex(currentIndex - 1);
+    //         setIsNextDisabled(false);
+    //         setIsSubmitDisabled(true);
+    //         setAnswer("");
+    //         setMessage(null);
+    //     }
+    // };
 
     const handleSubmit = () => {
         checkAnswer(taskData.id, taskData.answer_type, answer);
@@ -189,7 +189,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                 createTaskCompletion(taskData.id);
                 setMessage('');
             } else {
-                const currentTaskId = tasks[currentIndex]?.id;
+                const currentTaskId = tasks[currentIndex]?.idgry;
                 setMessage("Niepoprawna odpowiedź");
                 fetchImageAnswers(currentTaskId);
             }
