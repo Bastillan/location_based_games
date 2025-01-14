@@ -383,3 +383,30 @@ class TaskCompletionView(viewsets.ModelViewSet):
         if task_id is not None:
             return CompletedTask.objects.filter(task_id=task_id)
         return CompletedTask.objects.all()
+
+    @action(detail=False, methods=["get"], url_path='current-task', url_name='current-task')
+    def current_task(self, request):
+        """Return current task to do"""
+        team_id = request.query_params.get("team")
+        scenario_id = request.query_params.get("scenario")
+        completed_tasks = CompletedTask.objects.filter(team=team_id).order_by('-task__number')
+        scenario_tasks = Task.objects.filter(scenario=scenario_id)
+        current_task = scenario_tasks.filter(number=completed_tasks[0].task.number+1)
+        ended = False
+        if current_task.exists():
+            serializer = TaskSerializer(current_task, many=True)
+            serialized_data = serializer.data
+            for task in serialized_data:
+                task.pop('correct_text_answer', None)
+        else:
+            ended = True
+            serialized_data = null
+
+        response = {
+            "ended": ended,
+            "percentage": (current_task[0].number-1)/len(scenario_tasks),
+            "current_task": serialized_data[0],
+        }
+        
+        return(Response(response))
+        

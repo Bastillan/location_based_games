@@ -19,6 +19,9 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     const [registerMessage, setRegisterMessage] = useState(null);
     const [completionCounts, setCompletionCounts] = useState({});
     const [teamId, setTeamId] = useState(null);
+    const [taskData, setTaskData] = useState(null);
+    const [completionPercentage, setCompletionPercentage] = useState(0);
+    const [isGameEnded, setIsGameEnded] = useState(false);
 
     // Request to API to check answer is correct
     const checkAnswer = async (TaskId, AnswerType, Answer) => {
@@ -26,7 +29,18 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
             const response = await api.get(`/api/tasks/check-answer/?answer_type=${AnswerType}&answer=${Answer}&task_id=${TaskId}`);
             setAnswerCorrect([response.data.is_correct, answer_correct[1]+1]);
         } catch (error) {
-            console.error("Error checking answer: ", error)
+            console.error("Error checking answer: ", error);
+        }
+    };
+
+    const getCurrentTask = async (teamId) => {
+        try {
+            const response = await api.get(`/api/task-completion/current-task/?team=${teamId}&scenario=${game.scenario.id}`);
+            setTaskData(response.data.current_task);
+            setCompletionPercentage(Math.round(response.data.percentage * 100));
+            setIsGameEnded(response.data.ended);
+        } catch (error) {
+            console.error("Error getting task data: ", error)
         }
     };
 
@@ -86,7 +100,6 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
 
     const handleLocation = () => {
         navigator.geolocation.getCurrentPosition((position) => {
-            console.log(position.coords);
             setAnswer(position.coords.latitude + ", " + position.coords.longitude);
         })
     }
@@ -105,7 +118,6 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
         try {
             const response = await api.get(`/api/task-completion/?task=${taskId}`);
             const data = response.data;
-            console.log(data)
             setCompletionCounts((prev) => ({
                 ...prev,
                 [taskId]: data.length,
@@ -127,7 +139,9 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
 
     const handleEnterGame = async (error) => {
         setTeamId(error.response.data.team.id);
+        const newTeamId = error.response.data.team.id;
         setUserRegistered(true);
+        await getCurrentTask(newTeamId);
     }
 
     useEffect(() => {
@@ -148,7 +162,6 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
             }
         };
         fetchData();
-
     }, []);
 
     useEffect(() => {
@@ -175,7 +188,6 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
         }
     }, [answer_correct])
 
-    const completionPercentage = Math.round(((globalIndex) / tasks.length) * 100);
 
     return (
         // Checking user registered to game
@@ -200,7 +212,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                         <text x="18" y="20.35" className="percentage">{completionPercentage}%</text>
                     </svg>
                 </div>
-                {currentIndex >= tasks.length ? (
+                {isGameEnded ? (
                     <div className="congratulations">
                         <h2>Gratulacje!</h2>
                         <p>Udało Ci się przejść całą grę. Świetna robota!</p>
@@ -221,7 +233,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                         </div>
                         <p style={{marginTop: "3px"}}>Opis zadania: {tasks[currentIndex].description}</p>
                         {tasks[currentIndex].image && (
-                            <img src={tasks[currentIndex].image} className="task_image" alt="obraz" />
+                            <img src={taskData.image} className="task_image" alt="obraz" />
                         )}
                         {tasks[currentIndex].audio && (
                             <audio controls>
