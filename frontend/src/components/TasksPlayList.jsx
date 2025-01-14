@@ -4,7 +4,7 @@ import '../styles/TasksPlayList.css';
 import userIcon from '../assets/user-icon.svg';
 
 // Used for displaying list of tasks in game
-const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
+const TasksPlayList = ({ game, handleBackToGamesList }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [globalIndex, setGlobalIndex] = useState(0);
     const [isNextDisabled, setIsNextDisabled] = useState(true);
@@ -73,14 +73,12 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     };
 
     const handleNext = () => {
-        if (currentIndex < tasks.length) {
-            getCurrentTask(teamId);
-            setIsNextDisabled(currentIndex === globalIndex - 1);
-            setIsSubmitDisabled(currentIndex !== globalIndex - 1);
-            setCurrentIndex(currentIndex + 1);
-            setAnswer("");
-            setMessage(null);
-        }
+        getCurrentTask(teamId);
+        setIsNextDisabled(currentIndex === globalIndex - 1);
+        setIsSubmitDisabled(currentIndex !== globalIndex - 1);
+        setCurrentIndex(currentIndex + 1);
+        setAnswer("");
+        setMessage(null);
     };
 
     // const handlePrevious = () => {
@@ -114,7 +112,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
             const response = await api.get(`/api/answerimages/?task_id=${TaskId}`);
             setAnswerImages(response.data);
         } catch (error) {
-            console.error("Error fetching tasks:", error);
+            console.error("Error fetching answer images:", error);
         }
     };
 
@@ -183,13 +181,13 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
     useEffect(() => {
         if (answer_correct[0] != null){
             if (answer_correct[0] === true) {
-                setIsNextDisabled(currentIndex >= tasks.length);
+                setIsNextDisabled(false);
                 setGlobalIndex(globalIndex + 1);
                 setIsSubmitDisabled(true);
                 createTaskCompletion(taskData.id);
                 setMessage('');
             } else {
-                const currentTaskId = tasks[currentIndex]?.idgry;
+                const currentTaskId = taskData.id;
                 setMessage("Niepoprawna odpowiedź");
                 fetchImageAnswers(currentTaskId);
             }
@@ -231,9 +229,7 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                         <p>Udało Ci się przejść całą grę. Świetna robota!</p>
                     </div>
                 ) : (
-                // displaying tasks
                 <div>
-                {tasks.length > 0 && tasks[currentIndex] && (
                     <div>
                         <h3>Zadanie {taskData.number}</h3>
                         <div className="teamsNum">
@@ -289,20 +285,13 @@ const TasksPlayList = ({ game, tasks, handleBackToGamesList }) => {
                         </div>
                         </div>
                     </div>
-                )}
                 </div>)}
                 <div className="buttons">
                     {/* <button className="previous" onClick={() => handlePrevious()} disabled={currentIndex === 0}>Poprzednie</button> */}
-                    {(currentIndex < tasks.length) && (
+                    {(!isGameEnded) && (
                         <>
-                        {
-                            !isGameEnded &&
                             <button className="submit" onClick={() => handleSubmit()} disabled={isSubmitDisabled}>Zatwierdź odpowiedź</button>
-                        }
-                        {
-                            !isGameEnded &&
                             <button className="next" onClick={() => handleNext()} disabled={isNextDisabled}>Następne</button>
-                        }
                         </>
                     )}
                 </div>

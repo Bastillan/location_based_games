@@ -19,20 +19,8 @@ const UserPage = () => {
         }
     };
 
-    // Fetching scenario tasks list from API
-    const fetchTasks = async (scenarioId) => {
-        try {
-            const response = await api.get(`/api/tasks/?scenario=${scenarioId}`);
-            setTasks(response.data);
-        } catch (error) {
-            console.error("Error fetching tasks:", error);
-        }
-    };
-
     const onGameSelect = (game) => {
         setSelectedGame(game);
-
-        fetchTasks(game.scenario.id);
     };
 
     const handleBackToGamesList = () => {
@@ -46,7 +34,7 @@ const UserPage = () => {
     return (
         <div className="main">
             {selectedGame ? (
-                <TasksPlayList  game={selectedGame} tasks={tasks} handleBackToGamesList={handleBackToGamesList} />
+                <TasksPlayList  game={selectedGame} handleBackToGamesList={handleBackToGamesList} />
             ) : (
             <div>
                 <div className="gamesView">
