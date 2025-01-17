@@ -13,11 +13,16 @@ from datetime import datetime
 from geopy.distance import geodesic
 from django.core.mail import send_mail
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from rapidfuzz import fuzz
 from itertools import permutations
 from .permissions import IsStaff
+
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont  
 
 
 class ScenarioViewSet(viewsets.ModelViewSet):
@@ -431,3 +436,49 @@ class TaskCompletionView(viewsets.ModelViewSet):
         
         return(Response(response))
         
+
+def generate_game_report(request, game_id):
+    game = Game.objects.get(id=game_id)
+    teams = Team.objects.filter(game=game)
+    tasks_number = Task.objects.filter(scenario=game.scenario).count()
+
+    total_players = sum(team.players_number for team in teams)
+
+    include_teams = request.GET.get('include_teams', 'true') == 'true'
+    include_tasks = request.GET.get('include_tasks', 'true') == 'true'
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="game_report_{game.id}.pdf"'
+
+    #pdfmetrics.registerFont(TTFont('Verdana', 'Verdana.ttf'))
+    pdf = canvas.Canvas(response, pagesize=A4)
+    #pdf.setFont("Helvetica", 12)
+    pdf.setFont("Times-Roman", 12)
+    #pdf.setFont("Verdana", 12)
+    
+
+    pdf.drawString(80, 750, f"Raport z gry: {game.title}")
+    pdf.drawString(80, 735, f"Aktywna od: {game.beginning_date.strftime('%d-%m-%Y')} do: {game.end_date.strftime('%d-%m-%Y')}")
+    pdf.drawString(80, 710, f"Liczba zadan: {tasks_number}")
+
+    y = 680
+
+    if include_teams:
+        pdf.drawString(80, y, f"Liczba zespolow: {teams.count()}")
+        y -= 20
+        pdf.drawString(80, y, f"Liczba wszystkich graczy: {total_players}")
+        y -= 20
+        
+        for team in teams:
+            team_completed_tasks_count = CompletedTask.objects.filter(team=team).count()
+            pdf.drawString(80, y, f"- Id zespolu: {team.id}, Liczba czlonkow: {team.players_number}, Liczba ukonczonych zadan: {team_completed_tasks_count}, Procent ukonczenia: {team_completed_tasks_count/tasks_number:.2%}")
+            y -= 15
+            if y < 50:
+                pdf.showPage()
+                y = 750
+    
+    
+    pdf.showPage()
+    pdf.save()
+
+    return response
