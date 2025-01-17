@@ -22,6 +22,7 @@ const App = () => {
                         <Route path="user" element={<ProtectedRoute is_staff={false}><UserPage /></ProtectedRoute>} />
                         <Route path="account" element={<ProtectedRoute is_staff={false}><AccountManagement /> </ProtectedRoute>} />
                         <Route path="*" element={<NoPage/>} />
+                        <Route path="/account" element={<AccountManagement />} />
                     </Route>
                 </Routes>
             </BrowserRouter>
