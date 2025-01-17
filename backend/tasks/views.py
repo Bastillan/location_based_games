@@ -292,6 +292,8 @@ class TeamViewSet(viewsets.ModelViewSet):
         game_id = request.data.get("game")
         game = get_object_or_404(Game, id=game_id)
 
+        players_number = request.data.get("players_number", 1)
+
         existing_team = Team.objects.filter(
             user=user_profile, game=game).first()
         if existing_team:
@@ -304,7 +306,7 @@ class TeamViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        team = Team.objects.create(user=user_profile, game=game)
+        team = Team.objects.create(user=user_profile, game=game, players_number=players_number)
         serializer = self.get_serializer(team)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)

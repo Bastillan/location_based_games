@@ -53,7 +53,8 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
         setRegisterMessage(null);
         try {
             const payload = {
-                game: game.id
+                game: game.id,
+                players_number: members
             };
             const response = await api.post('/api/teams/', payload);
             setTeamId(response.data.id);
