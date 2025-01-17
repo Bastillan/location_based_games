@@ -44,6 +44,7 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
             console.error("Error getting task data: ", error)
         } finally {
             setLoading(false);
+            console.log("done");
         }
     };
 
@@ -58,6 +59,7 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
             };
             const response = await api.post('/api/teams/', payload);
             setTeamId(response.data.id);
+            getCurrentTask(response.data.id);
             setRegisterMessage('Pomyślnie zarejestrowano do gry');
             setUserRegistered(true);
         } catch (error) {
@@ -140,9 +142,9 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
         }
     };
 
-    const handleEnterGame = async (error) => {
-        setTeamId(error.response.data.team.id);
-        const newTeamId = error.response.data.team.id;
+    const handleEnterGame = async (response) => {
+        setTeamId(response.data.team.id);
+        const newTeamId = response.data.team.id;
         setUserRegistered(true);
         await getCurrentTask(newTeamId);
     }
@@ -153,13 +155,12 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
                 const payload = {
                     game: game.id
                 };
-                const response = await api.post('/api/teams/', payload);
+                const response = await api.get('/api/teams/is-registered-to-game', payload);
+                await handleEnterGame(response)
             } catch (error) {
-                if (error.response && error.response.status === 400) {
-                    await handleEnterGame(error);
-                } else if (error.response && error.response.status === 500) {
+                if (error.response && error.response.status === 500) {
                     setRegisterMessage('Żeby dołączyć do gry trzeba się zalogować.');
-                }else {
+                } else {
                     setRegisterMessage('Wystąpił błąd: ' + error.message);
                 }
             }

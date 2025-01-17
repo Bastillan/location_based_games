@@ -284,6 +284,19 @@ class TeamViewSet(viewsets.ModelViewSet):
         serializer = TeamSerializer(teams, many=True)
         return Response(serializer.data)
 
+    @action(detail=False, methods=["get"], url_path='is-registered-to-game', url_name='is-registered-to-game')
+    def is_registered_to_game(self, request):
+        """Return current task to do"""
+        user = request.user
+        user_profile = User.objects.get(user=user)
+        try:
+            team = Team.objects.filter(user=user_profile)
+            if len(team) > 0:
+                team_data = TeamSerializer(team, many=True)
+                return(Response({"registered": True, "team": team_data.data[0]}))
+        except:
+            return(Response({"registered": False}, status=status.HTTP_400_BAD_REQUEST))
+
     def create(self, request):
         """Create new team"""
         user = request.user
