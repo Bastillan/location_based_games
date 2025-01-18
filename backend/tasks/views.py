@@ -464,6 +464,9 @@ def generate_game_report(request):
             pdf = SimpleDocTemplate(buffer, pagesize=A4)
             elements = []
 
+            pdfmetrics.registerFont(TTFont('DejaVuSans', 'fonts/DejaVuSans.ttf'))
+            pdfmetrics.registerFont(TTFont('DejaVuSans-Bold', 'fonts/DejaVuSans-Bold.ttf'))
+
             styles = getSampleStyleSheet()
 
             title = f"Raport z przeprowadzenia gry"
@@ -472,6 +475,7 @@ def generate_game_report(request):
             elements.append(Spacer(1, 12))
             
             body_style = styles['BodyText']
+            body_style.fontName = 'DejaVuSans'
 
             if include_game_title:
                 elements.append(Paragraph(f"Tytuł gry: {game.title}", body_style))
@@ -510,7 +514,7 @@ def generate_game_report(request):
                     ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
                     ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
                     ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                    ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                    ("FONTNAME", (0, 0), (-1, 0), "DejaVuSans-Bold"),
                     ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
                     ("GRID", (0, 0), (-1, -1), 1, colors.black),
                 ]))
