@@ -9,6 +9,7 @@ import ProtectedRoute from './services/ProtectedRoute';
 import './styles/App.css';
 import AdminPage from './pages/AdminPage';
 import UserPage from './pages/UserPage';
+import ResetPasswordConfirm from "./pages/ResetPasswordConfirm";
 
 // Generates main application view
 const App = () => {
@@ -23,6 +24,7 @@ const App = () => {
                         <Route path="account" element={<ProtectedRoute is_staff={false}><AccountManagement /> </ProtectedRoute>} />
                         <Route path="*" element={<NoPage/>} />
                         <Route path="/account" element={<AccountManagement />} />
+                        <Route path="/reset-password-confirm" element={<ResetPasswordConfirm />} />
                     </Route>
                 </Routes>
             </BrowserRouter>
