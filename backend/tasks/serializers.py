@@ -62,3 +62,13 @@ class CompletedTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompletedTask
         fields = '__all__'
+
+class ReportSerializer(serializers.Serializer):
+    game_id = serializers.IntegerField()
+    game_title = serializers.BooleanField()
+    game_dates = serializers.BooleanField()
+    scenario_title = serializers.BooleanField()
+    number_of_tasks = serializers.BooleanField()
+    number_of_teams = serializers.BooleanField()
+    total_number_of_players = serializers.BooleanField()
+    teams_details = serializers.BooleanField()

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from .models import Task, Scenario, Game, User, AnswerImages, Team, CompletedTask
 from .serializers import (TaskSerializer, ScenarioSerializer, GameSerializer, UserSerializer, AnswerImagesSerializer,
-                          TeamSerializer, UserProfileSerializer, EmailSerializer, CompletedTaskSerializer)
+                          TeamSerializer, UserProfileSerializer, EmailSerializer, CompletedTaskSerializer, ReportSerializer)
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
@@ -13,7 +13,7 @@ from datetime import datetime
 from geopy.distance import geodesic
 from django.core.mail import send_mail
 from django.conf import settings
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, FileResponse
 from django.shortcuts import get_object_or_404
 from rapidfuzz import fuzz
 from itertools import permutations
@@ -23,6 +23,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont  
+import io
 
 
 class ScenarioViewSet(viewsets.ModelViewSet):
@@ -436,49 +437,73 @@ class TaskCompletionView(viewsets.ModelViewSet):
         
         return(Response(response))
         
-
+@api_view(['POST'])
 def generate_game_report(request, game_id):
-    game = Game.objects.get(id=game_id)
-    teams = Team.objects.filter(game=game)
-    tasks_number = Task.objects.filter(scenario=game.scenario).count()
+    if request.method == 'POST':
+        serializer = ReportSerializer(data=request.data)
+        if serializer.is_valid():
+            game_id = serializer.validated_data['game_id']
+            game_title = serializer.validated_data['game_title']
+            game_dates = serializer.validated_data['game_dates']
+            scenario_title = serializer.validated_data['scenario_title']
+            number_of_tasks = serializer.validated_data['number_of_tasks']
+            number_of_teams = serializer.validated_data['number_of_teams']
+            total_number_of_players = serializer.validated_data['total_number_of_players']
+            teams_details = serializer.validated_data['teams_details']
 
-    total_players = sum(team.players_number for team in teams)
+            game = Game.objects.get(id=game_id)
+            teams = Team.objects.filter(game=game)
+            tasks_number = Task.objects.filter(scenario=game.scenario).count()
+            total_players = sum(team.players_number for team in teams)
+            
+            buffer = io.BytesIO()
+            pdf = canvas.Canvas(buffer, pagesize=A4)
+            pdf.setFont("Times-Roman", 12)
 
-    include_teams = request.GET.get('include_teams', 'true') == 'true'
-    include_tasks = request.GET.get('include_tasks', 'true') == 'true'
+            x = 60
+            y = 750
 
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="game_report_{game.id}.pdf"'
-
-    #pdfmetrics.registerFont(TTFont('Verdana', 'Verdana.ttf'))
-    pdf = canvas.Canvas(response, pagesize=A4)
-    #pdf.setFont("Helvetica", 12)
-    pdf.setFont("Times-Roman", 12)
-    #pdf.setFont("Verdana", 12)
-    
-
-    pdf.drawString(80, 750, f"Raport z gry: {game.title}")
-    pdf.drawString(80, 735, f"Aktywna od: {game.beginning_date.strftime('%d-%m-%Y')} do: {game.end_date.strftime('%d-%m-%Y')}")
-    pdf.drawString(80, 710, f"Liczba zadan: {tasks_number}")
-
-    y = 680
-
-    if include_teams:
-        pdf.drawString(80, y, f"Liczba zespolow: {teams.count()}")
-        y -= 20
-        pdf.drawString(80, y, f"Liczba wszystkich graczy: {total_players}")
-        y -= 20
-        
-        for team in teams:
-            team_completed_tasks_count = CompletedTask.objects.filter(team=team).count()
-            pdf.drawString(80, y, f"- Id zespolu: {team.id}, Liczba czlonkow: {team.players_number}, Liczba ukonczonych zadan: {team_completed_tasks_count}, Procent ukonczenia: {team_completed_tasks_count/tasks_number:.2%}")
+            pdf.drawString(x, y, f"Raport z przeprowadzenia gry")
             y -= 15
-            if y < 50:
-                pdf.showPage()
-                y = 750
-    
-    
-    pdf.showPage()
-    pdf.save()
 
-    return response
+            if game_title:
+                pdf.drawString(x, y, f"Tytuł gry: {game.title}")
+                y -= 15
+            
+            if game_dates:
+                pdf.drawString(x, y, f"Aktywna od: {game.beginning_date.strftime('%d-%m-%Y')} do: {game.end_date.strftime('%d-%m-%Y')}")
+                y -= 15
+
+            if scenario_title:
+                pdf.drawString(x, y, f"Przeprowadzona na podstawie scenariusza: {game.scenario.title}")
+                y -= 15
+
+            if number_of_tasks:
+                pdf.drawString(x, y, f"Liczba zadań: {tasks_number}")
+                y -= 15
+            
+            if number_of_teams:
+                pdf.drawString(x, y, f"Liczba wszystkich zespołów: {teams.count()}")
+                y -= 15
+
+            if total_number_of_players:
+                pdf.drawString(x, y, f"Liczba wszystkich graczy: {total_players}")
+                y -= 15
+
+            if teams_details:
+                y -= 10
+                pdf.drawString(x, y, "Zepsoły:")
+                y -=15
+                for team in teams:
+                    team_completed_tasks_count = CompletedTask.objects.filter(team=team).count()
+                    pdf.drawString(80, y, f"- Id zespolu: {team.id}, Liczba czlonkow: {team.players_number}, Liczba ukonczonych zadan: {team_completed_tasks_count}, Procent ukonczenia: {team_completed_tasks_count/tasks_number:.2%}")
+                    y -= 15
+                    if y < 50:
+                        pdf.showPage()
+                        y = 750
+
+            pdf.showPage()
+            pdf.save()
+
+            buffer.seek(0)
+            return FileResponse(buffer, as_attachment=True, filename=f'game_report_{game.id}.pdf')
