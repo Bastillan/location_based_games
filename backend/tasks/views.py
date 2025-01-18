@@ -438,18 +438,18 @@ class TaskCompletionView(viewsets.ModelViewSet):
         return(Response(response))
         
 @api_view(['POST'])
-def generate_game_report(request, game_id):
+def generate_game_report(request):
     if request.method == 'POST':
         serializer = ReportSerializer(data=request.data)
         if serializer.is_valid():
             game_id = serializer.validated_data['game_id']
-            game_title = serializer.validated_data['game_title']
-            game_dates = serializer.validated_data['game_dates']
-            scenario_title = serializer.validated_data['scenario_title']
-            number_of_tasks = serializer.validated_data['number_of_tasks']
-            number_of_teams = serializer.validated_data['number_of_teams']
-            total_number_of_players = serializer.validated_data['total_number_of_players']
-            teams_details = serializer.validated_data['teams_details']
+            include_game_title = serializer.validated_data['include_game_title']
+            include_game_dates = serializer.validated_data['include_game_dates']
+            include_scenario_title = serializer.validated_data['include_scenario_title']
+            include_number_of_tasks = serializer.validated_data['include_number_of_tasks']
+            include_number_of_teams = serializer.validated_data['include_number_of_teams']
+            include_total_number_of_players = serializer.validated_data['include_total_number_of_players']
+            include_teams_details = serializer.validated_data['include_teams_details']
 
             game = Game.objects.get(id=game_id)
             teams = Team.objects.filter(game=game)
@@ -464,35 +464,35 @@ def generate_game_report(request, game_id):
             y = 750
 
             pdf.drawString(x, y, f"Raport z przeprowadzenia gry")
-            y -= 15
+            y -= 25
 
-            if game_title:
-                pdf.drawString(x, y, f"Tytuł gry: {game.title}")
+            if include_game_title:
+                pdf.drawString(x, y, f"Tytul gry: {game.title}")
                 y -= 15
             
-            if game_dates:
+            if include_game_dates:
                 pdf.drawString(x, y, f"Aktywna od: {game.beginning_date.strftime('%d-%m-%Y')} do: {game.end_date.strftime('%d-%m-%Y')}")
                 y -= 15
 
-            if scenario_title:
+            if include_scenario_title:
                 pdf.drawString(x, y, f"Przeprowadzona na podstawie scenariusza: {game.scenario.title}")
                 y -= 15
 
-            if number_of_tasks:
-                pdf.drawString(x, y, f"Liczba zadań: {tasks_number}")
+            if include_number_of_tasks:
+                pdf.drawString(x, y, f"Liczba zadan: {tasks_number}")
                 y -= 15
             
-            if number_of_teams:
-                pdf.drawString(x, y, f"Liczba wszystkich zespołów: {teams.count()}")
+            if include_number_of_teams:
+                pdf.drawString(x, y, f"Liczba wszystkich zespolow: {teams.count()}")
                 y -= 15
 
-            if total_number_of_players:
+            if include_total_number_of_players:
                 pdf.drawString(x, y, f"Liczba wszystkich graczy: {total_players}")
                 y -= 15
 
-            if teams_details:
+            if include_teams_details:
                 y -= 10
-                pdf.drawString(x, y, "Zepsoły:")
+                pdf.drawString(x, y, "Zepsoly:")
                 y -=15
                 for team in teams:
                     team_completed_tasks_count = CompletedTask.objects.filter(team=team).count()

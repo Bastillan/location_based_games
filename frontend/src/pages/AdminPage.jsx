@@ -4,6 +4,7 @@ import ScenarioForm from '../modals/ScenarioForm';
 import ScenarioList from '../components/ScenarioList';
 import GameForm from '../modals/GameForm';
 import MailForm from '../modals/MailForm';
+import ReportForm from '../modals/ReportForm';
 import api from '../services/api'; // if api key should be attached to the api request replace axios with api
 
 // Used for displaying admin view
@@ -21,7 +22,8 @@ const AdminPage = () => {
     const [scenarioForGame, setScenarioForGame] = useState(null);
     const [selectedGameIdForEmail, setSelectedGameIdForEmail] = useState(null);
     const [emailStatus, setEmailStatus] = useState('');
-
+    const [selectedGameIdForReport, setSelectedGameIdForReport] = useState(null);
+    const [reportStatus, setReportStatus] = useState(null)
 
     // Fetch scenarios from API
     const fetchScenarios = async () => {
@@ -181,6 +183,29 @@ const AdminPage = () => {
         setSelectedGameIdForEmail(null);
         setEmailStatus('');
     };
+
+    const openReportForm = (gameId) => {
+        setSelectedGameIdForReport(gameId)
+    }
+
+    const handleGenerateReport = async (options) => {
+        try {
+            const response = await api.post('/api/generate-report/', options, {responseType: 'blob'});
+            if (response.status === 200) {
+                setReportStatus('Raport został pomyślnie wygenerowany!');
+            }
+            const blob = response.data;
+            const url = window.URL.createObjectURL(blob);
+            window.open(url, "_blank");
+        } catch (error) {
+            setReportStatus('Nie udało się wygenerować raportu: ' + error.message);
+        }
+    }
+
+    const closeReportForm = async () => {
+        setSelectedGameIdForReport(null);
+        setReportStatus(null);
+    }
     
 
     return (
@@ -260,6 +285,9 @@ const AdminPage = () => {
                                                 <button className="mainBut" onClick={() => openMailForm(game.id)}>
                                                     Wyślij e-maile
                                                 </button>
+                                                <button className="mainBut" onClick={() => openReportForm(game.id)}>
+                                                    Wygeneruj raport
+                                                </button>
                                             </div>
                                             <button className="mainBut" onClick={() => handleDeleteGame(game.id)}>Usuń</button>
                                         </div>
@@ -290,6 +318,9 @@ const AdminPage = () => {
                     onClose={closeEmailForm}
                     onSend={handleSendEmail}
                 />
+            )}
+            {selectedGameIdForReport && (
+                <ReportForm gameId={selectedGameIdForReport} onGenerateReport={handleGenerateReport} onClose={closeReportForm} reportStatus={reportStatus} />
             )}
         </div>
     );

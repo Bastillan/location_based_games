@@ -16,5 +16,5 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('', include(router.urls)),
     path('send-email/', send_email, name='send-email'),
-    path('generate-report/<int:game_id>', generate_game_report, name='generate-game-report'),
+    path('generate-report/', generate_game_report, name='generate-game-report'),
 ]

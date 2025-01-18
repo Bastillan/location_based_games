@@ -65,10 +65,10 @@ class CompletedTaskSerializer(serializers.ModelSerializer):
 
 class ReportSerializer(serializers.Serializer):
     game_id = serializers.IntegerField()
-    game_title = serializers.BooleanField()
-    game_dates = serializers.BooleanField()
-    scenario_title = serializers.BooleanField()
-    number_of_tasks = serializers.BooleanField()
-    number_of_teams = serializers.BooleanField()
-    total_number_of_players = serializers.BooleanField()
-    teams_details = serializers.BooleanField()
+    include_game_title = serializers.BooleanField()
+    include_game_dates = serializers.BooleanField()
+    include_scenario_title = serializers.BooleanField()
+    include_number_of_tasks = serializers.BooleanField()
+    include_number_of_teams = serializers.BooleanField()
+    include_total_number_of_players = serializers.BooleanField()
+    include_teams_details = serializers.BooleanField()
