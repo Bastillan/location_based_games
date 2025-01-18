@@ -24,6 +24,9 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont  
 import io
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
 
 
 class ScenarioViewSet(viewsets.ModelViewSet):
@@ -439,6 +442,7 @@ class TaskCompletionView(viewsets.ModelViewSet):
         
 @api_view(['POST'])
 def generate_game_report(request):
+    """Generate report for the game"""
     if request.method == 'POST':
         serializer = ReportSerializer(data=request.data)
         if serializer.is_valid():
@@ -457,53 +461,64 @@ def generate_game_report(request):
             total_players = sum(team.players_number for team in teams)
             
             buffer = io.BytesIO()
-            pdf = canvas.Canvas(buffer, pagesize=A4)
-            pdf.setFont("Times-Roman", 12)
+            pdf = SimpleDocTemplate(buffer, pagesize=A4)
+            elements = []
 
-            x = 60
-            y = 750
+            styles = getSampleStyleSheet()
 
-            pdf.drawString(x, y, f"Raport z przeprowadzenia gry")
-            y -= 25
+            title = f"Raport z przeprowadzenia gry"
+            title_paragraph = Paragraph(title, styles['Title'])
+            elements.append(title_paragraph)
+            elements.append(Spacer(1, 12))
+            
+            body_style = styles['BodyText']
 
             if include_game_title:
-                pdf.drawString(x, y, f"Tytul gry: {game.title}")
-                y -= 15
-            
+                elements.append(Paragraph(f"Tytuł gry: {game.title}", body_style))
+
             if include_game_dates:
-                pdf.drawString(x, y, f"Aktywna od: {game.beginning_date.strftime('%d-%m-%Y')} do: {game.end_date.strftime('%d-%m-%Y')}")
-                y -= 15
+                elements.append(Paragraph(
+                    f"Aktywna od: {game.beginning_date.strftime('%d-%m-%Y')} do: {game.end_date.strftime('%d-%m-%Y')}", 
+                    body_style
+                ))
 
             if include_scenario_title:
-                pdf.drawString(x, y, f"Przeprowadzona na podstawie scenariusza: {game.scenario.title}")
-                y -= 15
+                elements.append(Paragraph(
+                    f"Przeprowadzona na podstawie scenariusza: {game.scenario.title}", 
+                    body_style
+                ))
 
             if include_number_of_tasks:
-                pdf.drawString(x, y, f"Liczba zadan: {tasks_number}")
-                y -= 15
-            
+                elements.append(Paragraph(f"Liczba zadań: {tasks_number}", body_style))
+
             if include_number_of_teams:
-                pdf.drawString(x, y, f"Liczba wszystkich zespolow: {teams.count()}")
-                y -= 15
+                elements.append(Paragraph(f"Liczba wszystkich zespołów: {teams.count()}", body_style))
 
             if include_total_number_of_players:
-                pdf.drawString(x, y, f"Liczba wszystkich graczy: {total_players}")
-                y -= 15
+                elements.append(Paragraph(f"Liczba wszystkich graczy: {total_players}", body_style))
 
             if include_teams_details:
-                y -= 10
-                pdf.drawString(x, y, "Zepsoly:")
-                y -=15
+
+                table_data = [["Id zespołu", "Liczba członków", "Liczba ukończonych zadań", "Procent ukończenia"]]
+
                 for team in teams:
                     team_completed_tasks_count = CompletedTask.objects.filter(team=team).count()
-                    pdf.drawString(80, y, f"- Id zespolu: {team.id}, Liczba czlonkow: {team.players_number}, Liczba ukonczonych zadan: {team_completed_tasks_count}, Procent ukonczenia: {team_completed_tasks_count/tasks_number:.2%}")
-                    y -= 15
-                    if y < 50:
-                        pdf.showPage()
-                        y = 750
+                    table_data.append([team.id, team.players_number, team_completed_tasks_count, f'{team_completed_tasks_count/tasks_number:.2%}'])
 
-            pdf.showPage()
-            pdf.save()
+                table = Table(table_data)
+                table.setStyle(TableStyle([
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+                    ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                    ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                    ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+                    ("GRID", (0, 0), (-1, -1), 1, colors.black),
+                ]))
+
+                elements.append(Spacer(1, 24))
+                elements.append(table)
+
+            pdf.build(elements)
 
             buffer.seek(0)
             return FileResponse(buffer, as_attachment=True, filename=f'game_report_{game.id}.pdf')
