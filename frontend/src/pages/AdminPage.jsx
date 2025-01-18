@@ -172,10 +172,10 @@ const AdminPage = () => {
         try {
             const response = await api.post('/api/send-email/', emailData);
             if (response.status === 200) {
-                setEmailStatus('Emails sent successfully!');
+                setEmailStatus('E-maile zostały pomyślnie wysłane!');
             }
         } catch (error) {
-            setEmailStatus('Failed to send emails: ' + error.message);
+            setEmailStatus('Nie udało się wysłać e-maili: ' + error.message);
         }
     };
 
