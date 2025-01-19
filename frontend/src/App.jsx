@@ -10,6 +10,7 @@ import './styles/App.css';
 import AdminPage from './pages/AdminPage';
 import UserPage from './pages/UserPage';
 import ResetPasswordConfirm from "./pages/ResetPasswordConfirm";
+import ActivateAccount from "./pages/ActivateAccount";
 
 // Generates main application view
 const App = () => {
@@ -25,6 +26,7 @@ const App = () => {
                         <Route path="*" element={<NoPage/>} />
                         <Route path="/account" element={<AccountManagement />} />
                         <Route path="/reset-password-confirm" element={<ResetPasswordConfirm />} />
+                        <Route path="/activate" element={<ActivateAccount/>} />
                     </Route>
                 </Routes>
             </BrowserRouter>

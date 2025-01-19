@@ -121,16 +121,18 @@ SITE_NAME = "http://localhost:5173"
 DOMAIN = "localhost:5173"
 
 DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': "reset-password-confirm?uid={uid}&token={token}",
     'SERIALIZERS': {
         'current_user': 'tasks.serializers.UserSerializer'
     },
     'TOKEN_MODEL': None,
+    'PASSWORD_RESET_CONFIRM_URL': "reset-password-confirm?uid={uid}&token={token}",
     'PASSWORD_RESET_CONFIRM_RETYPE': True,
     'EMAIL': {
-        "password_reset": "tasks.auth_email.PasswordResetEmail"
-    }
-
+        "password_reset": "tasks.auth_email.PasswordResetEmail",
+        "activation": "tasks.auth_email.ActivationEmail"
+    },
+    "SEND_ACTIVATION_EMAIL": True,
+    "ACTIVATION_URL": "activate?uid={uid}&token={token}"
 }
 
 
