@@ -23,10 +23,9 @@ const App = () => {
                         <Route path="admin" element={<ProtectedRoute is_staff={true}><AdminPage /></ProtectedRoute>} />
                         <Route path="user" element={<ProtectedRoute is_staff={false}><UserPage /></ProtectedRoute>} />
                         <Route path="account" element={<ProtectedRoute is_staff={false}><AccountManagement /> </ProtectedRoute>} />
+                        <Route path="reset-password-confirm" element={<ResetPasswordConfirm />} />
+                        <Route path="activate" element={<ActivateAccount/>} />
                         <Route path="*" element={<NoPage/>} />
-                        <Route path="/account" element={<AccountManagement />} />
-                        <Route path="/reset-password-confirm" element={<ResetPasswordConfirm />} />
-                        <Route path="/activate" element={<ActivateAccount/>} />
                     </Route>
                 </Routes>
             </BrowserRouter>
