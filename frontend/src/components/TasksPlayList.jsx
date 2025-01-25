@@ -159,7 +159,7 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
                 await handleEnterGame(response)
             } catch (error) {
                 if (error.response && error.response.status === 500) {
-                    setRegisterMessage('Żeby dołączyć do gry trzeba się zalogować.');
+                    setRegisterMessage('Żeby zagrać trzeba się zarejestrować do gry podając liczbę członków zespołu.');
                 } else {
                     setRegisterMessage('Wystąpił błąd: ' + error.message);
                 }
@@ -304,7 +304,7 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
                 <button className='mainBut powrot' onClick={handleBackToGamesList}>Wróć do listy gier</button>
                 <form className="form-container" onSubmit={handleRegisterToGame}>
                     <input
-                    type="members"
+                    type="number"
                     placeholder={`Liczba członków zespołu`}
                     value={members}
                     onChange={(e) => setMembers(e.target.value)}
