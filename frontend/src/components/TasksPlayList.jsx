@@ -303,15 +303,18 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
             <div>
                 <button className='mainBut powrot' onClick={handleBackToGamesList}>Wróć do listy gier</button>
                 <form className="form-container" onSubmit={handleRegisterToGame}>
-                    <input
-                    type="number"
-                    placeholder={`Liczba członków zespołu`}
-                    value={members}
-                    onChange={(e) => setMembers(e.target.value)}
-                    min="1"
-                    max="20"
-                    className="form-input"
-                    />
+                    <label>
+                        Liczba członków zespołu:
+                        <input
+                        type="number"
+                        placeholder={`Od 1 do 20`}
+                        value={members}
+                        onChange={(e) => setMembers(e.target.value)}
+                        min="1"
+                        max="20"
+                        className="form-input"
+                        />
+                    </label>
                     <button type="submit">Dołącz do gry</button>
                 </form>
                 {registerMessage && (
