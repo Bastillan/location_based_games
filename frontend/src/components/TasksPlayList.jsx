@@ -305,7 +305,7 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
                 <form className="form-container" onSubmit={handleRegisterToGame}>
                     <input
                     type="members"
-                    placeholder={`Ilość członków zespołu`}
+                    placeholder={`Liczba członków zespołu`}
                     value={members}
                     onChange={(e) => setMembers(e.target.value)}
                     min="1"
