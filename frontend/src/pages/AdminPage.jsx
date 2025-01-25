@@ -27,6 +27,7 @@ const AdminPage = () => {
     const [reportStatus, setReportStatus] = useState(null)
     const [isDeleteTaskFormVisible, setIsDeleteTaskFormVisible] = useState(false);
     const [isDeleteGameFormVisible, setIsDeleteGameFormVisible] = useState(false);
+    const [taskToDelete, setTaskToDelete] = useState(null);
 
     // Fetch scenarios from API
     const fetchScenarios = async () => {
@@ -238,17 +239,17 @@ const AdminPage = () => {
                                 )}
                                 <div className="taskButtons">
                                     <button className="mainBut" onClick={() => handleEditTask(task)}>Edytuj</button>
-                                    <button className="mainBut" onClick={() => setIsDeleteTaskFormVisible(true)}>Usuń</button>
+                                    <button className="mainBut" onClick={() => {setIsDeleteTaskFormVisible(true); setTaskToDelete(task.id)}}>Usuń</button>
                                 </div>
-                                {isDeleteTaskFormVisible && (
-                                    <ConfirmForm
-                                        text="Czy na pewno chcesz usunąć to zadanie?"
-                                        onConfirm={() => handleDeleteTask(task.id)}
-                                        onClose={() => setIsDeleteTaskFormVisible(false)}
-                                    />
-                                )}
                             </div>
                         ))}
+                        {isDeleteTaskFormVisible && (
+                            <ConfirmForm
+                                text="Czy na pewno chcesz usunąć to zadanie?"
+                                onConfirm={() => handleDeleteTask(taskToDelete)}
+                                onClose={() => {setIsDeleteTaskFormVisible(false); setTaskToDelete(null)}}
+                            />
+                        )}
                     </div>
                     {isTaskFormVisible ? (
                         <TaskForm selectedScenario={selectedScenario} refreshScenarios={refreshScenariosAndTasks} closeForm={closeTaskForm}  taskToEdit={selectedTask}/>
