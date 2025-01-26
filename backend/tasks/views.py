@@ -297,9 +297,10 @@ class TeamViewSet(viewsets.ModelViewSet):
     def is_registered_to_game(self, request):
         """Return current task to do"""
         user = request.user
+        game_id =  self.request.query_params.get('game', None)
         user_profile = User.objects.get(user=user)
         try:
-            team = Team.objects.filter(user=user_profile)
+            team = Team.objects.filter(user=user_profile, game_id=game_id)
             if len(team) > 0:
                 team_data = TeamSerializer(team, many=True)
                 return(Response({"registered": True, "team": team_data.data[0]}))

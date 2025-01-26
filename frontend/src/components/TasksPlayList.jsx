@@ -152,10 +152,7 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const payload = {
-                    game: game.id
-                };
-                const response = await api.get('/api/teams/is-registered-to-game', payload);
+                const response = await api.get(`/api/teams/is-registered-to-game?game=${game.id}`);
                 await handleEnterGame(response)
             } catch (error) {
                 if (error.response && error.response.status === 500) {
