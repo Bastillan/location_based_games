@@ -6,6 +6,7 @@ import GameForm from '../modals/GameForm';
 import MailForm from '../modals/MailForm';
 import ReportForm from '../modals/ReportForm';
 import api from '../services/api'; // if api key should be attached to the api request replace axios with api
+import ConfirmForm from '../modals/ConfirmForm';
 
 // Used for displaying admin view
 const AdminPage = () => {
@@ -24,6 +25,9 @@ const AdminPage = () => {
     const [emailStatus, setEmailStatus] = useState('');
     const [selectedGameIdForReport, setSelectedGameIdForReport] = useState(null);
     const [reportStatus, setReportStatus] = useState(null)
+    const [isDeleteTaskFormVisible, setIsDeleteTaskFormVisible] = useState(false);
+    const [isDeleteGameFormVisible, setIsDeleteGameFormVisible] = useState(false);
+    const [taskToDelete, setTaskToDelete] = useState(null);
 
     // Fetch scenarios from API
     const fetchScenarios = async () => {
@@ -235,10 +239,17 @@ const AdminPage = () => {
                                 )}
                                 <div className="taskButtons">
                                     <button className="mainBut" onClick={() => handleEditTask(task)}>Edytuj</button>
-                                    <button className="mainBut" onClick={() => handleDeleteTask(task.id)}>Usuń</button>
+                                    <button className="mainBut" onClick={() => {setIsDeleteTaskFormVisible(true); setTaskToDelete(task.id)}}>Usuń</button>
                                 </div>
                             </div>
                         ))}
+                        {isDeleteTaskFormVisible && (
+                            <ConfirmForm
+                                text="Czy na pewno chcesz usunąć to zadanie?"
+                                onConfirm={() => handleDeleteTask(taskToDelete)}
+                                onClose={() => {setIsDeleteTaskFormVisible(false); setTaskToDelete(null)}}
+                            />
+                        )}
                     </div>
                     {isTaskFormVisible ? (
                         <TaskForm selectedScenario={selectedScenario} refreshScenarios={refreshScenariosAndTasks} closeForm={closeTaskForm}  taskToEdit={selectedTask}/>
@@ -288,8 +299,17 @@ const AdminPage = () => {
                                                 <button className="mainBut" onClick={() => openReportForm(game.id)}>
                                                     Wygeneruj raport
                                                 </button>
+                                                <button className="mainBut" onClick={() => setIsDeleteGameFormVisible(true)}>
+                                                    Usuń
+                                                </button>
                                             </div>
-                                            <button className="mainBut" onClick={() => handleDeleteGame(game.id)}>Usuń</button>
+                                            {isDeleteGameFormVisible && (
+                                                <ConfirmForm
+                                                    text="Czy na pewno chcesz usunąć tę grę?"
+                                                    onConfirm={() => handleDeleteGame(game.id)}
+                                                    onClose={() => setIsDeleteGameFormVisible(false)}
+                                                />
+                                            )}
                                         </div>
                                     )
                                 })}
