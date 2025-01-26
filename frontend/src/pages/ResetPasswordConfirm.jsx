@@ -57,7 +57,7 @@ const ResetPasswordConfirm = () => {
             required
           />
         </div>
-        <button type="submit">Zresetuj hasło</button>
+        <button type="submit" className="mainBut">Zresetuj hasło</button>
       </form>
       {message && <p>{message}</p>}
     </div>
