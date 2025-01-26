@@ -396,10 +396,7 @@ class TaskCompletionView(viewsets.ModelViewSet):
         task_id = request.data.get("task")
         task = get_object_or_404(Task, id=task_id)
 
-        game_id = request.data.get("game")
-        game = get_object_or_404(Game, id=game_id)
-
-        cTask = CompletedTask.objects.create(team=team, task=task, game=game)
+        cTask = CompletedTask.objects.create(team=team, task=task)
         serializer = self.get_serializer(cTask)
         print("1")
 
@@ -408,9 +405,8 @@ class TaskCompletionView(viewsets.ModelViewSet):
     def get_queryset(self):
         """Return completed tasks"""
         task_id = self.request.query_params.get('task', None)
-        game_id =  self.request.query_params.get('game', None)
         if task_id is not None:
-            return CompletedTask.objects.filter(task_id=task_id, game_id=game_id)
+            return CompletedTask.objects.filter(task_id=task_id)
         return CompletedTask.objects.all()
 
     @action(detail=False, methods=["get"], url_path='current-task', url_name='current-task')
@@ -418,10 +414,9 @@ class TaskCompletionView(viewsets.ModelViewSet):
         """Return current task to do"""
         team_id = request.query_params.get("team")
         scenario_id = request.query_params.get("scenario")
-        game_id = request.query_params.get("game")
         scenario_tasks = Task.objects.filter(scenario=scenario_id)
         try:
-            completed_tasks = CompletedTask.objects.filter(team=team_id, game=game_id).order_by('-task__number')
+            completed_tasks = CompletedTask.objects.filter(team=team_id).order_by('-task__number')
             current_task = scenario_tasks.filter(number=completed_tasks[0].task.number+1)
         except:
             current_task = scenario_tasks.filter(number=1)
