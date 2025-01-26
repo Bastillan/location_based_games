@@ -235,7 +235,7 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
                     <div>
                         <h3>Zadanie {taskData.number}</h3>
                         <div className="teamsNum">
-                        {completionCounts[taskData.number] || 0}
+                        {completionCounts[taskData.id] || 0}
                         <img
                             src={userIcon}
                             alt="Ikona ludzika"
