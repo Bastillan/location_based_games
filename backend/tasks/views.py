@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from .models import Task, Scenario, Game, User, AnswerImages, Team, CompletedTask
 from .serializers import (TaskSerializer, ScenarioSerializer, GameSerializer, UserSerializer, AnswerImagesSerializer,
-                          TeamSerializer, UserProfileSerializer, EmailSerializer, CompletedTaskSerializer)
+                          TeamSerializer, UserProfileSerializer, EmailSerializer, CompletedTaskSerializer, ReportSerializer)
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
@@ -13,11 +13,20 @@ from datetime import datetime
 from geopy.distance import geodesic
 from django.core.mail import send_mail
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
 from django.shortcuts import get_object_or_404
 from rapidfuzz import fuzz
 from itertools import permutations
 from .permissions import IsStaff
+
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+import io
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
 
 
 class ScenarioViewSet(viewsets.ModelViewSet):
@@ -67,7 +76,7 @@ class AnswerImagesSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
-        """Returns list of task images using for answering""" 
+        """Returns list of task images using for answering"""
         task_id = request.query_params.get('task_id', None)
         if task_id:
             self.queryset = self.queryset.filter(task=task_id)
@@ -284,6 +293,20 @@ class TeamViewSet(viewsets.ModelViewSet):
         serializer = TeamSerializer(teams, many=True)
         return Response(serializer.data)
 
+    @action(detail=False, methods=["get"], url_path='is-registered-to-game', url_name='is-registered-to-game')
+    def is_registered_to_game(self, request):
+        """Return current task to do"""
+        user = request.user
+        game_id =  self.request.query_params.get('game', None)
+        user_profile = User.objects.get(user=user)
+        try:
+            team = Team.objects.filter(user=user_profile, game_id=game_id)
+            if len(team) > 0:
+                team_data = TeamSerializer(team, many=True)
+                return(Response({"registered": True, "team": team_data.data[0]}))
+        except:
+            return(Response({"registered": False}, status=status.HTTP_400_BAD_REQUEST))
+
     def create(self, request):
         """Create new team"""
         user = request.user
@@ -291,6 +314,8 @@ class TeamViewSet(viewsets.ModelViewSet):
 
         game_id = request.data.get("game")
         game = get_object_or_404(Game, id=game_id)
+
+        players_number = request.data.get("players_number", 1)
 
         existing_team = Team.objects.filter(
             user=user_profile, game=game).first()
@@ -304,7 +329,7 @@ class TeamViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        team = Team.objects.create(user=user_profile, game=game)
+        team = Team.objects.create(user=user_profile, game=game, players_number=players_number)
         serializer = self.get_serializer(team)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -413,6 +438,92 @@ class TaskCompletionView(viewsets.ModelViewSet):
             "percentage": percentage,
             "current_task": serialized_data,
         }
-        
+
         return(Response(response))
-        
+
+@api_view(['POST'])
+def generate_game_report(request):
+    """Generate report for the game"""
+    if request.method == 'POST':
+        serializer = ReportSerializer(data=request.data)
+        if serializer.is_valid():
+            game_id = serializer.validated_data['game_id']
+            include_game_title = serializer.validated_data['include_game_title']
+            include_game_dates = serializer.validated_data['include_game_dates']
+            include_scenario_title = serializer.validated_data['include_scenario_title']
+            include_number_of_tasks = serializer.validated_data['include_number_of_tasks']
+            include_number_of_teams = serializer.validated_data['include_number_of_teams']
+            include_total_number_of_players = serializer.validated_data['include_total_number_of_players']
+            include_teams_details = serializer.validated_data['include_teams_details']
+
+            game = Game.objects.get(id=game_id)
+            teams = Team.objects.filter(game=game)
+            tasks_number = Task.objects.filter(scenario=game.scenario).count()
+            total_players = sum(team.players_number for team in teams)
+
+            buffer = io.BytesIO()
+            pdf = SimpleDocTemplate(buffer, pagesize=A4)
+            elements = []
+
+            pdfmetrics.registerFont(TTFont('DejaVuSans', 'fonts/DejaVuSans.ttf'))
+            pdfmetrics.registerFont(TTFont('DejaVuSans-Bold', 'fonts/DejaVuSans-Bold.ttf'))
+
+            styles = getSampleStyleSheet()
+
+            title = f"Raport z przeprowadzenia gry"
+            title_paragraph = Paragraph(title, styles['Title'])
+            elements.append(title_paragraph)
+            elements.append(Spacer(1, 12))
+
+            body_style = styles['BodyText']
+            body_style.fontName = 'DejaVuSans'
+
+            if include_game_title:
+                elements.append(Paragraph(f"Tytuł gry: {game.title}", body_style))
+
+            if include_game_dates:
+                elements.append(Paragraph(
+                    f"Aktywna od: {game.beginning_date.strftime('%d-%m-%Y')} do: {game.end_date.strftime('%d-%m-%Y')}",
+                    body_style
+                ))
+
+            if include_scenario_title:
+                elements.append(Paragraph(
+                    f"Przeprowadzona na podstawie scenariusza: {game.scenario.title}",
+                    body_style
+                ))
+
+            if include_number_of_tasks:
+                elements.append(Paragraph(f"Liczba zadań: {tasks_number}", body_style))
+
+            if include_number_of_teams:
+                elements.append(Paragraph(f"Liczba wszystkich zespołów: {teams.count()}", body_style))
+
+            if include_total_number_of_players:
+                elements.append(Paragraph(f"Liczba wszystkich graczy: {total_players}", body_style))
+
+            if include_teams_details:
+
+                table_data = [["Id zespołu", "Liczba członków", "Liczba ukończonych zadań", "Procent ukończenia"]]
+
+                for team in teams:
+                    team_completed_tasks_count = CompletedTask.objects.filter(team=team).count()
+                    table_data.append([team.id, team.players_number, team_completed_tasks_count, f'{team_completed_tasks_count/tasks_number:.2%}'])
+
+                table = Table(table_data)
+                table.setStyle(TableStyle([
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+                    ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                    ("FONTNAME", (0, 0), (-1, 0), "DejaVuSans-Bold"),
+                    ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+                    ("GRID", (0, 0), (-1, -1), 1, colors.black),
+                ]))
+
+                elements.append(Spacer(1, 24))
+                elements.append(table)
+
+            pdf.build(elements)
+
+            buffer.seek(0)
+            return FileResponse(buffer, as_attachment=True, filename=f'game_report_{game.id}.pdf')

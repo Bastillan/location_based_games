@@ -1,0 +1,21 @@
+{% load i18n %}
+{% block subject %}
+{% blocktrans %}Aktywacja konta na {{site_name }}{% endblocktrans %}
+{% endblock subject %}
+
+{% block html_body %}
+<p>
+  {% blocktrans %}Otrzymujesz tę wiadomość, ponieważ musisz dokończyć proces
+  rejstracji na {{ site_name }}.{% endblocktrans %}
+</p>
+
+<p>{% trans "Proszę kliknij poniższy link, aby aktywować konto:" %}</p>
+<p>
+  <a href="https://{{ domain }}/{{ url|safe }}"
+    >https://{{ domain }}/{{ url|safe }}</a
+  >
+</p>
+
+<p>{% trans "Pozdrawiamy i życzymy udanej rozgrywki" %}</p>
+
+{% endblock html_body %}

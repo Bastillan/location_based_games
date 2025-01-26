@@ -116,11 +116,24 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('JWT',),
 }
 
+SITE_NAME = os.environ.get('SITE_NAME', 'https://localhost:5173')
+DOMAIN = os.environ.get('DOMAIN', 'localhost:5173')
+
 DJOSER = {
     'SERIALIZERS': {
         'current_user': 'tasks.serializers.UserSerializer'
-    }
+    },
+    'TOKEN_MODEL': None,
+    'PASSWORD_RESET_CONFIRM_URL': "reset-password-confirm?uid={uid}&token={token}",
+    'PASSWORD_RESET_CONFIRM_RETYPE': True,
+    'EMAIL': {
+        "password_reset": "tasks.auth_email.PasswordResetEmail",
+        "activation": "tasks.auth_email.ActivationEmail"
+    },
+    "SEND_ACTIVATION_EMAIL": True,
+    "ACTIVATION_URL": "activate?uid={uid}&token={token}"
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -163,7 +176,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-MEDIA_URL = '/media/'
+MEDIA_URL = 'https://' + os.environ.get('DOMAIN') + '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 """

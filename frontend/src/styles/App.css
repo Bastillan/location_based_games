@@ -9,7 +9,7 @@ body, html {
   /* background: linear-gradient(135deg, #DDD0C8, #7c5b47); */
   /* overflow: auto; */
   overflow-x: hidden;
-  overflow-y: auto; 
+  overflow-y: auto;
   background: linear-gradient(0deg,  #DDD0C8, #4E3822);
   font-family: 'Georgia', serif;
   color: #3C2A1F;
@@ -23,7 +23,7 @@ body, html {
   align-items: center;
   /* overflow: auto; */
   overflow-x: hidden;
-  overflow-y: auto; 
+  overflow-y: auto;
 }
 
 body {
@@ -108,6 +108,15 @@ button.addTask {
   margin-bottom: 40px;
 }
 
+button.deleteBut {
+  margin: 5px;
+  background-color: #941717;
+}
+
+button.deleteBut:hover {
+  background-color: #581111;
+}
+
 .main {
   text-align: center;
   width:fit-content;
@@ -160,4 +169,8 @@ button.addTask {
 
 .taskButtons button {
   margin: 5px;
+}
+
+.gamesView, .scenarioView {
+  margin-top: 20px;
 }

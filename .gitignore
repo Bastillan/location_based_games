@@ -145,6 +145,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+frontend/certs/*
 
 # Spyder project settings
 .spyderproject

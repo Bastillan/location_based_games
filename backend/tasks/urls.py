@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import TaskViewSet, ScenarioViewSet, GameViewSet, UserViewSet, AnswerImagesSet, TeamViewSet, UserProfileViewSet, send_email, TaskCompletionView
+from .views import TaskViewSet, ScenarioViewSet, GameViewSet, UserViewSet, AnswerImagesSet, TeamViewSet, UserProfileViewSet, send_email, TaskCompletionView, generate_game_report
 
 router = DefaultRouter()
 router.register(r'tasks', TaskViewSet)
@@ -16,4 +16,5 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('', include(router.urls)),
     path('send-email/', send_email, name='send-email'),
+    path('generate-report/', generate_game_report, name='generate-game-report'),
 ]

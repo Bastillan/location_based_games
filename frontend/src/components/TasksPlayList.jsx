@@ -36,7 +36,7 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
 
     const getCurrentTask = async (teamId) => {
         try {
-            const response = await api.get(`/api/task-completion/current-task/?team=${teamId}&scenario=${game.scenario.id}`);
+            const response = await api.get(`/api/task-completion/current-task/?team=${teamId}&scenario=${game.scenario.id}&game=${game.id}`);
             setTaskData(response.data.current_task);
             setCompletionPercentage(Math.round(response.data.percentage * 100));
             setIsGameEnded(response.data.ended);
@@ -44,6 +44,7 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
             console.error("Error getting task data: ", error)
         } finally {
             setLoading(false);
+            console.log("done");
         }
     };
 
@@ -53,10 +54,12 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
         setRegisterMessage(null);
         try {
             const payload = {
-                game: game.id
+                game: game.id,
+                players_number: members
             };
             const response = await api.post('/api/teams/', payload);
             setTeamId(response.data.id);
+            getCurrentTask(response.data.id);
             setRegisterMessage('Pomyślnie zarejestrowano do gry');
             setUserRegistered(true);
         } catch (error) {
@@ -139,9 +142,9 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
         }
     };
 
-    const handleEnterGame = async (error) => {
-        setTeamId(error.response.data.team.id);
-        const newTeamId = error.response.data.team.id;
+    const handleEnterGame = async (response) => {
+        setTeamId(response.data.team.id);
+        const newTeamId = response.data.team.id;
         setUserRegistered(true);
         await getCurrentTask(newTeamId);
     }
@@ -149,16 +152,12 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const payload = {
-                    game: game.id
-                };
-                const response = await api.post('/api/teams/', payload);
+                const response = await api.get(`/api/teams/is-registered-to-game?game=${game.id}`);
+                await handleEnterGame(response)
             } catch (error) {
-                if (error.response && error.response.status === 400) {
-                    await handleEnterGame(error);
-                } else if (error.response && error.response.status === 500) {
-                    setRegisterMessage('Żeby dołączyć do gry trzeba się zalogować.');
-                }else {
+                if (error.response && error.response.status === 500) {
+                    setRegisterMessage('Żeby zagrać trzeba się zarejestrować do gry podając liczbę członków zespołu.');
+                } else {
                     setRegisterMessage('Wystąpił błąd: ' + error.message);
                 }
             }
@@ -233,7 +232,7 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
                     <div>
                         <h3>Zadanie {taskData.number}</h3>
                         <div className="teamsNum">
-                        {completionCounts[taskData.number] || 0}
+                        {completionCounts[taskData.id] || 0}
                         <img
                             src={userIcon}
                             alt="Ikona ludzika"
@@ -301,15 +300,18 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
             <div>
                 <button className='mainBut powrot' onClick={handleBackToGamesList}>Wróć do listy gier</button>
                 <form className="form-container" onSubmit={handleRegisterToGame}>
-                    <input
-                    type="members"
-                    placeholder={`Ilość członków zespołu`}
-                    value={members}
-                    onChange={(e) => setMembers(e.target.value)}
-                    min="1"
-                    max="20"
-                    className="form-input"
-                    />
+                    <label>
+                        Liczba członków zespołu:
+                        <input
+                        type="number"
+                        placeholder={`Od 1 do 20`}
+                        value={members}
+                        onChange={(e) => setMembers(e.target.value)}
+                        min="1"
+                        max="20"
+                        className="form-input"
+                        />
+                    </label>
                     <button type="submit">Dołącz do gry</button>
                 </form>
                 {registerMessage && (

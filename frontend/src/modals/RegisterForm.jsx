@@ -23,24 +23,9 @@ const RegisterForm = ( {closeForm} ) => {
         try {
             const response = await api.post("/auth/users/", formData);
 
-            const loginResponse = await api.post("/auth/jwt/create/", {
-                username: formData.username,
-                password: formData.password,
-            });
 
-            const token = loginResponse.data.access;
 
-            await api.post(
-                "/api/user-profile/",
-                {},
-                {
-                    headers: {
-                        Authorization: `JWT ${token}`,
-                    },
-                }
-            );
-
-            setMessage("Pomyślnie zarejestrowano.");
+            setMessage("Pomyślnie zarejestrowano i wysłano link aktywacyjny na adres e-mail.");
         } catch (error) {
             if (error.response && error.response.data) {
                 // setErrors(error.response.data);
