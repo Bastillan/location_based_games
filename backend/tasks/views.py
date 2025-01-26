@@ -22,7 +22,7 @@ from .permissions import IsStaff
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont  
+from reportlab.pdfbase.ttfonts import TTFont
 import io
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib import colors
@@ -76,7 +76,7 @@ class AnswerImagesSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
-        """Returns list of task images using for answering""" 
+        """Returns list of task images using for answering"""
         task_id = request.query_params.get('task_id', None)
         if task_id:
             self.queryset = self.queryset.filter(task=task_id)
@@ -395,7 +395,10 @@ class TaskCompletionView(viewsets.ModelViewSet):
         task_id = request.data.get("task")
         task = get_object_or_404(Task, id=task_id)
 
-        cTask = CompletedTask.objects.create(team=team, task=task)
+        game_id = request.data.get("game")
+        game = get_object_or_404(Game, id=game_id)
+
+        cTask = CompletedTask.objects.create(team=team, task=task, game=game)
         serializer = self.get_serializer(cTask)
         print("1")
 
@@ -404,8 +407,9 @@ class TaskCompletionView(viewsets.ModelViewSet):
     def get_queryset(self):
         """Return completed tasks"""
         task_id = self.request.query_params.get('task', None)
+        game_id =  self.request.query_params.get('game', None)
         if task_id is not None:
-            return CompletedTask.objects.filter(task_id=task_id)
+            return CompletedTask.objects.filter(task_id=task_id, game_id=game_id)
         return CompletedTask.objects.all()
 
     @action(detail=False, methods=["get"], url_path='current-task', url_name='current-task')
@@ -413,9 +417,10 @@ class TaskCompletionView(viewsets.ModelViewSet):
         """Return current task to do"""
         team_id = request.query_params.get("team")
         scenario_id = request.query_params.get("scenario")
+        game_id = request.query_params.get("game")
         scenario_tasks = Task.objects.filter(scenario=scenario_id)
         try:
-            completed_tasks = CompletedTask.objects.filter(team=team_id).order_by('-task__number')
+            completed_tasks = CompletedTask.objects.filter(team=team_id, game=game_id).order_by('-task__number')
             current_task = scenario_tasks.filter(number=completed_tasks[0].task.number+1)
         except:
             current_task = scenario_tasks.filter(number=1)
@@ -437,9 +442,9 @@ class TaskCompletionView(viewsets.ModelViewSet):
             "percentage": percentage,
             "current_task": serialized_data,
         }
-        
+
         return(Response(response))
-        
+
 @api_view(['POST'])
 def generate_game_report(request):
     """Generate report for the game"""
@@ -459,7 +464,7 @@ def generate_game_report(request):
             teams = Team.objects.filter(game=game)
             tasks_number = Task.objects.filter(scenario=game.scenario).count()
             total_players = sum(team.players_number for team in teams)
-            
+
             buffer = io.BytesIO()
             pdf = SimpleDocTemplate(buffer, pagesize=A4)
             elements = []
@@ -473,7 +478,7 @@ def generate_game_report(request):
             title_paragraph = Paragraph(title, styles['Title'])
             elements.append(title_paragraph)
             elements.append(Spacer(1, 12))
-            
+
             body_style = styles['BodyText']
             body_style.fontName = 'DejaVuSans'
 
@@ -482,13 +487,13 @@ def generate_game_report(request):
 
             if include_game_dates:
                 elements.append(Paragraph(
-                    f"Aktywna od: {game.beginning_date.strftime('%d-%m-%Y')} do: {game.end_date.strftime('%d-%m-%Y')}", 
+                    f"Aktywna od: {game.beginning_date.strftime('%d-%m-%Y')} do: {game.end_date.strftime('%d-%m-%Y')}",
                     body_style
                 ))
 
             if include_scenario_title:
                 elements.append(Paragraph(
-                    f"Przeprowadzona na podstawie scenariusza: {game.scenario.title}", 
+                    f"Przeprowadzona na podstawie scenariusza: {game.scenario.title}",
                     body_style
                 ))
 

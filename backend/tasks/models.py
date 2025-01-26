@@ -57,3 +57,4 @@ class CompletedTask(models.Model):
     """CompletedTask model used for representing tasks done by team"""
     team = models.ForeignKey(Team, related_name="completedTasks", on_delete=models.CASCADE)
     task = models.ForeignKey(Task, related_name="completedTasks", on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, related_name="completedTasks", on_delete=models.CASCADE)

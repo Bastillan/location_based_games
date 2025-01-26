@@ -36,7 +36,7 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
 
     const getCurrentTask = async (teamId) => {
         try {
-            const response = await api.get(`/api/task-completion/current-task/?team=${teamId}&scenario=${game.scenario.id}`);
+            const response = await api.get(`/api/task-completion/current-task/?team=${teamId}&scenario=${game.scenario.id}&game=${game.id}`);
             setTaskData(response.data.current_task);
             setCompletionPercentage(Math.round(response.data.percentage * 100));
             setIsGameEnded(response.data.ended);
@@ -121,7 +121,7 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
 
     const fetchCompletionCount = async (taskId) => {
         try {
-            const response = await api.get(`/api/task-completion/?task=${taskId}`);
+            const response = await api.get(`/api/task-completion/?task=${taskId}&game=${game.id}`);
             const data = response.data;
             setCompletionCounts((prev) => ({
                 ...prev,
@@ -134,7 +134,7 @@ const TasksPlayList = ({ game, handleBackToGamesList }) => {
 
     const createTaskCompletion = async (taskId) => {
         try {
-            const payload = {task: taskId, team: teamId};
+            const payload = {task: taskId, team: teamId, game: game.id};
             await api.post('/api/task-completion/', payload);
             fetchCompletionCount(taskId);
         } catch (error) {
