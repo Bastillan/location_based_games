@@ -170,3 +170,7 @@ button.deleteBut:hover {
 .taskButtons button {
   margin: 5px;
 }
+
+.gamesView, .scenarioView {
+  margin-top: 20px;
+}

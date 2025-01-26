@@ -116,7 +116,7 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('JWT',),
 }
 
-SITE_NAME = os.environ.get('SITE_NAME', 'http://localhost:5173')
+SITE_NAME = os.environ.get('SITE_NAME', 'https://localhost:5173')
 DOMAIN = os.environ.get('DOMAIN', 'localhost:5173')
 
 DJOSER = {
