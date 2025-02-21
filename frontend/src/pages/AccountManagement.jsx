@@ -2,14 +2,12 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../services/AuthProvider';
-import ConfirmForm from '../modals/ConfirmForm';
 
 const AccountManagementPage = () => {
     const { logout } = useAuth();
     const navigate = useNavigate();
     const [currentPassword, setCurrentPassword] = useState('');
     const [error, setError] = useState('');
-    const [isDeleteAccountFormVisible, setIsDeleteAccountFormVisible] = useState(false);
 
     const handleDeleteAccount = async () => {
         if (!currentPassword) {
@@ -49,19 +47,9 @@ const AccountManagementPage = () => {
                 />
             </div>
             {error && <p className="error">{error}</p>}
-            <button className='mainBut' onClick={() => navigate(-1)}>
-                Wróć
-            </button>
-            <button className={"mainBut deleteBut"} onClick={() => setIsDeleteAccountFormVisible(true)}>
+            <button className={"mainBut deleteBut"} onClick={handleDeleteAccount}>
                 Usuń konto
             </button>
-            {isDeleteAccountFormVisible && (
-                <ConfirmForm
-                    text="Czy na pewno chcesz usunąć konto?"
-                    onConfirm={handleDeleteAccount}
-                    onClose={() => setIsDeleteAccountFormVisible(false)}
-                />
-            )}
         </div>
     );
 };
